@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+</head>
+<body>
+<h2>Sample Page</h2>
+<div th:text="'こんにちは ' + ${#authentication.name} + ' さん'"></div>
+<form th:action="@{/logout}" method="post">
+    <input type="submit" value="ログアウト"/>
+</form>
+</body>
+</html>
