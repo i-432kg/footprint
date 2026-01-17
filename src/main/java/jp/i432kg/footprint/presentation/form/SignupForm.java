@@ -12,11 +12,11 @@ import lombok.Setter;
 public class SignupForm {
 
     @NotBlank
-    @Size(min = 1, max = 50)
+//    @Size(min = 1, max = 50)
     private String username;
 
     @NotBlank
-    @Size(min = 6, max = 20)
+//    @Size(min = 6, max = 20)
     private String password;
 
     public UserName toUserName() {

@@ -31,6 +31,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/signup").permitAll()
+                        .requestMatchers("/api/**").permitAll() // 開発用にapiリクエスト許可
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

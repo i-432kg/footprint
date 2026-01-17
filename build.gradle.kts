@@ -45,6 +45,7 @@ dependencies {
 	testImplementation("org.mybatis.spring.boot:mybatis-spring-boot-starter-test:4.0.0")
 	implementation("org.springframework.boot:spring-boot-h2console")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	implementation("com.drewnoakes:metadata-extractor:2.19.0")
 }
 
 tasks.withType<Test> {

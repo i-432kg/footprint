@@ -25,3 +25,12 @@ mybatis:
   type-handlers-package: jp.i432kg.footprint.infrastructure.datasource.typehandler
   configuration:
     map-underscore-to-camel-case: true # DBの項目名(user_id)をJavaのフィールド(userId)に自動変換
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+
+# 画像保存先の設定
+storage:
+  location: ./upload-images
+  public-path: /images/
