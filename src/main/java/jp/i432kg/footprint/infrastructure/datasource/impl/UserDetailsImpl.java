@@ -1,7 +1,9 @@
-package jp.i432kg.footprint.infrastructure.datasource;
+package jp.i432kg.footprint.infrastructure.datasource.impl;
 
-import jp.i432kg.footprint.domain.model.user.User;
+import jp.i432kg.footprint.domain.model.User;
+import jp.i432kg.footprint.domain.value.UserId;
 import lombok.Getter;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,46 +18,57 @@ public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
     @Getter
-    private final User user;
+    private final UserId userId;
     private final Collection<? extends GrantedAuthority> authorities;
+    private final String password;
+    private final String userName;
 
-    public UserDetailsImpl(User user) {
-        this.user = user;
+    private UserDetailsImpl(User user) {
+        this.userId = user.getId();
         this.authorities = List.of(new SimpleGrantedAuthority(user.getAuthority().name()));
+        this.password = user.getHashedPassword().value();
+        this.userName = user.getName().value();
+    }
+
+    public static UserDetailsImpl fromDomainUser(User user) {
+        return new UserDetailsImpl(user);
     }
 
     @Override
+    @NonNull
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
     }
 
     @Override
+    @NonNull
     public String getPassword() {
-        return user.getHashedPassword().value();
+        return password;
     }
 
     @Override
+    @NonNull
     public String getUsername() {
-        return user.getName().value();
+        return userName;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return UserDetails.super.isAccountNonExpired();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return UserDetails.super.isAccountNonLocked();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return UserDetails.super.isCredentialsNonExpired();
     }
 
     @Override
     public boolean isEnabled() {
-        return !user.isDisabled();
+        return UserDetails.super.isEnabled();
     }
 }

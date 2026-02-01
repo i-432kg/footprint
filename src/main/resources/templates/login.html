@@ -2,27 +2,20 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
 <head>
     <meta charset="UTF-8">
-    <link th:href="@{/css/style.css}" rel="stylesheet"/>
-    <title>ログイン</title>
+    <title>Footprint - login</title>
+    <!-- 開発中はViteのサーバーから、本番はSpringのstaticから読み込む -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<h2 class="heading">ログイン</h2>
-<form method="post" th:action="@{/login}">
-    <div th:if="${param.error}">
-        ログインに失敗しました
-        <div th:if="${session[SPRING_SECURITY_LAST_EXCEPTION] != null}">
-            <span th:text="${session[SPRING_SECURITY_LAST_EXCEPTION].message}"></span>
-        </div>
-    </div>
-    <div th:if="${param.logout}">
-        ログアウトしました
-    </div>
-    <label for="username">ユーザー名</label>
-    <input type="text" id="username" name="username"><br>
-    <label for="password">パスワード</label>
-    <input type="password" id="password" name="password"><br>
-    <button type="submit">ログイン</button>
-</form>
-<a href="/signup">ユーザー登録</a>
+
+<!-- Vue.jsがマウントされる場所 -->
+<div id="app-login"></div>
+
+<!--
+  開発時は Vite のエントリーポイントを読み込む
+  (Vueプロジェクト側の main.js へのパス)
+-->
+<script type="module" src="http://localhost:5173/src/entries/login/main.js"></script>
+
 </body>
 </html>

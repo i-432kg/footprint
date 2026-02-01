@@ -6,7 +6,7 @@ import jp.i432kg.footprint.domain.model.Reply;
 import jp.i432kg.footprint.domain.value.Comment;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.ReplyId;
-import jp.i432kg.footprint.infrastructure.datasource.UserDetailsImpl;
+import jp.i432kg.footprint.infrastructure.datasource.impl.UserDetailsImpl;
 import jp.i432kg.footprint.presentation.api.dto.ReplyRequest;
 import jp.i432kg.footprint.presentation.api.dto.ReplyResponse;
 import lombok.RequiredArgsConstructor;
@@ -69,7 +69,7 @@ public class ReplyRestController {
 
         final Reply.NewReply newReply = Reply.newReply()
                 .postId(postId)
-                .userId(userDetails.getUser().getId())
+                .userId(userDetails.getUserId())
                 .parentReplyId(Optional.ofNullable(request.getParentReplyId()).map(ReplyId::new).orElse(null))
                 .content(new Comment(request.getContent()))
                 .build();

@@ -21,18 +21,18 @@ public class UserNameTypeHandler extends BaseTypeHandler<UserName> {
     @Override
     public UserName getNullableResult(ResultSet rs, String columnName) throws SQLException {
         String value = rs.getString(columnName);
-        return value == null ? null : new UserName(value);
+        return value == null ? null : UserName.of(value);
     }
 
     @Override
     public UserName getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
         String value = rs.getString(columnIndex);
-        return value == null ? null : new UserName(value);
+        return value == null ? null : UserName.of(value);
     }
 
     @Override
     public UserName getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
         String value = cs.getString(columnIndex);
-        return value == null ? null : new UserName(value);
+        return value == null ? null : UserName.of(value);
     }
 }

@@ -6,7 +6,7 @@ import jp.i432kg.footprint.domain.model.Post;
 import jp.i432kg.footprint.domain.model.Posts;
 import jp.i432kg.footprint.domain.value.Comment;
 import jp.i432kg.footprint.domain.value.PostId;
-import jp.i432kg.footprint.infrastructure.datasource.UserDetailsImpl;
+import jp.i432kg.footprint.infrastructure.datasource.impl.UserDetailsImpl;
 import jp.i432kg.footprint.presentation.api.dto.PostRequest;
 import jp.i432kg.footprint.presentation.api.dto.PostResponse;
 import jp.i432kg.footprint.presentation.helper.ImageUrlConverter;
@@ -44,7 +44,7 @@ public class PostRestController {
     public String post(@Valid final PostRequest request, @AuthenticationPrincipal final UserDetailsImpl userDetails) {
 
         final Post.NewPost newPost = Post.newPost()
-                .userId(userDetails.getUser().getId())
+                .userId(userDetails.getUserId())
                 .comment(new Comment(request.getComment()))
                 .build();
 

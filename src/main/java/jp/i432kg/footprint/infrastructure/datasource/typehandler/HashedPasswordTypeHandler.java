@@ -21,18 +21,18 @@ public class HashedPasswordTypeHandler extends BaseTypeHandler<HashedPassword> {
     @Override
     public HashedPassword getNullableResult(ResultSet rs, String columnName) throws SQLException {
         String value = rs.getString(columnName);
-        return value == null ? null : new HashedPassword(value);
+        return value == null ? null : HashedPassword.of(value);
     }
 
     @Override
     public HashedPassword getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
         String value = rs.getString(columnIndex);
-        return value == null ? null : new HashedPassword(value);
+        return value == null ? null : HashedPassword.of(value);
     }
 
     @Override
     public HashedPassword getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
         String value = cs.getString(columnIndex);
-        return value == null ? null : new HashedPassword(value);
+        return value == null ? null : HashedPassword.of(value);
     }
 }

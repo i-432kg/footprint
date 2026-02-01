@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,7 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -30,13 +31,20 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(frame -> frame.disable())) // iframe許可
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/signup").permitAll()
+                        .requestMatchers("/signup", "/login").permitAll()
+                        .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/**").permitAll() // 開発用にapiリクエスト許可
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/")
+                        .loginProcessingUrl("/api/login")
+                        .successHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK);
+                        }) // 成功時に200 OKを返す
+                        .failureHandler((request, response, exception) -> {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication Failed");
+                        }) // 失敗時に401 Unauthorizedを返す
                         .permitAll()
                 )
                 .logout(logout -> logout

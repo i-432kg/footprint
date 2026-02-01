@@ -1,6 +1,6 @@
 package jp.i432kg.footprint.presentation.api;
 
-import jp.i432kg.footprint.infrastructure.datasource.UserDetailsImpl;
+import jp.i432kg.footprint.infrastructure.datasource.impl.UserDetailsImpl;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

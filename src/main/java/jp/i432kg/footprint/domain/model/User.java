@@ -1,19 +1,17 @@
-package jp.i432kg.footprint.domain.model.user;
-
+package jp.i432kg.footprint.domain.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jp.i432kg.footprint.domain.value.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Value
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 public class User {
 
     UserId id;
@@ -23,6 +21,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "authority", nullable = false)
     Authority authority;
+
+    BirthDate birthDate;
 
     boolean isDisabled;
     LocalDateTime disabledAt;
