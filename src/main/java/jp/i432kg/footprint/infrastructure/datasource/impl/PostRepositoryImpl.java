@@ -6,6 +6,7 @@ import jp.i432kg.footprint.domain.model.Posts;
 import jp.i432kg.footprint.domain.repository.PostRepository;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.SearchKeyword;
+import jp.i432kg.footprint.domain.value.UserId;
 import jp.i432kg.footprint.infrastructure.datasource.mapper.PostMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -47,6 +48,14 @@ public class PostRepositoryImpl implements PostRepository {
     @Override
     public Posts search(final SearchKeyword keyword, final PostId lastId, final int size) {
         final List<Post> posts = postMapper.searchPosts(keyword, lastId, size).stream()
+                .map(this::ensureLocation)
+                .toList();
+        return new Posts(posts);
+    }
+
+    @Override
+    public Posts findMyPosts(final UserId userId) {
+        final List<Post> posts = postMapper.findPostByUserId(userId).stream()
                 .map(this::ensureLocation)
                 .toList();
         return new Posts(posts);

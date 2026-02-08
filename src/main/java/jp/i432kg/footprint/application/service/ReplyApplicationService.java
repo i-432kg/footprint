@@ -5,6 +5,7 @@ import jp.i432kg.footprint.domain.model.Reply;
 import jp.i432kg.footprint.domain.repository.ReplyRepository;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.ReplyId;
+import jp.i432kg.footprint.domain.value.UserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,11 @@ public class ReplyApplicationService {
         if(newReply.hasParentReply()){
             replyRepository.increaseReplyCount(newReply.getParentReplyId());
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Replies getMyReplies(final UserId userId){
+        return replyRepository.findMyReplies(userId);
     }
 
 }

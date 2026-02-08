@@ -8,6 +8,7 @@ import jp.i432kg.footprint.domain.repository.PostRepository;
 import jp.i432kg.footprint.domain.value.ImageFileName;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.SearchKeyword;
+import jp.i432kg.footprint.domain.value.UserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,5 +54,10 @@ public class PostApplicationService {
     @Transactional(readOnly = true)
     public Posts searchPosts(final SearchKeyword keyword, final PostId lastId, final int size) {
         return postRepository.search(keyword, lastId, size);
+    }
+
+    @Transactional(readOnly = true)
+    public Posts getMyPosts(final UserId userId) {
+        return postRepository.findMyPosts(userId);
     }
 }

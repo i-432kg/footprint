@@ -28,4 +28,7 @@ public interface ReplyMapper {
 
     @Update("UPDATE replies SET child_count = child_count + 1 WHERE id = #{id}")
     void incrementChildCount(@Param("id") ReplyId replyId);
+
+    @Select("SELECT id, post_id, user_id, parent_reply_id, content, created_at, child_count FROM replies WHERE user_id = #{user_id}")
+    List<Reply> findByUserId(@Param("user_id") UserId userId);
 }

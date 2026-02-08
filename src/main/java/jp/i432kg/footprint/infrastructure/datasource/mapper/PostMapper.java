@@ -40,4 +40,8 @@ public interface PostMapper {
             @Param("lastId") PostId lastId,
             @Param("size") int size
     );
+
+    @Select("SELECT id, user_id, image_file_name, comment, latitude, longitude, created_at FROM posts WHERE user_id = #{user_id}")
+    @ResultMap("postResult")
+    List<Post> findPostByUserId(@Param("user_id") UserId userId);
 }

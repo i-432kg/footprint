@@ -4,6 +4,7 @@ import jp.i432kg.footprint.domain.model.Replies;
 import jp.i432kg.footprint.domain.model.Reply;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.ReplyId;
+import jp.i432kg.footprint.domain.value.UserId;
 
 public interface ReplyRepository {
 
@@ -36,4 +37,6 @@ public interface ReplyRepository {
      * @param replyId
      */
     void increaseReplyCount(final ReplyId replyId);
+
+    Replies findMyReplies(final UserId userId);
 }

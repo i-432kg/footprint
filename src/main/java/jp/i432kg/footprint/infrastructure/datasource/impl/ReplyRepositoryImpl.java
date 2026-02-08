@@ -5,6 +5,7 @@ import jp.i432kg.footprint.domain.model.Reply;
 import jp.i432kg.footprint.domain.repository.ReplyRepository;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.ReplyId;
+import jp.i432kg.footprint.domain.value.UserId;
 import jp.i432kg.footprint.infrastructure.datasource.mapper.ReplyMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -38,6 +39,11 @@ public class ReplyRepositoryImpl implements ReplyRepository {
     @Override
     public void increaseReplyCount(ReplyId replyId) {
         replyMapper.incrementChildCount(replyId);
+    }
+
+    @Override
+    public Replies findMyReplies(final UserId userId) {
+        return Replies.of(replyMapper.findByUserId(userId));
     }
 
 
