@@ -34,4 +34,10 @@ public interface PostMapper {
             @Param("latitude") Coordinate latitude,
             @Param("longitude") Coordinate longitude
     );
+
+    List<Post> searchPosts(
+            @Param("keyword") SearchKeyword keyword,
+            @Param("lastId") PostId lastId,
+            @Param("size") int size
+    );
 }

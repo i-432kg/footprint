@@ -7,6 +7,7 @@ import jp.i432kg.footprint.domain.repository.ImageRepository;
 import jp.i432kg.footprint.domain.repository.PostRepository;
 import jp.i432kg.footprint.domain.value.ImageFileName;
 import jp.i432kg.footprint.domain.value.PostId;
+import jp.i432kg.footprint.domain.value.SearchKeyword;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,5 +48,10 @@ public class PostApplicationService {
         // 3. 投稿情報を保存する
         postRepository.savePost(postToSave);
 
+    }
+
+    @Transactional(readOnly = true)
+    public Posts searchPosts(final SearchKeyword keyword, final PostId lastId, final int size) {
+        return postRepository.search(keyword, lastId, size);
     }
 }

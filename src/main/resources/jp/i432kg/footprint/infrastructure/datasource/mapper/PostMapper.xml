@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.i432kg.footprint.infrastructure.datasource.mapper.PostMapper">
+
+    <select id="searchPosts" resultType="jp.i432kg.footprint.domain.model.Post">
+        SELECT
+        id,
+        user_id,
+        image_file_name,
+        comment,
+        latitude,
+        longitude,
+        created_at
+        FROM posts
+        WHERE comment LIKE CONCAT('%', #{keyword}, '%')
+        <if test="lastId != null">
+            AND id &lt; #{lastId}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{size}
+    </select>
+
+</mapper>

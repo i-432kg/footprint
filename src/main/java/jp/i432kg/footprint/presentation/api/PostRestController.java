@@ -6,11 +6,13 @@ import jp.i432kg.footprint.domain.model.Post;
 import jp.i432kg.footprint.domain.model.Posts;
 import jp.i432kg.footprint.domain.value.Comment;
 import jp.i432kg.footprint.domain.value.PostId;
+import jp.i432kg.footprint.domain.value.SearchKeyword;
 import jp.i432kg.footprint.infrastructure.datasource.impl.UserDetailsImpl;
 import jp.i432kg.footprint.presentation.api.dto.PostRequest;
 import jp.i432kg.footprint.presentation.api.dto.PostResponse;
 import jp.i432kg.footprint.presentation.helper.ImageUrlConverter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,5 +53,19 @@ public class PostRestController {
         postApplicationService.createPost(newPost, request.getImageFile());
 
         return "redirect:/";
+    }
+
+    @GetMapping("/api/posts/search")
+    public ResponseEntity<List<PostResponse>> search(
+            @RequestParam SearchKeyword keyword,
+            @RequestParam(required = false) PostId lastId,
+            @RequestParam(defaultValue = "10") int size) {
+
+        List<PostResponse> responses = postApplicationService.searchPosts(keyword, lastId, size)
+                .asList().stream()
+                .map(post -> new PostResponse(post, imageUrlConverter.convert(post.getImageFileName())))
+                .toList();
+
+        return ResponseEntity.ok(responses);
     }
 }

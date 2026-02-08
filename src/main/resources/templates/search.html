@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Footprint - search</title>
+    <!-- 開発中はViteのサーバーから、本番はSpringのstaticから読み込む -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Vue.jsがマウントされる場所 -->
+<div id="app-search"></div>
+
+<!--
+  開発時は Vite のエントリーポイントを読み込む
+  (Vueプロジェクト側の main.js へのパス)
+-->
+<script type="module" src="http://localhost:5173/src/entries/search/main.js"></script>
+
+</body>
+</html>
