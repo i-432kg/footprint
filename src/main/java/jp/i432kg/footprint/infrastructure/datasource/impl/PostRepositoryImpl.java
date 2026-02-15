@@ -27,8 +27,8 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public Posts findRecentPosts() {
-        final List<Post> posts = postMapper.findRecentPosts().stream()
+    public Posts findRecentPosts(final PostId lastId, final int size) {
+        final List<Post> posts = postMapper.findRecentPosts(lastId, size).stream()
                 .map(this::ensureLocation)
                 .toList();
         return new Posts(posts);

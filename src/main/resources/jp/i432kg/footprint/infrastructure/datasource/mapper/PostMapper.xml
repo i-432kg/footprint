@@ -2,15 +2,48 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.i432kg.footprint.infrastructure.datasource.mapper.PostMapper">
 
-    <select id="searchPosts" resultType="jp.i432kg.footprint.domain.model.Post">
-        SELECT
-        id,
-        user_id,
-        image_file_name,
-        comment,
-        latitude,
-        longitude,
-        created_at
+    <!-- マッピング定義 -->
+    <resultMap id="postResultMap" type="jp.i432kg.footprint.domain.model.Post">
+        <id property="id" column="id" />
+        <result property="userId" column="user_id" />
+        <result property="imageFileName" column="image_file_name" />
+        <result property="comment" column="comment" />
+        <result property="location.latitude" column="latitude" />
+        <result property="location.longitude" column="longitude" />
+        <result property="createdAt" column="created_at" />
+    </resultMap>
+
+    <!-- カラム定義 -->
+    <sql id="postColumns">
+        id, user_id, image_file_name, comment, latitude, longitude, created_at
+    </sql>
+
+    <select id="findPostByPostId" resultMap="postResultMap">
+        SELECT <include refid="postColumns" />
+        FROM posts
+        WHERE id = #{post_id}
+    </select>
+
+    <select id="findPostByUserId" resultMap="postResultMap">
+        SELECT <include refid="postColumns" />
+        FROM posts
+        WHERE user_id = #{user_id}
+    </select>
+
+    <select id="findRecentPosts" resultMap="postResultMap">
+        SELECT <include refid="postColumns" />
+        FROM posts
+        <where>
+            <if test="lastId != null">
+                id &lt; #{lastId}
+            </if>
+        </where>
+        ORDER BY id DESC
+        LIMIT #{size}
+    </select>
+
+    <select id="searchPosts" resultMap="postResultMap">
+        SELECT <include refid="postColumns" />
         FROM posts
         WHERE comment LIKE CONCAT('%', #{keyword}, '%')
         <if test="lastId != null">
@@ -19,5 +52,18 @@
         ORDER BY id DESC
         LIMIT #{size}
     </select>
+
+    <insert id="insert">
+        INSERT INTO posts (user_id,
+                           image_file_name,
+                           comment,
+                           latitude,
+                           longitude)
+        VALUES (#{user_id},
+                #{image_file_name},
+                #{comment},
+                #{latitude},
+                #{longitude})
+    </insert>
 
 </mapper>

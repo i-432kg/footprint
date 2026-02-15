@@ -28,8 +28,8 @@ public class PostApplicationService {
     }
 
     @Transactional(readOnly = true)
-    public Posts getRecentPosts() {
-        return postRepository.findRecentPosts();
+    public Posts getRecentPosts(final PostId lastId, final int size) {
+        return postRepository.findRecentPosts(lastId, size);
     }
 
     @Transactional

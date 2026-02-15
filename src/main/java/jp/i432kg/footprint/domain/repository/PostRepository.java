@@ -12,7 +12,7 @@ public interface PostRepository {
 
     Optional<Post> findPost(final PostId postId);
 
-    Posts findRecentPosts();
+    Posts findRecentPosts(final PostId lastId, final int size);
 
     void savePost(final Post.NewPost newPost);
 
