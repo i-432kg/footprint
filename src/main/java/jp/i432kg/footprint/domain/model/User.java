@@ -16,6 +16,7 @@ public class User {
 
     UserId id;
     UserName name;
+    LoginId loginId;
     HashedPassword hashedPassword;
 
     @Enumerated(EnumType.STRING)
@@ -23,6 +24,8 @@ public class User {
     Authority authority;
 
     BirthDate birthDate;
+    EmailAddress emailAddress;
+    boolean isActive;
 
     boolean isDisabled;
     LocalDateTime disabledAt;

@@ -12,10 +12,13 @@ import java.time.LocalDate;
 public class SignUpRequest {
 
     @NotBlank
-    private String username;
+    private String loginId;
 
     @NotBlank
     private String password;
+
+//    @NotBlank
+//    private String userName;
 
     @NotNull
     private LocalDate birthDate;

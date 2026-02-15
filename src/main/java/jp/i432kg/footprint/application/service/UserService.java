@@ -18,14 +18,15 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void register(UserName userName, RawPassword rawPassword, Authority authority, BirthDate birthDate) throws Exception {
+    public void register(UserName userName, LoginId loginId, RawPassword rawPassword, Authority authority, BirthDate birthDate) throws Exception {
 
-        if (userDomainService.isExistUser(userName)) {
+        if (userDomainService.isExistUser(loginId)) {
             throw new Exception("このユーザー名は既に存在します");
         }
 
         final User user = User.builder()
                 .name(userName)
+                .loginId(loginId)
                 .hashedPassword(toHashedPassword(rawPassword))
                 .authority(authority)
                 .birthDate(birthDate)

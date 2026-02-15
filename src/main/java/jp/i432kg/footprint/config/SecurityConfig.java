@@ -39,6 +39,7 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/api/login")
+                        .usernameParameter("loginId") // Spring Security のログイン識別子を loginId に変更する
                         .successHandler((request, response, authentication) -> {
                             response.setStatus(HttpServletResponse.SC_OK);
                         }) // 成功時に200 OKを返す

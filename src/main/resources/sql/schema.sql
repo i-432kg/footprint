@@ -2,19 +2,23 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS comments;
 
-
+-- ユーザ
 CREATE TABLE users
 (
     id              BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name            VARCHAR(254) NOT NULL UNIQUE, -- RFC5321 メアドの最大長254文字
-    hashed_password VARCHAR(255) NOT NULL,        -- BCryptで生成されるエンコード文字列は60文字、アルゴリズム変更を考慮して255とする
-    authority       VARCHAR(20)  NOT NULL,        -- read/writeの権限（いたずら防止用として）
+    name            VARCHAR(255) NOT NULL,
+    login_id        VARCHAR(255) NOT NULL UNIQUE,
+    hashed_password VARCHAR(255) NOT NULL,              -- BCryptで生成されるエンコード文字列は60文字、アルゴリズム変更を考慮して255とする
+    authority       VARCHAR(20)  NOT NULL,              -- read/writeの権限（いたずら防止用として）
     birthdate       DATE         NOT NULL,
+    email           VARCHAR(254) ,                      -- RFC5321 メアドの最大長254文字
+    is_active       BOOLEAN      NOT NULL DEFAULT TRUE, -- ユーザの認証可否（メアド認証導入時に使用）
     disabled        BOOLEAN      NOT NULL DEFAULT FALSE,
     disabled_at     TIMESTAMP,
     created_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 投稿
 CREATE TABLE posts
 (
     id              BIGINT    NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -27,6 +31,7 @@ CREATE TABLE posts
     FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
+-- 返信
 CREATE TABLE replies
 (
     id              BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,

@@ -1,8 +1,6 @@
 -- ユーザ
-INSERT INTO users(name, hashed_password, authority, birthdate)
-VALUES ('test', '$2a$10$c/xgJEeLdWay1Qv/mVP1WurNreZ32vuNeRxSTCEQ30c/gY75RQLwe', 'GENERAL', '2000-01-01');
-INSERT INTO users(name, hashed_password, authority, birthdate)
-VALUES ('user', '$2a$10$c/xgJEeLdWay1Qv/mVP1WurNreZ32vuNeRxSTCEQ30c/gY75RQLwe', 'GENERAL', '2000-01-01');
+INSERT INTO users(name, login_id, hashed_password, authority, birthdate, email)
+VALUES ('test', 'test', '$2a$10$c/xgJEeLdWay1Qv/mVP1WurNreZ32vuNeRxSTCEQ30c/gY75RQLwe', 'GENERAL', '2000-01-01', 'test@dummy');
 
 -- 投稿
 INSERT INTO posts (user_id, comment, image_file_name, latitude, longitude, created_at)

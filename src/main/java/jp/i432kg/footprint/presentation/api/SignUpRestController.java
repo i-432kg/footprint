@@ -2,10 +2,7 @@ package jp.i432kg.footprint.presentation.api;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jp.i432kg.footprint.application.service.UserService;
-import jp.i432kg.footprint.domain.value.Authority;
-import jp.i432kg.footprint.domain.value.BirthDate;
-import jp.i432kg.footprint.domain.value.RawPassword;
-import jp.i432kg.footprint.domain.value.UserName;
+import jp.i432kg.footprint.domain.value.*;
 import jp.i432kg.footprint.presentation.api.dto.SignUpRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,15 +28,16 @@ public class SignUpRestController {
             return ResponseEntity.badRequest().body(result.getAllErrors());
         }
 
-        final UserName userName = UserName.of(signUpRequest.getUsername());
+        final UserName userName = UserName.of("test");
+        final LoginId loginId = LoginId.of(signUpRequest.getLoginId());
         final RawPassword rawPassword = RawPassword.of(signUpRequest.getPassword());
         final BirthDate birthDate = BirthDate.of(signUpRequest.getBirthDate());
 
         try {
-            userService.register(userName, rawPassword, Authority.GENERAL, birthDate);
+            userService.register(userName, loginId, rawPassword, Authority.GENERAL, birthDate);
 
             // 登録後、そのままログイン状態にする
-            request.login(signUpRequest.getUsername(), signUpRequest.getPassword());
+            request.login(signUpRequest.getLoginId(), signUpRequest.getPassword());
 
             return ResponseEntity.ok().build();
         } catch (Exception e) {

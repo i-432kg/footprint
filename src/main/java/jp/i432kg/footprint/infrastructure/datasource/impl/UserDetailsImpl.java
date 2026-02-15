@@ -21,13 +21,13 @@ public class UserDetailsImpl implements UserDetails {
     private final UserId userId;
     private final Collection<? extends GrantedAuthority> authorities;
     private final String password;
-    private final String userName;
+    private final String loginId;
 
     private UserDetailsImpl(User user) {
         this.userId = user.getId();
         this.authorities = List.of(new SimpleGrantedAuthority(user.getAuthority().name()));
         this.password = user.getHashedPassword().value();
-        this.userName = user.getName().value();
+        this.loginId = user.getLoginId().value();
     }
 
     public static UserDetailsImpl fromDomainUser(User user) {
@@ -46,10 +46,14 @@ public class UserDetailsImpl implements UserDetails {
         return password;
     }
 
+    /**
+     *
+     * @return Spring Security の認証に使用する識別子（ドメインのUserNameとは異なる）
+     */
     @Override
     @NonNull
     public String getUsername() {
-        return userName;
+        return loginId;
     }
 
     @Override

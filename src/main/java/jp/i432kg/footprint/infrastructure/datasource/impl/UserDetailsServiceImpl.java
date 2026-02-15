@@ -1,6 +1,7 @@
 package jp.i432kg.footprint.infrastructure.datasource.impl;
 
 import jp.i432kg.footprint.domain.model.User;
+import jp.i432kg.footprint.domain.value.LoginId;
 import jp.i432kg.footprint.infrastructure.datasource.mapper.UserMapper;
 import jp.i432kg.footprint.domain.value.UserName;
 import lombok.NonNull;
@@ -29,7 +30,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetailsImpl loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
 
-        User user = userMapper.findByName(UserName.of(username))
+        User user = userMapper.findByLoginId(LoginId.of(username))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
         return UserDetailsImpl.fromDomainUser(user);
