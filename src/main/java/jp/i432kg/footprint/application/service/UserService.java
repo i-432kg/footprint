@@ -28,7 +28,6 @@ public class UserService {
                 .name(userName)
                 .loginId(loginId)
                 .hashedPassword(toHashedPassword(rawPassword))
-                .authority(authority)
                 .birthDate(birthDate)
                 .build();
 

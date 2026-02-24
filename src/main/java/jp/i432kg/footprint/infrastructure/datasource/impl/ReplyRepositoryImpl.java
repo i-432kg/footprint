@@ -28,12 +28,10 @@ public class ReplyRepositoryImpl implements ReplyRepository {
 
     @Override
     public void saveReply(Reply.NewReply newReply) {
-        replyMapper.insert(
-                newReply.getPostId(),
-                newReply.getUserId(),
-                newReply.getParentReplyId(),
-                newReply.getContent()
-        );
+
+        // 返信レコードを保存する
+        final ReplyMapper.ReplyInsertEntity entity = ReplyMapper.ReplyInsertEntity.from(newReply);
+        replyMapper.insert(entity);
     }
 
     @Override

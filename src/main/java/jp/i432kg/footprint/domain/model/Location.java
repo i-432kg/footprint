@@ -37,7 +37,7 @@ public class Location {
     /**
      * 位置情報が有効かどうかを判定します
      */
-    public boolean isPresent() {
+    public boolean hasLocation() {
         return latitude != null && longitude != null;
     }
 }

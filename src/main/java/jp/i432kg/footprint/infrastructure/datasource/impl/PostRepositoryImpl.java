@@ -7,6 +7,7 @@ import jp.i432kg.footprint.domain.repository.PostRepository;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.SearchKeyword;
 import jp.i432kg.footprint.domain.value.UserId;
+import jp.i432kg.footprint.infrastructure.datasource.mapper.PostImagesMapper;
 import jp.i432kg.footprint.infrastructure.datasource.mapper.PostMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -19,6 +20,8 @@ import java.util.Optional;
 public class PostRepositoryImpl implements PostRepository {
 
     private final PostMapper postMapper;
+
+    private final PostImagesMapper postImagesMapper;
 
     @Override
     public Optional<Post> findPost(PostId postId) {
@@ -36,13 +39,22 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Override
     public void savePost(final Post.NewPost newPost) {
-        postMapper.insert(
-                newPost.getUserId(),
-                newPost.getImageFileName(),
-                newPost.getComment(),
-                newPost.getLocation().getLatitude().orElse(null),
-                newPost.getLocation().getLongitude().orElse(null)
-        );
+
+        // 投稿レコードを保存する
+        final PostMapper.PostInsertEntity entity = PostMapper.PostInsertEntity.from(newPost);
+        postMapper.insert(entity); // 呼び出し後、entity.id に採番された値がセットされる
+
+        // 自動採番されたIDを PostId に変換 (Long -> int)
+        final PostId generatedPostId = new PostId(entity.getId().intValue());
+
+        // 画像情報の保存
+        final PostImagesMapper.PostImageInsertEntity imageEntity =
+                PostImagesMapper.PostImageInsertEntity.from(
+                        generatedPostId,
+                        newPost.getImageFileName(),
+                        newPost.getLocation().hasLocation()
+                );
+        postImagesMapper.insert(imageEntity);
     }
 
     @Override
@@ -77,8 +89,10 @@ public class PostRepositoryImpl implements PostRepository {
                 .id(post.getId())
                 .userId(post.getUserId())
                 .imageFileName(post.getImageFileName())
-                .comment(post.getComment())
+                .caption(post.getCaption())
+                .hasLocation(post.isHasLocation())
                 .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
                 .location(Location.unknown())
                 .build();
     }

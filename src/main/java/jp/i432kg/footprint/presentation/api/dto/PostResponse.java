@@ -20,7 +20,7 @@ public class PostResponse {
     public PostResponse(final Post post, final String imageUrl) {
         this.id = post.getId().value();
         this.imageUrl = imageUrl;
-        this.comment = post.getComment().value();
+        this.comment = post.getCaption().value();
 
         final Location loc = post.getLocation();
         this.latitude = loc.getLatitude().map(Coordinate::value).orElse(null);

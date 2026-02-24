@@ -19,10 +19,6 @@ public class User {
     LoginId loginId;
     HashedPassword hashedPassword;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "authority", nullable = false)
-    Authority authority;
-
     BirthDate birthDate;
     EmailAddress emailAddress;
     boolean isActive;

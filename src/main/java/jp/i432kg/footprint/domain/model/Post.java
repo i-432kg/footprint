@@ -21,13 +21,18 @@ public class Post {
     ImageFileName imageFileName;
 
     @org.jspecify.annotations.NonNull
-    Comment comment;
+    Comment caption;
+
+    boolean hasLocation;
 
     @org.jspecify.annotations.NonNull
     Location location;
 
     @org.jspecify.annotations.NonNull
     LocalDateTime createdAt;
+
+    @org.jspecify.annotations.NonNull
+    LocalDateTime updatedAt;
 
     @Value
     @Builder(toBuilder = true)

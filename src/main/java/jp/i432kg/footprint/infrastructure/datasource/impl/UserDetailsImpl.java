@@ -5,12 +5,11 @@ import jp.i432kg.footprint.domain.value.UserId;
 import lombok.Getter;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serial;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 public class UserDetailsImpl implements UserDetails {
 
@@ -19,13 +18,11 @@ public class UserDetailsImpl implements UserDetails {
 
     @Getter
     private final UserId userId;
-    private final Collection<? extends GrantedAuthority> authorities;
     private final String password;
     private final String loginId;
 
     private UserDetailsImpl(User user) {
         this.userId = user.getId();
-        this.authorities = List.of(new SimpleGrantedAuthority(user.getAuthority().name()));
         this.password = user.getHashedPassword().value();
         this.loginId = user.getLoginId().value();
     }
@@ -37,7 +34,8 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     @NonNull
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        // 現状、ロールベースの権限管理を行っていないため空のリストを返す
+        return Collections.emptyList();
     }
 
     @Override

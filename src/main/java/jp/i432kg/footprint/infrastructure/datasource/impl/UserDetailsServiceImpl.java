@@ -31,7 +31,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetailsImpl loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
 
         User user = userMapper.findByLoginId(LoginId.of(username))
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+                .orElseThrow(() -> {
+                    System.err.println("Login failed: User not found for email [" + username + "]");
+                    return new UsernameNotFoundException("User not found: " + username);
+                });
 
         return UserDetailsImpl.fromDomainUser(user);
     }
