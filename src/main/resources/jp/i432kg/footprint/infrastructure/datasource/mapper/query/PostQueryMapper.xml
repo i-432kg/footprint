@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.i432kg.footprint.infrastructure.datasource.mapper.query.PostQueryMapper">
+
+    <!-- マッピング定義 -->
+    <resultMap id="PostSummaryResultMap" type="jp.i432kg.footprint.application.query.model.PostSummary">
+        <id property="id" column="post_id"/>
+        <result property="caption" column="caption"/>
+        <result property="hasLocation" column="has_location"/>
+        <result property="createdAt" column="created_at"/>
+        <association property="location" javaType="jp.i432kg.footprint.application.query.model.LocationSummary">
+            <result property="lat" column="latitude"/>
+            <result property="lng" column="longitude"/>
+        </association>
+        <collection property="images" ofType="jp.i432kg.footprint.application.query.model.ImageSummary">
+            <id property="id" column="image_id"/>
+            <result property="sortOrder" column="sort_order"/>
+            <result property="url" column="image_path"/>
+            <result property="contentType" column="content_type"/>
+            <result property="sizeBytes" column="size_bytes"/>
+            <result property="width" column="width"/>
+            <result property="height" column="height"/>
+        </collection>
+    </resultMap>
+
+    <select id="findPostById" resultMap="PostSummaryResultMap">
+        SELECT p.id   AS post_id,
+               p.caption,
+               p.has_location,
+               p.latitude,
+               p.longitude,
+               p.created_at,
+               i.id   AS image_id,
+               i.sort_order,
+               i.path AS image_path,
+               i.content_type,
+               i.size_bytes,
+               i.width,
+               i.height
+        FROM posts p
+                 LEFT JOIN post_images i ON p.id = i.post_id
+        WHERE p.id = #{postId}
+    </select>
+
+    <select id="findRecentPosts" resultMap="PostSummaryResultMap">
+        SELECT
+        p.id AS post_id,
+        p.caption,
+        p.has_location,
+        p.latitude,
+        p.longitude,
+        p.created_at,
+        i.id AS image_id,
+        i.sort_order,
+        i.path AS image_path,
+        i.content_type,
+        i.size_bytes,
+        i.width,
+        i.height
+        FROM posts p
+        LEFT JOIN post_images i ON p.id = i.post_id
+        <where>
+            <if test="lastId != null">
+                AND p.id &lt; #{lastId.value}
+            </if>
+        </where>
+        ORDER BY p.created_at DESC, p.id DESC
+        LIMIT #{size}
+    </select>
+
+    <select id="findPostsByKeyword" resultMap="PostSummaryResultMap">
+        SELECT
+        p.id AS post_id,
+        p.caption,
+        p.has_location,
+        p.latitude,
+        p.longitude,
+        p.created_at,
+        i.id AS image_id,
+        i.sort_order,
+        i.path AS image_path,
+        i.content_type,
+        i.size_bytes,
+        i.width,
+        i.height
+        FROM posts p
+        LEFT JOIN post_images i ON p.id = i.post_id
+        WHERE p.caption LIKE CONCAT('%', #{keyword}, '%')
+        <if test="lastId != null">
+            AND p.id &lt; #{lastId}
+        </if>
+        ORDER BY p.created_at DESC, p.id DESC
+        LIMIT #{size}
+    </select>
+
+</mapper>

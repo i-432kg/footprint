@@ -2,16 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.i432kg.footprint.infrastructure.datasource.mapper.PostMapper">
 
+    <!-- query 用のマッピング定義 -->
+
     <!-- マッピング定義 -->
     <resultMap id="PostResultMap" type="jp.i432kg.footprint.domain.model.Post">
         <id property="id" column="id" />
         <result property="userId" column="user_id" />
         <result property="caption" column="caption" />
         <result property="hasLocation" column="has_location" />
-        <result property="imageFileName" column="image_path" />
         <result property="takenAt" column="taken_at" />
         <result property="createdAt" column="created_at" />
         <result property="updatedAt" column="updated_at" />
+        <association property="image" javaType="jp.i432kg.footprint.domain.model.Image">
+            <association property="filePath" javaType="jp.i432kg.footprint.domain.value.FilePath">
+                <result property="value" column="image_path" />
+            </association>
+        </association>
         <association property="location" javaType="jp.i432kg.footprint.domain.model.Location">
             <result property="latitude" column="latitude" />
             <result property="longitude" column="longitude" />

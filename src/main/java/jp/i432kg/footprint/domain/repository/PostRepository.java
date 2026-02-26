@@ -10,13 +10,7 @@ import java.util.Optional;
 
 public interface PostRepository {
 
-    Optional<Post> findPost(final PostId postId);
+    void savePost(Post.NewPost newPost);
 
-    Posts findRecentPosts(final PostId lastId, final int size);
-
-    void savePost(final Post.NewPost newPost);
-
-    Posts search(final SearchKeyword keyword, final PostId lastId, final int size);
-
-    Posts findMyPosts(final UserId userId);
+    Posts findMyPosts(UserId userId);
 }

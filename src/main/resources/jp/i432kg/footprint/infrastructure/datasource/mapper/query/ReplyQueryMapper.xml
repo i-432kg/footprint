@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.i432kg.footprint.infrastructure.datasource.mapper.query.ReplyQueryMapper">
+
+    <!-- マッピング定義 -->
+    <resultMap id="ReplySummaryResultMap" type="jp.i432kg.footprint.application.query.model.ReplySummary">
+        <id property="id" column="id"/>
+        <result property="postId" column="post_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="parentReplyId" column="parent_reply_id"/>
+        <result property="content" column="content"/>
+        <result property="childCount" column="child_count"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findTopLevelRepliesByPostId" resultMap="ReplySummaryResultMap">
+        SELECT id,
+               post_id,
+               parent_reply_id,
+               body,
+               child_count,
+               created_at
+        FROM replies
+        WHERE post_id = #{postId}
+          AND parent_reply_id IS NULL
+    </select>
+
+    <select id="findNestedRepliesByParentId" resultMap="ReplySummaryResultMap">
+        SELECT id,
+               post_id,
+               parent_reply_id,
+               body,
+               child_count,
+               created_at
+        FROM replies
+        WHERE parent_reply_id = #{parentReplyId}
+    </select>
+
+</mapper>

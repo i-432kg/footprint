@@ -23,19 +23,19 @@ public class PostRepositoryImpl implements PostRepository {
 
     private final PostImagesMapper postImagesMapper;
 
-    @Override
-    public Optional<Post> findPost(PostId postId) {
-        return postMapper.findPostByPostId(postId)
-                .map(this::ensureLocation);
-    }
-
-    @Override
-    public Posts findRecentPosts(final PostId lastId, final int size) {
-        final List<Post> posts = postMapper.findRecentPosts(lastId, size).stream()
-                .map(this::ensureLocation)
-                .toList();
-        return new Posts(posts);
-    }
+//    @Override
+//    public Optional<Post> findPost(PostId postId) {
+//        return postMapper.findPostByPostId(postId)
+//                .map(this::ensureLocation);
+//    }
+//
+//    @Override
+//    public Posts findRecentPosts(final PostId lastId, final int size) {
+//        final List<Post> posts = postMapper.findRecentPosts(lastId, size).stream()
+//                .map(this::ensureLocation)
+//                .toList();
+//        return new Posts(posts);
+//    }
 
     @Override
     public void savePost(final Post.NewPost newPost) {
@@ -57,13 +57,13 @@ public class PostRepositoryImpl implements PostRepository {
         postImagesMapper.insert(imageEntity);
     }
 
-    @Override
-    public Posts search(final SearchKeyword keyword, final PostId lastId, final int size) {
-        final List<Post> posts = postMapper.searchPosts(keyword, lastId, size).stream()
-                .map(this::ensureLocation)
-                .toList();
-        return new Posts(posts);
-    }
+//    @Override
+//    public Posts search(final SearchKeyword keyword, final PostId lastId, final int size) {
+//        final List<Post> posts = postMapper.searchPosts(keyword, lastId, size).stream()
+//                .map(this::ensureLocation)
+//                .toList();
+//        return new Posts(posts);
+//    }
 
     @Override
     public Posts findMyPosts(final UserId userId) {
@@ -88,11 +88,9 @@ public class PostRepositoryImpl implements PostRepository {
         return Post.builder()
                 .id(post.getId())
                 .userId(post.getUserId())
-                .imageFileName(post.getImageFileName())
+                .image(post.getImage())
                 .caption(post.getCaption())
-                .hasLocation(post.isHasLocation())
                 .createdAt(post.getCreatedAt())
-                .updatedAt(post.getUpdatedAt())
                 .location(Location.unknown())
                 .build();
     }

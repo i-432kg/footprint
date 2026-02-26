@@ -16,16 +16,6 @@ public class ReplyApplicationService {
 
     private final ReplyRepository replyRepository;
 
-    @Transactional(readOnly = true)
-    public Replies getRootReplies(final PostId postId){
-        return replyRepository.findRootsByPostId(postId);
-    }
-
-    @Transactional(readOnly = true)
-    public Replies getNextReplies(final ReplyId parentReplyId){
-        return replyRepository.findNextByParentReplyId(parentReplyId);
-    }
-
     @Transactional
     public void createReply(final Reply.NewReply newReply){
 

@@ -14,20 +14,20 @@ import java.util.Optional;
 @Mapper
 public interface PostMapper {
 
-    Optional<Post> findPostByPostId(@Param("post_id") PostId postId);
+//    Optional<Post> findPostByPostId(@Param("post_id") PostId postId);
 
     List<Post> findPostByUserId(@Param("user_id") UserId userId);
 
-    List<Post> findRecentPosts(
-            @Param("lastId") PostId lastId,
-            @Param("size") int size
-    );
-
-    List<Post> searchPosts(
-            @Param("keyword") SearchKeyword keyword,
-            @Param("lastId") PostId lastId,
-            @Param("size") int size
-    );
+//    List<Post> findRecentPosts(
+//            @Param("lastId") PostId lastId,
+//            @Param("size") int size
+//    );
+//
+//    List<Post> searchPosts(
+//            @Param("keyword") SearchKeyword keyword,
+//            @Param("lastId") PostId lastId,
+//            @Param("size") int size
+//    );
 
     void insert(PostInsertEntity params);
 

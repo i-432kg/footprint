@@ -11,28 +11,35 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 public class Post {
 
-    @org.jspecify.annotations.NonNull
+    /**
+     * 投稿 ID
+     */
     PostId id;
 
-    @org.jspecify.annotations.NonNull
+    /**
+     * 投稿者
+     */
     UserId userId;
 
-    @org.jspecify.annotations.NonNull
-    ImageFileName imageFileName;
+    /**
+     * 投稿画像
+     */
+    Image image;
 
-    @org.jspecify.annotations.NonNull
+    /**
+     * 投稿コメント
+     */
     Comment caption;
 
-    boolean hasLocation;
-
-    @org.jspecify.annotations.NonNull
+    /**
+     * 投稿位置情報
+     */
     Location location;
 
-    @org.jspecify.annotations.NonNull
+    /**
+     * 投稿時間
+     */
     LocalDateTime createdAt;
-
-    @org.jspecify.annotations.NonNull
-    LocalDateTime updatedAt;
 
     @Value
     @Builder(toBuilder = true)

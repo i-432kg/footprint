@@ -1,57 +1,55 @@
 package jp.i432kg.footprint.presentation.api;
 
+import jp.i432kg.footprint.application.query.ReplyQueryService;
+import jp.i432kg.footprint.application.query.model.ReplySummary;
 import jp.i432kg.footprint.application.service.ReplyApplicationService;
-import jp.i432kg.footprint.domain.model.Replies;
 import jp.i432kg.footprint.domain.model.Reply;
 import jp.i432kg.footprint.domain.value.Comment;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.ReplyId;
 import jp.i432kg.footprint.infrastructure.datasource.impl.UserDetailsImpl;
 import jp.i432kg.footprint.presentation.api.dto.ReplyRequest;
-import jp.i432kg.footprint.presentation.api.dto.ReplyResponse;
+import jp.i432kg.footprint.presentation.api.response.ReplyItemResponse;
+import jp.i432kg.footprint.presentation.api.response.mapper.ReplyResponseMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * 返信（コメント）に関する操作を提供する API コントローラー
+ */
 @RestController
+@RequestMapping("/api/replies")
 @RequiredArgsConstructor
 public class ReplyRestController {
 
     private final ReplyApplicationService replyApplicationService;
 
-    /**
-     * 指定された投稿IDに紐づく1階層目のコメントを取得します。
-     *
-     * @param postId コメントを取得したい投稿の識別子
-     * @return コメントのリスト
-     */
-    @GetMapping("/api/post/{postId}/replies")
-    public List<ReplyResponse> getReplies(@PathVariable final PostId postId) {
+    private final ReplyQueryService replyQueryService;
 
-        final Replies replies = replyApplicationService.getRootReplies(postId);
-        return replies.asList().stream()
-                .map(ReplyResponse::new)
-                .toList();
-    }
+    private final ReplyResponseMapper replyResponseMapper;
 
     /**
-     * 指定された親コメントIDに紐づく子コメントを取得します。
+     * 指定された親返信IDに紐づく、ネストされた返信一覧を取得します。
      *
-     * @param parentReplyId 親コメントの識別子
-     * @return 子コメントのリスト
+     * @param parentReplyId 親返信の識別子
+     * @return 返信アイテムのリスト
      */
-    @GetMapping("/api/reply/{parentReplyId}/replies")
-    public List<ReplyResponse> getNextReplies(@PathVariable final ReplyId parentReplyId) {
+    @GetMapping("/{parentReplyId}")
+    public ResponseEntity<List<ReplyItemResponse>> getNextReplies_v2(@PathVariable final ReplyId parentReplyId) {
 
-        final Replies replies = replyApplicationService.getNextReplies(parentReplyId);
-        return replies.asList().stream()
-                .map(ReplyResponse::new)
-                .toList();
+        // 返信一覧を取得する
+        final List<ReplySummary> replySummaries = replyQueryService.listNestedReplies(parentReplyId);
+
+        // レスポンス形式に変換する
+        final List<ReplyItemResponse> responses = replyResponseMapper.fromList(replySummaries);
+
+        return ResponseEntity.ok(responses);
     }
-
 
     /**
      * 指定された投稿にコメントを作成します。

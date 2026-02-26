@@ -1,6 +1,6 @@
 package jp.i432kg.footprint.presentation.helper;
 
-import jp.i432kg.footprint.domain.value.ImageFileName;
+import jp.i432kg.footprint.domain.value.FilePath;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,10 +13,10 @@ public class ImageUrlConverter {
         this.publicPath = publicPath;
     }
 
-    public String convert(ImageFileName fileName) {
-        if (fileName == null || fileName.value() == null) {
+    public String convert(FilePath filePath) {
+        if (filePath == null || filePath.value() == null) {
             return null;
         }
-        return publicPath + fileName.value();
+        return publicPath + filePath.value();
     }
 }

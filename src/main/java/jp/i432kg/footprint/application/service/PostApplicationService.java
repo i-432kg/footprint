@@ -22,16 +22,6 @@ public class PostApplicationService {
 
     private final ImageRepository imageRepository;
 
-    @Transactional(readOnly = true)
-    public Post getPostDetail(PostId postId) {
-        return postRepository.findPost(postId).orElseThrow(() -> new RuntimeException("Post not found."));
-    }
-
-    @Transactional(readOnly = true)
-    public Posts getRecentPosts(final PostId lastId, final int size) {
-        return postRepository.findRecentPosts(lastId, size);
-    }
-
     @Transactional
     public void createPost(final Post.NewPost newPost, final MultipartFile imageFile) {
 
@@ -49,11 +39,6 @@ public class PostApplicationService {
         // 3. 投稿情報を保存する
         postRepository.savePost(postToSave);
 
-    }
-
-    @Transactional(readOnly = true)
-    public Posts searchPosts(final SearchKeyword keyword, final PostId lastId, final int size) {
-        return postRepository.search(keyword, lastId, size);
     }
 
     @Transactional(readOnly = true)

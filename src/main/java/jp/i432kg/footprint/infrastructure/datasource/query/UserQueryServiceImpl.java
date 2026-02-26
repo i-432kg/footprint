@@ -1,0 +1,32 @@
+package jp.i432kg.footprint.infrastructure.datasource.query;
+
+import jp.i432kg.footprint.application.query.UserQueryService;
+import jp.i432kg.footprint.application.query.model.UserProfileSummary;
+import jp.i432kg.footprint.domain.value.UserId;
+import jp.i432kg.footprint.infrastructure.datasource.mapper.query.UserQueryMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+
+/**
+ * ユーザーの参照サービス実装クラス
+ */
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class UserQueryServiceImpl implements UserQueryService {
+
+    final private UserQueryMapper userQueryMapper;
+
+    @Override
+    public UserProfileSummary getUserProfile(final UserId userId) {
+        return findUserProfile(userId).orElseThrow();
+    }
+
+    @Override
+    public Optional<UserProfileSummary> findUserProfile(final UserId userId) {
+        return userQueryMapper.findProfileByUserId(userId);
+    }
+}

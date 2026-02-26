@@ -1,16 +1,21 @@
 package jp.i432kg.footprint.presentation.api;
 
 import jakarta.validation.Valid;
+import jp.i432kg.footprint.application.query.PostQueryService;
+import jp.i432kg.footprint.application.query.ReplyQueryService;
+import jp.i432kg.footprint.application.query.model.PostSummary;
+import jp.i432kg.footprint.application.query.model.ReplySummary;
 import jp.i432kg.footprint.application.service.PostApplicationService;
 import jp.i432kg.footprint.domain.model.Post;
-import jp.i432kg.footprint.domain.model.Posts;
 import jp.i432kg.footprint.domain.value.Comment;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.SearchKeyword;
 import jp.i432kg.footprint.infrastructure.datasource.impl.UserDetailsImpl;
 import jp.i432kg.footprint.presentation.api.dto.PostRequest;
-import jp.i432kg.footprint.presentation.api.dto.PostResponse;
-import jp.i432kg.footprint.presentation.helper.ImageUrlConverter;
+import jp.i432kg.footprint.presentation.api.response.PostItemResponse;
+import jp.i432kg.footprint.presentation.api.response.ReplyItemResponse;
+import jp.i432kg.footprint.presentation.api.response.mapper.PostResponseMapper;
+import jp.i432kg.footprint.presentation.api.response.mapper.ReplyResponseMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,50 +24,102 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 投稿に関する操作を提供する API コントローラー
+ */
 @RestController
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostRestController {
 
     private final PostApplicationService postApplicationService;
-    private final ImageUrlConverter imageUrlConverter;
 
-    // 投稿一覧の取得
+    private final PostQueryService postQueryService;
+
+    private final ReplyQueryService replyQueryService;
+
+    private final PostResponseMapper postResponseMapper;
+
+    private final ReplyResponseMapper replyResponseMapper;
+
+    /**
+     * 最新の投稿一覧を取得します。
+     *
+     * @param lastId 最後に取得した投稿の識別子（スクロール読み込み用、任意）
+     * @param size   取得する投稿件数（デフォルト 10件）
+     * @return 投稿アイテムのリスト
+     */
     @GetMapping
-    public ResponseEntity<List<PostResponse>> getRecentPosts(
-            @RequestParam(required = false) PostId lastId,
-            @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<List<PostItemResponse>> getRecentPosts(
+            @RequestParam(required = false) final PostId lastId,
+            @RequestParam(defaultValue = "10") final int size) {
 
-        Posts posts = postApplicationService.getRecentPosts(lastId, size);
+        // 投稿一覧を取得する
+        List<PostSummary> postSummaries = postQueryService.listRecentPosts(lastId, size);
 
-        List<PostResponse> responses = posts.asList().stream()
-                .map(post -> new PostResponse(post, imageUrlConverter.convert(post.getImageFileName())))
-                .toList();
+        // レスポンス形式に変換する
+        List<PostItemResponse> responses = postResponseMapper.fromList(postSummaries);
 
         return ResponseEntity.ok(responses);
     }
 
-    // 検索した投稿一覧を取得
+    /**
+     * キーワードに基づいて投稿を検索します。
+     *
+     * @param keyword 検索キーワード
+     * @param lastId  最後に取得した投稿の識別子（スクロール読み込み用、任意）
+     * @param size    取得する投稿件数（デフォルト 10件）
+     * @return 検索結果の投稿アイテムリスト
+     */
     @GetMapping("/search")
-    public ResponseEntity<List<PostResponse>> search(
+    public ResponseEntity<List<PostItemResponse>> search(
             @RequestParam final SearchKeyword keyword,
             @RequestParam(required = false) final PostId lastId,
             @RequestParam(defaultValue = "10") int size) {
 
-        Posts posts = postApplicationService.searchPosts(keyword, lastId, size);
+        // 検索結果を取得する
+        List<PostSummary> postSummaries = postQueryService.searchPosts(keyword, lastId, size);
 
-        List<PostResponse> responses = posts.asList().stream()
-                .map(post -> new PostResponse(post, imageUrlConverter.convert(post.getImageFileName())))
-                .toList();
+        // レスポンス形式に変換する
+        List<PostItemResponse> responses = postResponseMapper.fromList(postSummaries);
 
         return ResponseEntity.ok(responses);
     }
 
-    // 投稿詳細の取得
+    /**
+     * 指定された投稿IDの詳細情報を取得します。
+     *
+     * @param postId 投稿の識別子
+     * @return 投稿詳細のレスポンス
+     */
     @GetMapping("/{postId}")
-    public ResponseEntity<PostResponse> getPost(@PathVariable final PostId postId) {
-        Post post = postApplicationService.getPostDetail(postId);
-        return ResponseEntity.ok(new PostResponse(post, imageUrlConverter.convert(post.getImageFileName())));
+    public ResponseEntity<PostItemResponse> getPost(@PathVariable final PostId postId) {
+
+        // 投稿詳細を取得する
+        PostSummary postSummary = postQueryService.getPost(postId);
+
+        // レスポンス形式に変換する
+        PostItemResponse response = postResponseMapper.from(postSummary);
+
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 指定された投稿IDに紐づくトップレベルの返信一覧を取得します。
+     *
+     * @param postId 投稿の識別子
+     * @return 返信アイテムのリスト
+     */
+    @GetMapping("/{postId}/replies")
+    public ResponseEntity<List<ReplyItemResponse>> getReplies(@PathVariable final PostId postId) {
+
+        // 返信一覧を取得する
+        final List<ReplySummary> replySummaries = replyQueryService.listTopLevelReplies(postId);
+
+        // レスポンス形式に変換する
+        final List<ReplyItemResponse> responses = replyResponseMapper.fromList(replySummaries);
+
+        return ResponseEntity.ok(responses);
     }
 
     // 投稿を作成

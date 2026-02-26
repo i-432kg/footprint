@@ -15,11 +15,11 @@ import java.util.List;
 @Mapper
 public interface ReplyMapper {
 
-    @Select("SELECT id, post_id, user_id, parent_reply_id, body AS content, child_count, created_at, updated_at FROM replies WHERE post_id = #{post_id} AND parent_reply_id IS NULL")
-    List<Reply> findByPostIdAndParentReplyIdIsNull(@Param("post_id") PostId postId);
-
-    @Select("SELECT id, post_id, user_id, parent_reply_id, body AS content, child_count, created_at, updated_at FROM replies WHERE parent_reply_id = #{parent_reply_id}")
-    List<Reply> findByParentReplyId(@Param("parent_reply_id") ReplyId parentReplyId);
+//    @Select("SELECT id, post_id, user_id, parent_reply_id, body AS content, child_count, created_at, updated_at FROM replies WHERE post_id = #{post_id} AND parent_reply_id IS NULL")
+//    List<Reply> findByPostIdAndParentReplyIdIsNull(@Param("post_id") PostId postId);
+//
+//    @Select("SELECT id, post_id, user_id, parent_reply_id, body AS content, child_count, created_at, updated_at FROM replies WHERE parent_reply_id = #{parent_reply_id}")
+//    List<Reply> findByParentReplyId(@Param("parent_reply_id") ReplyId parentReplyId);
 
     @Insert("""
         INSERT INTO replies (post_id, user_id, parent_reply_id, body, child_count, created_at, updated_at)

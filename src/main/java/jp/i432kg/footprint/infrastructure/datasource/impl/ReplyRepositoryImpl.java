@@ -16,15 +16,15 @@ public class ReplyRepositoryImpl implements ReplyRepository {
 
     private final ReplyMapper replyMapper;
 
-    @Override
-    public Replies findRootsByPostId(PostId postId) {
-        return Replies.of(replyMapper.findByPostIdAndParentReplyIdIsNull(postId));
-    }
-
-    @Override
-    public Replies findNextByParentReplyId(ReplyId parentReplyId) {
-        return Replies.of(replyMapper.findByParentReplyId(parentReplyId));
-    }
+//    @Override
+//    public Replies findRootsByPostId(PostId postId) {
+//        return Replies.of(replyMapper.findByPostIdAndParentReplyIdIsNull(postId));
+//    }
+//
+//    @Override
+//    public Replies findNextByParentReplyId(ReplyId parentReplyId) {
+//        return Replies.of(replyMapper.findByParentReplyId(parentReplyId));
+//    }
 
     @Override
     public void saveReply(Reply.NewReply newReply) {

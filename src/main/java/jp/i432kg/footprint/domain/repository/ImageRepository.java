@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ImageRepository {
 
-    ImageFileName save(final MultipartFile file);
+    ImageFileName save(MultipartFile file);
 
-    Optional<Location> extractGpsLocation(final MultipartFile file);
+    Optional<Location> extractGpsLocation(MultipartFile file);
 }
