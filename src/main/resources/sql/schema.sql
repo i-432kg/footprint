@@ -66,7 +66,7 @@ CREATE TABLE replies
     post_id         BIGINT    NOT NULL,                           -- 対象投稿
     user_id         BIGINT    NOT NULL,                           -- 投稿者
     parent_reply_id BIGINT    NULL,                               -- 親返信
-    body            TEXT      NOT NULL,                           -- 返信本文
+    message         TEXT      NOT NULL,                           -- 返信本文
     child_count     INT       NOT NULL DEFAULT 0,                 -- 次階層の返信数
     created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 作成日時
     updated_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 更新日時

@@ -4,6 +4,7 @@ import jp.i432kg.footprint.application.query.ReplyQueryService;
 import jp.i432kg.footprint.application.query.model.ReplySummary;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.ReplyId;
+import jp.i432kg.footprint.domain.value.UserId;
 import jp.i432kg.footprint.infrastructure.datasource.mapper.query.ReplyQueryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,5 +30,10 @@ public class ReplyQueryServiceImpl implements ReplyQueryService {
     @Override
     public List<ReplySummary> listNestedReplies(final ReplyId parentReplyId) {
         return replyQueryMapper.findNestedRepliesByParentId(parentReplyId);
+    }
+
+    @Override
+    public List<ReplySummary> listMyReplies(final UserId userId, final ReplyId lastId, final int size) {
+        return replyQueryMapper.findMyReplies(userId, lastId, size);
     }
 }

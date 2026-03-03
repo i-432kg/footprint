@@ -10,6 +10,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * MyBatis の型ハンドラで SearchKeyword を String に変換するための実装クラス
+ */
 @MappedTypes(SearchKeyword.class)
 public class SearchKeywordTypeHandler extends BaseTypeHandler<SearchKeyword> {
 

@@ -3,8 +3,10 @@ package jp.i432kg.footprint.infrastructure.datasource.mapper.query;
 import jp.i432kg.footprint.application.query.model.ReplySummary;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.ReplyId;
+import jp.i432kg.footprint.domain.value.UserId;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -29,4 +31,18 @@ public interface ReplyQueryMapper {
      * @return 返信の参照専用モデルのリスト
      */
     List<ReplySummary> findNestedRepliesByParentId(@Param("parentReplyId") ReplyId parentReplyId);
+
+    /**
+     * ユーザーが投稿した返信の一覧を検索します。
+     *
+     * @param userId ユーザー ID
+     * @param lastId 最後の返信 ID（ページング用）
+     * @param size ページサイズ
+     * @return 返信の参照専用モデルのリスト
+     */
+    List<ReplySummary> findMyReplies(
+            @Param("userId") UserId userId,
+            @Param("lastId") @Nullable ReplyId lastId,
+            @Param("size") int size
+    );
 }

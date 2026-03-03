@@ -1,16 +1,23 @@
 package jp.i432kg.footprint.domain.value;
 
-public record UserId(int value) {
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Value;
 
-    static final int MAX_SIZE = 9999;
-    static final int MIN_SIZE = 0;
+/**
+ * ユーザー ID を表す値オブジェクト。
+ */
+@Value
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class UserId {
 
-    public UserId {
+    int value;
 
-//        if (value < MIN_SIZE)
-//            throw new IllegalArgumentException("UserId is too small :" + value);
-//
-//        if (value > MAX_SIZE)
-//            throw new IllegalArgumentException("UserId is too big :" + value);
+    public static UserId of(final int value) {
+        return new UserId(value);
+    }
+
+    public int value() {
+        return value;
     }
 }

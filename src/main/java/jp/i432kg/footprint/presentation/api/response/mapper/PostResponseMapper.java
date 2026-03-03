@@ -17,9 +17,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * 投稿のクエリモデルをレスポンス形式に変換するマッパー。
- * <p>
- * 画像 URL の変換や、日時のオフセット調整を含みます。
+ * 投稿のクエリモデルをレスポンス形式に変換するマッパー
  */
 @Component
 @RequiredArgsConstructor

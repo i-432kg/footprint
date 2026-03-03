@@ -13,10 +13,20 @@ public class RawPassword {
 
     String value;
 
+    /**
+     * 生パスワードを指定して {@link RawPassword} インスタンスを生成します。
+     *
+     * @param value パスワード文字列
+     * @return {@link RawPassword} インスタンス
+     */
     public static RawPassword of(final String value) {
-        if (value == null) {
-            throw new IllegalArgumentException("Password cannot be null");
-        }
+//        if (value == null || value.isBlank()) {
+//            throw new IllegalArgumentException("Password cannot be null or empty");
+//        }
+//        // バリデーション例
+//        if (value.length() < MIN_LENGTH || value.length() > MAX_LENGTH) {
+//            throw new IllegalArgumentException("Password must be between " + MIN_LENGTH + " and " + MAX_LENGTH + " characters");
+//        }
 
         return new RawPassword(value);
     }

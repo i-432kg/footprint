@@ -1,17 +1,18 @@
 package jp.i432kg.footprint.presentation.api;
 
+import jp.i432kg.footprint.application.command.model.CreateReplyCommand;
 import jp.i432kg.footprint.application.query.ReplyQueryService;
 import jp.i432kg.footprint.application.query.model.ReplySummary;
-import jp.i432kg.footprint.application.service.ReplyApplicationService;
-import jp.i432kg.footprint.domain.model.Reply;
+import jp.i432kg.footprint.application.command.ReplyCommandService;
 import jp.i432kg.footprint.domain.value.Comment;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.ReplyId;
-import jp.i432kg.footprint.infrastructure.datasource.impl.UserDetailsImpl;
-import jp.i432kg.footprint.presentation.api.dto.ReplyRequest;
+import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
+import jp.i432kg.footprint.presentation.api.request.ReplyRequest;
 import jp.i432kg.footprint.presentation.api.response.ReplyItemResponse;
 import jp.i432kg.footprint.presentation.api.response.mapper.ReplyResponseMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ReplyRestController {
 
-    private final ReplyApplicationService replyApplicationService;
+    private final ReplyCommandService replyCommandService;
 
     private final ReplyQueryService replyQueryService;
 
@@ -40,7 +41,7 @@ public class ReplyRestController {
      * @return 返信アイテムのリスト
      */
     @GetMapping("/{parentReplyId}")
-    public ResponseEntity<List<ReplyItemResponse>> getNextReplies_v2(@PathVariable final ReplyId parentReplyId) {
+    public ResponseEntity<List<ReplyItemResponse>> getNextReplies(@PathVariable final ReplyId parentReplyId) {
 
         // 返信一覧を取得する
         final List<ReplySummary> replySummaries = replyQueryService.listNestedReplies(parentReplyId);
@@ -52,29 +53,29 @@ public class ReplyRestController {
     }
 
     /**
-     * 指定された投稿にコメントを作成します。
+     * 返信作成処理を行います。
      *
      * @param postId 投稿の識別子
-     * @param request コメント作成リクエスト情報を含むオブジェクト
+     * @param request 返信作成リクエスト
      * @param userDetails 認証済みユーザーの詳細情報
-     * @return リダイレクト先のURL
+     * @return 返信作成結果
      */
-    @PostMapping("/api/post/{postId}/reply")
-    public String reply(
+    @PostMapping("/{postId}/reply")
+    public ResponseEntity<Void> reply(
             @PathVariable final PostId postId,
             @RequestBody final ReplyRequest request,
             @AuthenticationPrincipal final UserDetailsImpl userDetails) {
 
-        final Reply.NewReply newReply = Reply.newReply()
-                .postId(postId)
-                .userId(userDetails.getUserId())
-                .parentReplyId(Optional.ofNullable(request.getParentReplyId()).map(ReplyId::new).orElse(null))
-                .content(new Comment(request.getContent()))
-                .build();
+        final CreateReplyCommand command = CreateReplyCommand.of(
+                postId,
+                userDetails.getUserId(),
+                Optional.ofNullable(request.getParentReplyId()).map(ReplyId::of).orElse(null),
+                Comment.of(request.getMessage())
+        );
 
-        replyApplicationService.createReply(newReply);
+        replyCommandService.createReply(command);
 
-        return "redirect:/";
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 }

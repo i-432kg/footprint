@@ -4,6 +4,7 @@ import jp.i432kg.footprint.application.query.PostQueryService;
 import jp.i432kg.footprint.application.query.model.PostSummary;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.SearchKeyword;
+import jp.i432kg.footprint.domain.value.UserId;
 import jp.i432kg.footprint.infrastructure.datasource.mapper.query.PostQueryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,11 @@ public class PostQueryServiceImpl implements PostQueryService {
     @Override
     public List<PostSummary> listRecentPosts(final PostId lastId, final int size) {
         return postQueryMapper.findRecentPosts(lastId, size);
+    }
+
+    @Override
+    public List<PostSummary> listMyPosts(final UserId userId, final PostId lastId, final int size) {
+        return postQueryMapper.findMyPosts(userId, lastId, size);
     }
 
     @Override

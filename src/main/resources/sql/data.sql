@@ -170,10 +170,10 @@ INSERT INTO post_images (post_id, sort_order, storage_type, path, content_type, 
 
 -- 返信
 -- 投稿1への返信
-INSERT INTO replies(post_id, user_id, parent_reply_id, body, child_count) VALUES (1, 1, null, 'いちこめ', 2);
-INSERT INTO replies(post_id, user_id, parent_reply_id, body, child_count) VALUES (1, 1, 1, 'にこめ', 0);
-INSERT INTO replies(post_id, user_id, parent_reply_id, body, child_count) VALUES (1, 1, 1, 'にこめ2', 0);
--- 投稿2へ
-INSERT INTO replies(post_id, user_id, parent_reply_id, body, child_count) VALUES (2, 1, null, '1get', 2);
-INSERT INTO replies(post_id, user_id, parent_reply_id, body, child_count) VALUES (2, 1, 4, '2get', 0);
-INSERT INTO replies(post_id, user_id, parent_reply_id, body, child_count) VALUES (2, 1, 4, '2get2', 0);
+INSERT INTO replies(post_id, user_id, parent_reply_id, message, child_count) VALUES (1, 1, null, 'いちこめ', 2);
+INSERT INTO replies(post_id, user_id, parent_reply_id, message, child_count) VALUES (1, 1, 1, 'にこめ', 0);
+INSERT INTO replies(post_id, user_id, parent_reply_id, message, child_count) VALUES (1, 1, 1, 'にこめ2', 0);
+-- 投稿2への返信
+INSERT INTO replies(post_id, user_id, parent_reply_id, message, child_count) VALUES (2, 1, null, '1get', 2);
+INSERT INTO replies(post_id, user_id, parent_reply_id, message, child_count) VALUES (2, 1, 4, '2get', 0);
+INSERT INTO replies(post_id, user_id, parent_reply_id, message, child_count) VALUES (2, 1, 4, '2get2', 0);

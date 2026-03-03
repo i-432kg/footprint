@@ -6,38 +6,39 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 
+/**
+ * 位置情報ドメインモデル
+ */
 @Value
-@Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 public class Location {
 
-
-    @Nullable
+    /**
+     * 緯度
+     */
     Coordinate latitude;
 
-    @Nullable
+    /**
+     * 経度
+     */
     Coordinate longitude;
 
-    public Optional<Coordinate> getLatitude() {
-        return Optional.ofNullable(latitude);
-    }
-
-    public Optional<Coordinate> getLongitude() {
-        return Optional.ofNullable(longitude);
+    /**
+     * 位置情報ドメインモデルを生成します。
+     *
+     * @param latitude  緯度
+     * @param longitude 経度
+     * @return {@link Location} インスタンス
+     */
+    public static Location of(final Coordinate latitude, final Coordinate longitude) {
+        return new Location(latitude, longitude);
     }
 
     /**
-     * 位置情報が不明のオブジェクトを生成します
+     * 位置情報が不明のオブジェクトを生成します。
      */
     public static Location unknown() {
-        return new Location(null, null);
-    }
-
-    /**
-     * 位置情報が有効かどうかを判定します
-     */
-    public boolean hasLocation() {
-        return latitude != null && longitude != null;
+        return Location.of(null, null);
     }
 }

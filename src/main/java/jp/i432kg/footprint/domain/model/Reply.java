@@ -7,56 +7,49 @@ import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDateTime;
 
+/**
+ * 返信ドメインモデル
+ */
 @Value
-@Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 public class Reply {
 
-    @NonNull
-    ReplyId id;
-
-    @NonNull
+    /**
+     * 返信元の投稿
+     */
     PostId postId;
 
-    @NonNull
+    /**
+     * 返信者
+     */
     UserId userId;
 
-    @Nullable
+    /**
+     * 返信元の返信
+     */
     ReplyId parentReplyId;
 
-    @NonNull
-    Comment content;
+    /**
+     * 返信本文
+     */
+    Comment message;
 
-    @NonNull
+    /**
+     * 返信日時
+     */
     LocalDateTime createdAt;
 
-    @NonNull
-    ReplyCount childCount;
-
-    @Value
-    @Builder(toBuilder = true)
-    public static class NewReply {
-
-        @NonNull
-        PostId postId;
-
-        @NonNull
-        UserId userId;
-
-        @Nullable
-        ReplyId parentReplyId;
-
-        @NonNull
-        Comment content;
-
-        public boolean hasParentReply(){
-            return parentReplyId != null;
-        }
-
-    }
-
-    public static NewReply.NewReplyBuilder newReply() {
-        return NewReply.builder();
+    /**
+     * インスタンスを生成します。
+     */
+    public static Reply of(
+            final PostId postId,
+            final UserId userId,
+            final ReplyId parentReplyId,
+            final Comment message,
+            final LocalDateTime createdAt
+    ) {
+        return new Reply(postId, userId, parentReplyId, message, createdAt);
     }
 }

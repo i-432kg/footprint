@@ -1,25 +1,24 @@
 package jp.i432kg.footprint.domain.repository;
 
-import jp.i432kg.footprint.domain.model.Replies;
 import jp.i432kg.footprint.domain.model.Reply;
 import jp.i432kg.footprint.domain.value.ReplyId;
-import jp.i432kg.footprint.domain.value.UserId;
 
+/**
+ * 返信に関するリポジトリインターフェース
+ */
 public interface ReplyRepository {
 
     /**
-     * 新しい返信を保存する
+     * 新しい返信を保存します。
      *
-     * @param newReply 保存する新規返信情報
+     * @param reply 保存する新規返信情報
      */
-    void saveReply(Reply.NewReply newReply);
+    void saveReply(Reply reply);
 
     /**
-     * 返信の親にカウントを増やす
+     * 返信先が持つ返信数を1つ増やします。
      *
-     * @param replyId
+     * @param replyId 返信先の返信 ID
      */
     void increaseReplyCount(ReplyId replyId);
-
-    Replies findMyReplies(UserId userId);
 }

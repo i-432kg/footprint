@@ -10,6 +10,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * MyBatis の型ハンドラで HashedPassword を String に変換するための実装クラス
+ */
 @MappedTypes(HashedPassword.class)
 public class HashedPasswordTypeHandler extends BaseTypeHandler<HashedPassword> {
 

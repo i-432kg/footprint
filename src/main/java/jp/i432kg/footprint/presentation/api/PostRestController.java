@@ -1,17 +1,15 @@
 package jp.i432kg.footprint.presentation.api;
 
 import jakarta.validation.Valid;
+import jp.i432kg.footprint.application.command.model.CreatePostCommand;
 import jp.i432kg.footprint.application.query.PostQueryService;
 import jp.i432kg.footprint.application.query.ReplyQueryService;
 import jp.i432kg.footprint.application.query.model.PostSummary;
 import jp.i432kg.footprint.application.query.model.ReplySummary;
-import jp.i432kg.footprint.application.service.PostApplicationService;
-import jp.i432kg.footprint.domain.model.Post;
-import jp.i432kg.footprint.domain.value.Comment;
-import jp.i432kg.footprint.domain.value.PostId;
-import jp.i432kg.footprint.domain.value.SearchKeyword;
-import jp.i432kg.footprint.infrastructure.datasource.impl.UserDetailsImpl;
-import jp.i432kg.footprint.presentation.api.dto.PostRequest;
+import jp.i432kg.footprint.application.command.PostCommandService;
+import jp.i432kg.footprint.domain.value.*;
+import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
+import jp.i432kg.footprint.presentation.api.request.PostRequest;
 import jp.i432kg.footprint.presentation.api.response.PostItemResponse;
 import jp.i432kg.footprint.presentation.api.response.ReplyItemResponse;
 import jp.i432kg.footprint.presentation.api.response.mapper.PostResponseMapper;
@@ -22,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -32,7 +31,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostRestController {
 
-    private final PostApplicationService postApplicationService;
+    private final PostCommandService postCommandService;
 
     private final PostQueryService postQueryService;
 
@@ -122,19 +121,30 @@ public class PostRestController {
         return ResponseEntity.ok(responses);
     }
 
-    // 投稿を作成
+    /**
+     * 新しい投稿を作成します。
+     *
+     * @param request 投稿作成リクエスト
+     * @param userDetails 認証済みユーザーの詳細情報
+     * @return 投稿作成結果
+     * @throws IOException 画像処理時に発生した例外
+     */
     @PostMapping
     public ResponseEntity<Void> create(
             @Valid final PostRequest request,
             @AuthenticationPrincipal final UserDetailsImpl userDetails
-    ) {
+    ) throws IOException {
 
-        final Post.NewPost newPost = Post.newPost()
-                .userId(userDetails.getUserId())
-                .comment(new Comment(request.getComment()))
-                .build();
+        // リクエスト情報をコマンド形式に変換する
+        final CreatePostCommand command = CreatePostCommand.of(
+                userDetails.getUserId(),
+                Comment.of(request.getComment()),
+                request.getImageFile().getInputStream(),
+                FileName.of(request.getImageFile().getOriginalFilename())
+        );
 
-        postApplicationService.createPost(newPost, request.getImageFile());
+        // 投稿情報を保存する
+        postCommandService.createPost(command);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

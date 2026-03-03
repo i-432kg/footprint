@@ -10,6 +10,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * MyBatis の型ハンドラで PostId を int に変換するための実装クラス
+ */
 @MappedTypes(PostId.class)
 public class PostIdTypeHandler extends BaseTypeHandler<PostId> {
 
@@ -21,18 +24,18 @@ public class PostIdTypeHandler extends BaseTypeHandler<PostId> {
     @Override
     public PostId getNullableResult(ResultSet rs, String columnName) throws SQLException {
         int value = rs.getInt(columnName);
-        return rs.wasNull() ? null : new PostId(value);
+        return rs.wasNull() ? null : PostId.of(value);
     }
 
     @Override
     public PostId getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
         int value = rs.getInt(columnIndex);
-        return rs.wasNull() ? null : new PostId(value);
+        return rs.wasNull() ? null : PostId.of(value);
     }
 
     @Override
     public PostId getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
         int value = cs.getInt(columnIndex);
-        return cs.wasNull() ? null : new PostId(value);
+        return cs.wasNull() ? null : PostId.of(value);
     }
 }

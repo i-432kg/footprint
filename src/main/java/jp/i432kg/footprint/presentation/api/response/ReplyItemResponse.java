@@ -30,7 +30,7 @@ public class ReplyItemResponse {
     /**
      * 返信本文
      */
-    String body;
+    String message;
 
     /**
      * この返信の子返信の数

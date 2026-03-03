@@ -10,6 +10,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * MyBatis の型ハンドラで ReplyId を int に変換するための実装クラス
+ */
 @MappedTypes(ReplyId.class)
 public class ReplyIdTypeHandler extends BaseTypeHandler<ReplyId> {
 
@@ -21,18 +24,18 @@ public class ReplyIdTypeHandler extends BaseTypeHandler<ReplyId> {
     @Override
     public ReplyId getNullableResult(ResultSet rs, String columnName) throws SQLException {
         int value = rs.getInt(columnName);
-        return rs.wasNull() ? null : new ReplyId(value);
+        return rs.wasNull() ? null : ReplyId.of(value);
     }
 
     @Override
     public ReplyId getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
         int value = rs.getInt(columnIndex);
-        return rs.wasNull() ? null : new ReplyId(value);
+        return rs.wasNull() ? null : ReplyId.of(value);
     }
 
     @Override
     public ReplyId getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
         int value = cs.getInt(columnIndex);
-        return cs.wasNull() ? null : new ReplyId(value);
+        return cs.wasNull() ? null : ReplyId.of(value);
     }
 }

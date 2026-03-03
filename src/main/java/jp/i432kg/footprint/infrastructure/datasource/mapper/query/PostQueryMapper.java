@@ -3,6 +3,7 @@ package jp.i432kg.footprint.infrastructure.datasource.mapper.query;
 import jp.i432kg.footprint.application.query.model.PostSummary;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.SearchKeyword;
+import jp.i432kg.footprint.domain.value.UserId;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.jspecify.annotations.Nullable;
@@ -27,7 +28,7 @@ public interface PostQueryMapper {
     /**
      * 最新の投稿一覧を検索します。
      *
-     * @param lastId 最後に取得した投稿のID（シーク用）
+     * @param lastId 最後に取得した投稿のID（ページング用）
      * @param size   取得件数
      * @return 投稿の参照専用モデルのリスト
      */
@@ -37,10 +38,24 @@ public interface PostQueryMapper {
     );
 
     /**
+     * 自分の投稿一覧を検索します。
+     *
+     * @param userId 自分のユーザー ID
+     * @param lastId 最後に取得した投稿のID（ページング用）
+     * @param size   取得件数
+     * @return 投稿の参照専用モデルのリスト
+     */
+    List<PostSummary> findMyPosts(
+            @Param("userId") UserId userId,
+            @Param("lastId") @Nullable PostId lastId,
+            @Param("size") int size
+    );
+
+    /**
      * キーワードに基づいて投稿一覧を検索します。
      *
      * @param keyword 検索キーワード
-     * @param lastId  最後に取得した投稿のID（シーク用）
+     * @param lastId  最後に取得した投稿のID（ページング用）
      * @param size    取得件数
      * @return 投稿の参照専用モデルのリスト
      */

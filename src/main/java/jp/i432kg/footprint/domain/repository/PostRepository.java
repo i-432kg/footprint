@@ -1,16 +1,17 @@
 package jp.i432kg.footprint.domain.repository;
 
 import jp.i432kg.footprint.domain.model.Post;
-import jp.i432kg.footprint.domain.model.Posts;
-import jp.i432kg.footprint.domain.value.PostId;
-import jp.i432kg.footprint.domain.value.SearchKeyword;
-import jp.i432kg.footprint.domain.value.UserId;
 
-import java.util.Optional;
-
+/**
+ * 投稿に関するリポジトリインターフェース
+ */
 public interface PostRepository {
 
-    void savePost(Post.NewPost newPost);
+    /**
+     * 新しい投稿を保存します。
+     *
+     * @param post 保存する新規投稿情報
+     */
+    void savePost(Post post);
 
-    Posts findMyPosts(UserId userId);
 }

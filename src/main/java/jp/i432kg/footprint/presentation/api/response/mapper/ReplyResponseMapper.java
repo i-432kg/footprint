@@ -29,7 +29,7 @@ public class ReplyResponseMapper {
                         s.getId(),
                         s.getPostId(),
                         s.getParentReplyId(),
-                        s.getBody(),
+                        s.getMessage(),
                         s.getChildCount(),
                         Objects.requireNonNull(s.getCreatedAt()).atOffset(ZoneOffset.UTC)
                 ))

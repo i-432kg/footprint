@@ -9,6 +9,9 @@ import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.MappedTypes;
 
+/**
+ * MyBatis の型ハンドラで EmailAddress を String に変換するための実装クラス
+ */
 @MappedTypes(EmailAddress.class)
 public class EmailAddressTypeHandler extends BaseTypeHandler<EmailAddress> {
 

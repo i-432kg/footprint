@@ -10,6 +10,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * MyBatis の型ハンドラで UserName を String に変換するための実装クラス
+ */
 @MappedTypes(UserName.class)
 public class UserNameTypeHandler extends BaseTypeHandler<UserName> {
 

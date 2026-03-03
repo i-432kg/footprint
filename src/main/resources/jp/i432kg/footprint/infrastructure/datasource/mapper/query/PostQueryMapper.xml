@@ -68,6 +68,33 @@
         LIMIT #{size}
     </select>
 
+    <select id="findMyPosts" resultMap="PostSummaryResultMap">
+        SELECT
+        p.id AS post_id,
+        p.caption,
+        p.has_location,
+        p.latitude,
+        p.longitude,
+        p.created_at,
+        i.id AS image_id,
+        i.sort_order,
+        i.path AS image_path,
+        i.content_type,
+        i.size_bytes,
+        i.width,
+        i.height
+        FROM posts p
+        LEFT JOIN post_images i ON p.id = i.post_id
+        <where>
+            AND p.user_id = #{userId.value}
+            <if test="lastId != null">
+                AND p.id &lt; #{lastId.value}
+            </if>
+        </where>
+        ORDER BY p.created_at DESC, p.id DESC
+        LIMIT #{size}
+    </select>
+
     <select id="findPostsByKeyword" resultMap="PostSummaryResultMap">
         SELECT
         p.id AS post_id,

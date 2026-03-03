@@ -8,7 +8,7 @@
         <result property="postId" column="post_id"/>
         <result property="userId" column="user_id"/>
         <result property="parentReplyId" column="parent_reply_id"/>
-        <result property="content" column="content"/>
+        <result property="message" column="message"/>
         <result property="childCount" column="child_count"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
@@ -18,7 +18,7 @@
         SELECT id,
                post_id,
                parent_reply_id,
-               body,
+               message,
                child_count,
                created_at
         FROM replies
@@ -30,11 +30,29 @@
         SELECT id,
                post_id,
                parent_reply_id,
-               body,
+               message,
                child_count,
                created_at
         FROM replies
         WHERE parent_reply_id = #{parentReplyId}
+    </select>
+
+    <select id="findMyReplies" resultMap="ReplySummaryResultMap">
+        SELECT id,
+        post_id,
+        parent_reply_id,
+        message,
+        child_count,
+        created_at
+        FROM replies
+        <where>
+            AND user_id = #{userId.value}
+            <if test="lastId != null">
+                AND id &lt; #{lastId.value}
+            </if>
+        </where>
+        ORDER BY created_at DESC, id DESC
+        LIMIT #{size}
     </select>
 
 </mapper>

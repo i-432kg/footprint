@@ -11,6 +11,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
+/**
+ * MyBatis の型ハンドラで BirthDate を LocalDate に変換するための実装クラス
+ */
 @MappedTypes(BirthDate.class)
 public class BirthDateTypeHandler extends BaseTypeHandler<BirthDate> {
 

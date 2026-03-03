@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.i432kg.footprint.infrastructure.datasource.mapper.repository.UserMapper">
+
+    <resultMap id="UserResultMap" type="jp.i432kg.footprint.domain.model.User">
+        <result property="userName" column="username"/>
+        <result property="email" column="email"/>
+        <result property="hashedPassword" column="password_hash"/>
+        <result property="birthDate" column="birthdate"/>
+    </resultMap>
+
+    <select id="findByLoginId" resultMap="UserResultMap">
+        SELECT
+            username,
+            email,
+            password_hash,
+            birthdate
+        FROM users
+        WHERE email = #{email}
+    </select>
+
+    <select id="countByEmail" resultType="int">
+        SELECT COUNT(*)
+        FROM users
+        WHERE email = #{email}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users (
+            username,
+            email,
+            password_hash,
+            birthdate,
+            is_active,
+            disabled,
+            created_at,
+            updated_at
+        ) VALUES (
+            #{username},
+            #{email},
+            #{passwordHash},
+            #{birthdate},
+            #{isActive},
+            #{isDisabled},
+            #{createdAt},
+            #{updatedAt}
+        )
+    </insert>
+
+</mapper>
