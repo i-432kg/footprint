@@ -120,4 +120,27 @@
         LIMIT #{size}
     </select>
 
+    <select id="findPostsByBBox" resultMap="PostSummaryResultMap">
+        SELECT
+            p.id AS post_id,
+            p.caption,
+            p.has_location,
+            p.latitude,
+            p.longitude,
+            p.created_at,
+            i.id AS image_id,
+            i.sort_order,
+            i.path AS image_path,
+            i.content_type,
+            i.size_bytes,
+            i.width,
+            i.height
+        FROM posts p
+                 LEFT JOIN post_images i ON p.id = i.post_id
+        WHERE p.has_location = true
+          AND p.latitude BETWEEN #{minLat} AND #{maxLat}
+          AND p.longitude BETWEEN #{minLng} AND #{maxLng}
+        ORDER BY p.created_at DESC, p.id DESC
+    </select>
+
 </mapper>

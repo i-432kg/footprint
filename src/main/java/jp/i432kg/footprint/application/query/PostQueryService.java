@@ -1,6 +1,7 @@
 package jp.i432kg.footprint.application.query;
 
 import jp.i432kg.footprint.application.query.model.PostSummary;
+import jp.i432kg.footprint.domain.value.Coordinate;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.SearchKeyword;
 import jp.i432kg.footprint.domain.value.UserId;
@@ -41,6 +42,22 @@ public interface PostQueryService {
      * @return 投稿の検索結果一覧（該当なしの場合は空リスト）
      */
     List<PostSummary> searchPosts(SearchKeyword keyword, PostId lastId, int size);
+
+    /**
+     * 指定された座標範囲（緯度経度の境界ボックス）に含まれる位置情報を持つ投稿一覧を取得します。
+     *
+     * @param minLat 最小緯度
+     * @param maxLat 最大緯度
+     * @param minLng 最小経度
+     * @param maxLng 最大経度
+     * @return 範囲内の投稿リスト
+     */
+    List<PostSummary> searchPostsByBBox(
+            Coordinate minLat,
+            Coordinate maxLat,
+            Coordinate minLng,
+            Coordinate maxLng
+    );
 
     /**
      * 投稿を取得する。

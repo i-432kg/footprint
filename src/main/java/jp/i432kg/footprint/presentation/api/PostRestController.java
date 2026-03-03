@@ -86,6 +86,30 @@ public class PostRestController {
     }
 
     /**
+     * 指定された範囲内の投稿を検索します。
+     * @param minLat 最小緯度
+     * @param maxLat 最大緯度
+     * @param minLng 最小経度
+     * @param maxLng 最大経度
+     * @return 検索結果の投稿アイテムリスト
+     */
+    @GetMapping("/search/map")
+    public ResponseEntity<List<PostItemResponse>> searchMap(
+            @RequestParam final Coordinate minLat,
+            @RequestParam final Coordinate maxLat,
+            @RequestParam final Coordinate minLng,
+            @RequestParam final Coordinate maxLng) {
+
+        // 検索結果を取得する
+        List<PostSummary> postSummaries = postQueryService.searchPostsByBBox(minLat, maxLat, minLng, maxLng);
+
+        // レスポンス形式に変換する
+        List<PostItemResponse> responses = postResponseMapper.fromList(postSummaries);
+
+        return ResponseEntity.ok(responses);
+    }
+
+    /**
      * 指定された投稿IDの詳細情報を取得します。
      *
      * @param postId 投稿の識別子

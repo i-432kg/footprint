@@ -1,6 +1,7 @@
 package jp.i432kg.footprint.infrastructure.datasource.mapper.query;
 
 import jp.i432kg.footprint.application.query.model.PostSummary;
+import jp.i432kg.footprint.domain.value.Coordinate;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.SearchKeyword;
 import jp.i432kg.footprint.domain.value.UserId;
@@ -63,5 +64,21 @@ public interface PostQueryMapper {
             @Param("keyword") SearchKeyword keyword,
             @Param("lastId") @Nullable PostId lastId,
             @Param("size") int size
+    );
+
+    /**
+     * 緯度経度に基づいて投稿一覧を検索します。
+     *
+     * @param minLat 最小緯度
+     * @param maxLat 最大緯度
+     * @param minLng 最小経度
+     * @param maxLng 最大経度
+     * @return 投稿の参照専用モデルのリスト
+     */
+    List<PostSummary> findPostsByBBox(
+            @Param("minLat") Coordinate minLat,
+            @Param("maxLat") Coordinate maxLat,
+            @Param("minLng") Coordinate minLng,
+            @Param("maxLng") Coordinate maxLng
     );
 }

@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.config;
 
+import jp.i432kg.footprint.presentation.helper.CoordinateConverter;
 import jp.i432kg.footprint.presentation.helper.PostIdConverter;
 import jp.i432kg.footprint.presentation.helper.ReplyIdConverter;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,16 +24,20 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     private final String publicPath;
 
+    private final CoordinateConverter coordinateConverter;
+
     private final PostIdConverter postIdConverter;
 
     private final ReplyIdConverter replyIdConverter;
 
     public WebMvcConfig(@Value("${storage.location}") String storageLocation,
                         @Value("${storage.public-path}") String publicPath,
+                        CoordinateConverter coordinateConverter,
                         PostIdConverter postIdConverter,
                         ReplyIdConverter replyIdConverter) {
         this.storageLocation = storageLocation;
         this.publicPath = publicPath;
+        this.coordinateConverter = coordinateConverter;
         this.postIdConverter = postIdConverter;
         this.replyIdConverter = replyIdConverter;
     }
@@ -61,6 +66,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
      */
     @Override
     public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(coordinateConverter);
         registry.addConverter(postIdConverter);
         registry.addConverter(replyIdConverter);
     }

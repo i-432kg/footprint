@@ -2,6 +2,7 @@ package jp.i432kg.footprint.infrastructure.datasource.query;
 
 import jp.i432kg.footprint.application.query.PostQueryService;
 import jp.i432kg.footprint.application.query.model.PostSummary;
+import jp.i432kg.footprint.domain.value.Coordinate;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.SearchKeyword;
 import jp.i432kg.footprint.domain.value.UserId;
@@ -36,6 +37,15 @@ public class PostQueryServiceImpl implements PostQueryService {
     @Override
     public List<PostSummary> searchPosts(final SearchKeyword keyword, final PostId lastId, final int size) {
         return postQueryMapper.findPostsByKeyword(keyword, lastId, size);
+    }
+
+    @Override
+    public List<PostSummary> searchPostsByBBox(
+            final Coordinate minLat,
+            final Coordinate maxLat,
+            final Coordinate minLng,
+            final Coordinate maxLng) {
+        return postQueryMapper.findPostsByBBox(minLat, maxLat, minLng, maxLng);
     }
 
     @Override
