@@ -5,33 +5,42 @@ import lombok.AllArgsConstructor;
 import lombok.Value;
 
 /**
- * ピクセル単位の解像度を表す値オブジェクト。
+ * 画像の解像度（ピクセル）を表す値オブジェクト
  */
 @Value
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Pixel {
+
+    /**
+     * 最大ピクセル数：8192px
+     */
+    private static final int MAX_VALUE = 8192;
+
+    /**
+     * 最小ピクセル数：320px
+     */
+    private static final int MIN_VALUE = 320;
 
     int value;
 
     /**
      * ピクセル値を指定して {@link Pixel} インスタンスを生成します。
      *
-     * @param value ピクセル値（0以上）
-     * @return {@link Pixel} インスタンス
-     * @throws IllegalArgumentException 負の値が指定された場合
+     * @param value ピクセル値
+     * @return {@link Pixel} インスタンスバリデーションエラーの場合
      */
-    public static Pixel of(int value) {
-        if (value < 0) {
-            throw new IllegalArgumentException("Pixel value cannot be negative: " + value);
+    public static Pixel of(final int value) {
+        if (value < MIN_VALUE) {
+            throw new IllegalArgumentException("Pixel value must be at least " + MIN_VALUE + "px: " + value);
         }
+
+        if (value > MAX_VALUE) {
+            throw new IllegalArgumentException("Pixel value exceeds the limit of " + MAX_VALUE + "px: " + value);
+        }
+
         return new Pixel(value);
     }
 
-    /**
-     * 値を取得します。
-     *
-     * @return ピクセル値
-     */
     public int value() {
         return value;
     }

@@ -18,6 +18,16 @@ import java.util.Objects;
 public class Image {
 
     /**
+     * 最大総ピクセル数：40MP (40,000,000 px)
+     */
+    private static final long MAX_TOTAL_PIXELS = 40_000_000L;
+
+    /**
+     * 最小短辺ピクセル数：320px
+     */
+    private static final int MIN_SHORT_SIDE_PIXELS = 320;
+
+    /**
      * 画像のファイルパス
      */
     FilePath filePath;
@@ -69,6 +79,7 @@ public class Image {
      * @param hasEXIF     EXIF 情報の有無
      * @param takenAt     撮影日時
      * @return {@link Image} インスタンス
+     * @throws IllegalArgumentException バリデーションエラーの場合
      */
     public static Image of(
             final FilePath filePath,
@@ -80,6 +91,13 @@ public class Image {
             final boolean hasEXIF,
             final LocalDateTime takenAt
     ) {
+        // 解像度のバリデーション
+        // 総ピクセル数チェック
+        final long totalPixels = (long) width.value() * height.value();
+        if (totalPixels > MAX_TOTAL_PIXELS) {
+            throw new IllegalArgumentException("Total pixels exceed the limit of 40MP: " + totalPixels);
+        }
+
         return new Image(filePath, contentType, fileSize, width, height, location, takenAt, hasEXIF);
     }
 
