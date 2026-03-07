@@ -31,8 +31,9 @@ public class UserCommandService {
     @Transactional
     public void createUser(final CreateUserCommand command) throws Exception {
 
-        if (userDomainService.isExistUser(command.getEmail())) {
-            throw new Exception("このユーザー名は既に存在します");
+        // メールアドレスの重複チェック
+        if (userDomainService.isEmailAlreadyUsed(command.getEmail())) {
+            throw new Exception();
         }
 
         final User user = User.of(

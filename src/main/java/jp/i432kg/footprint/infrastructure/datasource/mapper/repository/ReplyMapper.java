@@ -10,7 +10,7 @@ import lombok.Getter;
 import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Optional;
 
 /**
  * 返信に関する Mybatis マッパーインターフェース
@@ -18,14 +18,19 @@ import java.util.List;
 @Mapper
 public interface ReplyMapper {
 
-    @Insert("""
-            INSERT INTO replies (post_id, user_id, parent_reply_id, message, child_count, created_at, updated_at)
-            VALUES (#{postId}, #{userId}, #{parentReplyId}, #{message}, #{childCount}, #{createdAt}, #{updatedAt})
-            """)
-    @Options(useGeneratedKeys = true, keyProperty = "id")
+    /**
+     * 返信IDに基づいて返信を取得します。
+     */
+    Optional<Reply> findReplyById(@Param("replyId") ReplyId replyId);
+
+    /**
+     * 返信を新規登録します。
+     */
     void insert(ReplyInsertEntity params);
 
-    @Update("UPDATE replies SET child_count = child_count + 1 WHERE id = #{id}")
+    /**
+     * 返信のカウント（子返信数）を1つ増やします。
+     */
     void incrementChildCount(@Param("id") ReplyId replyId);
 
     /**

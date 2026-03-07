@@ -6,6 +6,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * 返信ドメインモデル
@@ -28,6 +29,7 @@ public class Reply {
     /**
      * 返信元の返信
      */
+    @Nullable
     ReplyId parentReplyId;
 
     /**
@@ -51,5 +53,14 @@ public class Reply {
             final LocalDateTime createdAt
     ) {
         return new Reply(postId, userId, parentReplyId, message, createdAt);
+    }
+
+    /**
+     * 返信が親返信を持つかどうかを判定します。
+     *
+     * @return 返信が親返信を持つ場合は true / それ以外は false
+     */
+    public boolean hasParentReply() {
+        return Objects.nonNull(parentReplyId);
     }
 }

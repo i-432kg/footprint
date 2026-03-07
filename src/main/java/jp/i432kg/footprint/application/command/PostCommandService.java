@@ -5,6 +5,7 @@ import jp.i432kg.footprint.domain.model.Image;
 import jp.i432kg.footprint.domain.model.Post;
 import jp.i432kg.footprint.domain.repository.ImageRepository;
 import jp.i432kg.footprint.domain.repository.PostRepository;
+import jp.i432kg.footprint.domain.service.PostDomainService;
 import jp.i432kg.footprint.domain.value.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,8 @@ public class PostCommandService {
 
     private final ImageRepository imageRepository;
 
+    private final PostDomainService postDomainService;
+
     /**
      * 新しい投稿を作成します。
      * 画像ファイルの保存、メタデータの抽出、および投稿情報の永続化を一連のトランザクションとして実行します。
@@ -31,6 +34,14 @@ public class PostCommandService {
      */
     @Transactional
     public void createPost(final CreatePostCommand command) {
+
+        // 投稿作成時のバリデーション
+        try {
+            postDomainService.isValidCreatePost(command.getUserId());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
 
         // 画像ファイルを物理ストレージに保存する
         final FileName savedFileName =

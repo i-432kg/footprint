@@ -17,6 +17,18 @@ import java.time.LocalDateTime;
 @Mapper
 public interface PostMapper {
 
+    /**
+     * 指定された投稿 IDの投稿数をカウントします。
+     * @param postId 投稿 ID
+     * @return 検索にヒットした件数
+     */
+    int countByPostId(@Param("postId") PostId postId);
+
+    /**
+     * Posts テーブルに新しいレコードを挿入します。
+     *
+     * @param params 挿入するデータを保持する {@link PostInsertEntity} オブジェクト
+     */
     void insertPosts(PostInsertEntity params);
 
     /**

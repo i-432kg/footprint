@@ -15,7 +15,18 @@ import java.time.LocalDateTime;
 public interface UserMapper {
 
     /**
+     * 指定されたユーザーIDを基に有効なユーザーの登録数を取得します。
+     *
+     * @param userId ユーザー ID
+     * @return 検索にヒットした件数
+     */
+    int countByUserId(@Param("userId") UserId userId);
+
+    /**
      * 指定されたメールアドレスの登録数を取得します。
+     *
+     * @param email 検索対象のメールアドレス
+     * @return 検索にヒットした件数
      */
     int countByEmail(@Param("email") EmailAddress email);
 

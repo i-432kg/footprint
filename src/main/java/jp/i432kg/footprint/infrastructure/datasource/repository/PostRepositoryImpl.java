@@ -17,6 +17,11 @@ public class PostRepositoryImpl implements PostRepository {
     private final PostMapper postMapper;
 
     @Override
+    public boolean existsById(PostId postId) {
+        return postMapper.countByPostId(postId) > 0;
+    }
+
+    @Override
     public void savePost(final Post post) {
 
         // 投稿レコードを保存する

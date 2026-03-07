@@ -9,14 +9,11 @@
         <result property="birthDate" column="birthdate"/>
     </resultMap>
 
-    <select id="findByLoginId" resultMap="UserResultMap">
-        SELECT
-            username,
-            email,
-            password_hash,
-            birthdate
+    <select id="countByUserId" resultType="int">
+        SELECT COUNT(*)
         FROM users
-        WHERE email = #{email}
+        WHERE id = #{userId}
+          AND disabled = false
     </select>
 
     <select id="countByEmail" resultType="int">

@@ -7,6 +7,8 @@ import jp.i432kg.footprint.infrastructure.datasource.mapper.repository.ReplyMapp
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 /**
  * 返信に関するリポジトリの実装クラス
  */
@@ -15,6 +17,11 @@ import org.springframework.stereotype.Repository;
 public class ReplyRepositoryImpl implements ReplyRepository {
 
     private final ReplyMapper replyMapper;
+
+    @Override
+    public Optional<Reply> findReplyById(ReplyId replyId) {
+        return replyMapper.findReplyById(replyId);
+    }
 
     @Override
     public void saveReply(final Reply reply) {
