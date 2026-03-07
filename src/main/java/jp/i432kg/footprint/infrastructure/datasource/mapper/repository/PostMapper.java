@@ -48,8 +48,8 @@ public interface PostMapper {
         private final UserId userId;
         private final Comment caption;
         private final boolean hasLocation;
-        private final Coordinate latitude;
-        private final Coordinate longitude;
+        private final Latitude latitude;
+        private final Longitude longitude;
         private final LocalDateTime takenAt;
         private final LocalDateTime createdAt;
         private final LocalDateTime updatedAt;

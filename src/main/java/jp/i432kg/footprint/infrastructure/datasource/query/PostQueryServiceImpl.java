@@ -2,10 +2,7 @@ package jp.i432kg.footprint.infrastructure.datasource.query;
 
 import jp.i432kg.footprint.application.query.PostQueryService;
 import jp.i432kg.footprint.application.query.model.PostSummary;
-import jp.i432kg.footprint.domain.value.Coordinate;
-import jp.i432kg.footprint.domain.value.PostId;
-import jp.i432kg.footprint.domain.value.SearchKeyword;
-import jp.i432kg.footprint.domain.value.UserId;
+import jp.i432kg.footprint.domain.value.*;
 import jp.i432kg.footprint.infrastructure.datasource.mapper.query.PostQueryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,10 +38,10 @@ public class PostQueryServiceImpl implements PostQueryService {
 
     @Override
     public List<PostSummary> searchPostsByBBox(
-            final Coordinate minLat,
-            final Coordinate maxLat,
-            final Coordinate minLng,
-            final Coordinate maxLng) {
+            final Latitude minLat,
+            final Latitude maxLat,
+            final Longitude minLng,
+            final Longitude maxLng) {
         return postQueryMapper.findPostsByBBox(minLat, maxLat, minLng, maxLng);
     }
 

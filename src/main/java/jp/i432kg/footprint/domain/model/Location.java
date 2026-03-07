@@ -1,10 +1,8 @@
 package jp.i432kg.footprint.domain.model;
 
-import jp.i432kg.footprint.domain.value.Coordinate;
+import jp.i432kg.footprint.domain.value.Latitude;
+import jp.i432kg.footprint.domain.value.Longitude;
 import lombok.*;
-import org.jspecify.annotations.Nullable;
-
-import java.util.Optional;
 
 /**
  * 位置情報ドメインモデル
@@ -17,12 +15,12 @@ public class Location {
     /**
      * 緯度
      */
-    Coordinate latitude;
+    Latitude latitude;
 
     /**
      * 経度
      */
-    Coordinate longitude;
+    Longitude longitude;
 
     /**
      * 位置情報ドメインモデルを生成します。
@@ -31,7 +29,7 @@ public class Location {
      * @param longitude 経度
      * @return {@link Location} インスタンス
      */
-    public static Location of(final Coordinate latitude, final Coordinate longitude) {
+    public static Location of(final Latitude latitude, final Longitude longitude) {
         return new Location(latitude, longitude);
     }
 

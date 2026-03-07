@@ -1,10 +1,7 @@
 package jp.i432kg.footprint.infrastructure.datasource.mapper.query;
 
 import jp.i432kg.footprint.application.query.model.PostSummary;
-import jp.i432kg.footprint.domain.value.Coordinate;
-import jp.i432kg.footprint.domain.value.PostId;
-import jp.i432kg.footprint.domain.value.SearchKeyword;
-import jp.i432kg.footprint.domain.value.UserId;
+import jp.i432kg.footprint.domain.value.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.jspecify.annotations.Nullable;
@@ -76,9 +73,9 @@ public interface PostQueryMapper {
      * @return 投稿の参照専用モデルのリスト
      */
     List<PostSummary> findPostsByBBox(
-            @Param("minLat") Coordinate minLat,
-            @Param("maxLat") Coordinate maxLat,
-            @Param("minLng") Coordinate minLng,
-            @Param("maxLng") Coordinate maxLng
+            @Param("minLat") Latitude minLat,
+            @Param("maxLat") Latitude maxLat,
+            @Param("minLng") Longitude minLng,
+            @Param("maxLng") Longitude maxLng
     );
 }

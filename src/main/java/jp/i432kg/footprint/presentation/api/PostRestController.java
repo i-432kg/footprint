@@ -95,10 +95,10 @@ public class PostRestController {
      */
     @GetMapping("/search/map")
     public ResponseEntity<List<PostItemResponse>> searchMap(
-            @RequestParam final Coordinate minLat,
-            @RequestParam final Coordinate maxLat,
-            @RequestParam final Coordinate minLng,
-            @RequestParam final Coordinate maxLng) {
+            @RequestParam final Latitude minLat,
+            @RequestParam final Latitude maxLat,
+            @RequestParam final Longitude minLng,
+            @RequestParam final Longitude maxLng) {
 
         // 検索結果を取得する
         List<PostSummary> postSummaries = postQueryService.searchPostsByBBox(minLat, maxLat, minLng, maxLng);

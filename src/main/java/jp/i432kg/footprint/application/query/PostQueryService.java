@@ -1,10 +1,7 @@
 package jp.i432kg.footprint.application.query;
 
 import jp.i432kg.footprint.application.query.model.PostSummary;
-import jp.i432kg.footprint.domain.value.Coordinate;
-import jp.i432kg.footprint.domain.value.PostId;
-import jp.i432kg.footprint.domain.value.SearchKeyword;
-import jp.i432kg.footprint.domain.value.UserId;
+import jp.i432kg.footprint.domain.value.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,10 +50,10 @@ public interface PostQueryService {
      * @return 範囲内の投稿リスト
      */
     List<PostSummary> searchPostsByBBox(
-            Coordinate minLat,
-            Coordinate maxLat,
-            Coordinate minLng,
-            Coordinate maxLng
+            Latitude minLat,
+            Latitude maxLat,
+            Longitude minLng,
+            Longitude maxLng
     );
 
     /**

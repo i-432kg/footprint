@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -63,8 +64,8 @@ public class ImageRepositoryImpl implements ImageRepository {
             final Location location = gpsDir
                     .filter(dir -> dir.getGeoLocation() != null)
                     .map(dir -> Location.of(
-                            Coordinate.of(dir.getGeoLocation().getLatitude()),
-                            Coordinate.of(dir.getGeoLocation().getLongitude())
+                            Latitude.of(BigDecimal.valueOf(dir.getGeoLocation().getLatitude())),
+                            Longitude.of(BigDecimal.valueOf(dir.getGeoLocation().getLongitude()))
                     ))
                     .orElse(Location.unknown());
 

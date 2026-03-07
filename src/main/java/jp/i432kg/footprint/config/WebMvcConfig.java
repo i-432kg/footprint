@@ -1,8 +1,6 @@
 package jp.i432kg.footprint.config;
 
-import jp.i432kg.footprint.presentation.helper.CoordinateConverter;
-import jp.i432kg.footprint.presentation.helper.PostIdConverter;
-import jp.i432kg.footprint.presentation.helper.ReplyIdConverter;
+import jp.i432kg.footprint.presentation.helper.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -24,7 +22,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     private final String publicPath;
 
-    private final CoordinateConverter coordinateConverter;
+    private final LatitudeConverter latitudeConverter;
+
+    private final LongitudeConverter longitudeConverter;
 
     private final PostIdConverter postIdConverter;
 
@@ -32,12 +32,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     public WebMvcConfig(@Value("${storage.location}") String storageLocation,
                         @Value("${storage.public-path}") String publicPath,
-                        CoordinateConverter coordinateConverter,
+                        LatitudeConverter latitudeConverter,
+                        LongitudeConverter longitudeConverter,
                         PostIdConverter postIdConverter,
                         ReplyIdConverter replyIdConverter) {
         this.storageLocation = storageLocation;
         this.publicPath = publicPath;
-        this.coordinateConverter = coordinateConverter;
+        this.latitudeConverter = latitudeConverter;
+        this.longitudeConverter = longitudeConverter;
         this.postIdConverter = postIdConverter;
         this.replyIdConverter = replyIdConverter;
     }
@@ -66,7 +68,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
      */
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        registry.addConverter(coordinateConverter);
+        registry.addConverter(latitudeConverter);
+        registry.addConverter(longitudeConverter);
         registry.addConverter(postIdConverter);
         registry.addConverter(replyIdConverter);
     }
