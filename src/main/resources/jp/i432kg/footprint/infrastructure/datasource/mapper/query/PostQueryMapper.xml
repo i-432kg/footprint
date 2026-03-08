@@ -15,7 +15,8 @@
         <collection property="images" ofType="jp.i432kg.footprint.application.query.model.ImageSummary">
             <id property="id" column="image_id"/>
             <result property="sortOrder" column="sort_order"/>
-            <result property="url" column="image_path"/>
+            <result property="storageType" column="image_storage_type"/>
+            <result property="objectKey" column="image_object_key"/>
             <result property="contentType" column="content_type"/>
             <result property="sizeBytes" column="size_bytes"/>
             <result property="width" column="width"/>
@@ -32,7 +33,8 @@
                p.created_at,
                i.id   AS image_id,
                i.sort_order,
-               i.path AS image_path,
+               i.storage_type AS image_storage_type,
+               i.object_key AS image_object_key,
                i.content_type,
                i.size_bytes,
                i.width,
@@ -52,7 +54,8 @@
         p.created_at,
         i.id AS image_id,
         i.sort_order,
-        i.path AS image_path,
+        i.storage_type AS image_storage_type,
+        i.object_key AS image_object_key,
         i.content_type,
         i.size_bytes,
         i.width,
@@ -78,7 +81,8 @@
         p.created_at,
         i.id AS image_id,
         i.sort_order,
-        i.path AS image_path,
+        i.storage_type AS image_storage_type,
+        i.object_key AS image_object_key,
         i.content_type,
         i.size_bytes,
         i.width,
@@ -105,7 +109,8 @@
         p.created_at,
         i.id AS image_id,
         i.sort_order,
-        i.path AS image_path,
+        i.storage_type AS image_storage_type,
+        i.object_key AS image_object_key,
         i.content_type,
         i.size_bytes,
         i.width,
@@ -130,7 +135,8 @@
             p.created_at,
             i.id AS image_id,
             i.sort_order,
-            i.path AS image_path,
+            i.storage_type AS image_storage_type,
+            i.object_key AS image_object_key,
             i.content_type,
             i.size_bytes,
             i.width,

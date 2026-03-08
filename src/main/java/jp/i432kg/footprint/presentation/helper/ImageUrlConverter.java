@@ -1,6 +1,6 @@
 package jp.i432kg.footprint.presentation.helper;
 
-import jp.i432kg.footprint.domain.value.FilePath;
+import jp.i432kg.footprint.domain.value.StorageObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,10 +13,13 @@ public class ImageUrlConverter {
         this.publicPath = publicPath;
     }
 
-    public String convert(FilePath filePath) {
-        if (filePath == null || filePath.value() == null) {
+    public String convert(final StorageObject storageObject) {
+        if (storageObject == null || storageObject.getObjectKey() == null) {
             return null;
         }
-        return publicPath + filePath.value();
+        if (!storageObject.isLocal()) {
+            throw new IllegalArgumentException("storageObject is not LOCAL.");
+        }
+        return publicPath + storageObject.getObjectKey().getValue();
     }
 }

@@ -79,7 +79,7 @@ public interface PostMapper {
         private final PostId postId;
         private final int sortOrder;
         private final StorageType storageType;
-        private final FilePath path;
+        private final ObjectKey objectKey;
         private final String contentType;
         private final Byte sizeBytes;
         private final Pixel width;
@@ -95,8 +95,8 @@ public interface PostMapper {
                     null, // Insert 前なので ID は null
                     postId,
                     0,
-                    StorageType.LOCAL,
-                    image.getFilePath(),
+                    image.getStorageObject().getStorageType(),
+                    image.getStorageObject().getObjectKey(),
                     image.getContentType(),
                     image.getFileSize(),
                     image.getWidth(),

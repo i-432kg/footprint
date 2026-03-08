@@ -3,7 +3,7 @@ package jp.i432kg.footprint.presentation.api.response.mapper;
 import jp.i432kg.footprint.application.query.model.ImageSummary;
 import jp.i432kg.footprint.application.query.model.LocationSummary;
 import jp.i432kg.footprint.application.query.model.PostSummary;
-import jp.i432kg.footprint.domain.value.FilePath;
+import jp.i432kg.footprint.domain.value.StorageObject;
 import jp.i432kg.footprint.presentation.api.response.ImageResponse;
 import jp.i432kg.footprint.presentation.api.response.LocationResponse;
 import jp.i432kg.footprint.presentation.api.response.PostItemResponse;
@@ -65,15 +65,20 @@ public class PostResponseMapper {
      */
     private ImageResponse fromImageSummary(final ImageSummary summary) {
         return Optional.ofNullable(summary)
-                .map(s -> ImageResponse.of(
-                        s.getId(),
-                        s.getSortOrder(),
-                        imageUrlConverter.convert(FilePath.of(s.getUrl())),
-                        s.getContentType(),
-                        s.getSizeBytes(),
-                        s.getWidth(),
-                        s.getHeight()
-                ))
+                .map(s -> {
+                    final StorageObject storageObject =
+                            StorageObject.of(s.getStorageType(), s.getObjectKey());
+
+                    return ImageResponse.of(
+                            s.getId(),
+                            s.getSortOrder(),
+                            imageUrlConverter.convert(storageObject),
+                            s.getContentType(),
+                            s.getSizeBytes(),
+                            s.getWidth(),
+                            s.getHeight()
+                    );
+                })
                 .orElse(null);
     }
 

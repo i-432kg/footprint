@@ -11,6 +11,7 @@ import jp.i432kg.footprint.domain.model.Location;
 import jp.i432kg.footprint.domain.repository.ImageRepository;
 import jp.i432kg.footprint.domain.value.*;
 import jp.i432kg.footprint.domain.value.Byte;
+import jp.i432kg.footprint.infrastructure.storage.LocalStoragePathResolver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -31,17 +32,19 @@ import java.util.UUID;
 @Repository
 public class ImageRepositoryImpl implements ImageRepository {
 
-    private final String storageLocation;
+    private final Path storageRoot;
+    private final LocalStoragePathResolver localStoragePathResolver;
 
     // final フィールドにするためにコンストラクタで注入
     public ImageRepositoryImpl(@Value("${storage.location}") String storageLocation) {
-        this.storageLocation = storageLocation;
+        this.storageRoot = Paths.get(storageLocation);
+        this.localStoragePathResolver = new LocalStoragePathResolver(this.storageRoot);
     }
 
     @Override
-    public Image extractImageMetadata(final FilePath filePath) {
+    public Image extractImageMetadata(final StorageObject storageObject) {
         try {
-            final Path path = Paths.get(storageLocation).resolve(filePath.value());
+            final Path path = localStoragePathResolver.resolve(storageObject);
             final Metadata metadata = ImageMetadataReader.readMetadata(path.toFile());
 
             // 1. 基本情報 (解像度) の取得
@@ -83,29 +86,31 @@ public class ImageRepositoryImpl implements ImageRepository {
             final String contentType = Files.probeContentType(path);
             final boolean hasEXIF = metadata.containsDirectoryOfType(ExifIFD0Directory.class) || gpsDir.isPresent();
 
-            return Image.of(filePath, contentType, fileSize, width, height, location, hasEXIF, takenAt);
+            return Image.of(storageObject, contentType, fileSize, width, height, location, hasEXIF, takenAt);
 
         } catch (final Exception e) {
-            throw new RuntimeException("画像メタデータの抽出に失敗しました: " + filePath.value(), e);
+            throw new RuntimeException("画像メタデータの抽出に失敗しました: " + storageObject.getObjectKey().getValue(), e);
         }
     }
 
     @Override
-    public FileName save(final InputStream imageStream, final FileName originalFilename) {
+    public StorageObject save(final InputStream imageStream, final FileName originalFilename) {
         try {
             // ファイル名の競合を避けるため UUID をプレフィックスとして付与
             final FileName fileName = FileName.of(UUID.randomUUID() + "_" + originalFilename.value());
-            final Path root = Paths.get(storageLocation);
+            final StorageObject storageObject = StorageObject.local(ObjectKey.of(fileName.value()));
+            final Path path = localStoragePathResolver.resolve(storageObject);
 
             // 保存先ディレクトリが存在しない場合は作成する
-            if (!Files.exists(root)) {
-                Files.createDirectories(root);
+            final Path parent = path.getParent();
+            if (parent != null && !Files.exists(parent)) {
+                Files.createDirectories(parent);
             }
 
             // ストリームの内容を指定したパスにコピー（保存）する
-            Files.copy(imageStream, root.resolve(fileName.value()));
+            Files.copy(imageStream, path);
 
-            return fileName;
+            return storageObject;
         } catch (final IOException e) {
             throw new RuntimeException("ファイルの物理保存に失敗しました", e);
         }

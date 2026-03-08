@@ -48,7 +48,7 @@ CREATE TABLE post_images
     post_id        BIGINT        NOT NULL,                           -- 紐づく投稿
     sort_order     INT           NOT NULL DEFAULT 0,                 -- 表示順
     storage_type   VARCHAR(16)   NOT NULL,                           -- LOCAL / S3
-    path           VARCHAR(1024) NOT NULL,                           -- 保存パス or オブジェクトキー
+    object_key     VARCHAR(1024) NOT NULL,                           -- 保存パス or オブジェクトキー
     content_type   VARCHAR(128)  NOT NULL,                           -- MIMEタイプ
     size_bytes     BIGINT        NOT NULL,                           -- ファイルサイズ
     width          INT           NULL,                               -- 横幅

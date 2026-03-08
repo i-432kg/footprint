@@ -1,10 +1,12 @@
 package jp.i432kg.footprint.application.query.model;
 
-import lombok.NoArgsConstructor;
+import jp.i432kg.footprint.domain.value.ObjectKey;
+import jp.i432kg.footprint.domain.value.StorageType;
 import lombok.Value;
+import lombok.NoArgsConstructor;
 
 /**
- * 投稿画像の参照専用モデル
+ * 画像の参照専用モデル
  */
 @Value
 @NoArgsConstructor(force = true)
@@ -16,32 +18,37 @@ public class ImageSummary {
     Integer id;
 
     /**
-     * 画像の並び順
+     * 表示順
      */
     Integer sortOrder;
 
     /**
-     * 画像の URL
+     * 保存種別
      */
-    String url;
+    StorageType storageType;
 
     /**
-     * 画像の MIME タイプ
+     * 保存先オブジェクトキー
+     */
+    ObjectKey objectKey;
+
+    /**
+     * MIME タイプ
      */
     String contentType;
 
     /**
-     * 画像のサイズ（Byte）
+     * ファイルサイズ
      */
     Long sizeBytes;
 
     /**
-     * 画像の横幅
+     * 横幅
      */
     Integer width;
 
     /**
-     * 画像の縦幅
+     * 高さ
      */
     Integer height;
 }

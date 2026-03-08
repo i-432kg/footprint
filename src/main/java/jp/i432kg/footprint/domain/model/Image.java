@@ -1,8 +1,8 @@
 package jp.i432kg.footprint.domain.model;
 
 import jp.i432kg.footprint.domain.value.Byte;
-import jp.i432kg.footprint.domain.value.FilePath;
 import jp.i432kg.footprint.domain.value.Pixel;
+import jp.i432kg.footprint.domain.value.StorageObject;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -28,9 +28,9 @@ public class Image {
     private static final int MIN_SHORT_SIDE_PIXELS = 320;
 
     /**
-     * 画像のファイルパス
+     * 画像のストレージ保存先
      */
-    FilePath filePath;
+    StorageObject storageObject;
 
     /**
      * 画像の拡張子
@@ -70,19 +70,19 @@ public class Image {
     /**
      * 画像ドメインモデルを生成します。
      *
-     * @param filePath    画像のファイルパス
-     * @param contentType 画像の MIME タイプ
-     * @param fileSize    画像のファイルサイズ
-     * @param width       画像の横幅
-     * @param height      画像の高さ
-     * @param location    位置情報
-     * @param hasEXIF     EXIF 情報の有無
-     * @param takenAt     撮影日時
+     * @param storageObject 画像のストレージ保存先
+     * @param contentType   画像の MIME タイプ
+     * @param fileSize      画像のファイルサイズ
+     * @param width         画像の横幅
+     * @param height        画像の高さ
+     * @param location      位置情報
+     * @param hasEXIF       EXIF 情報の有無
+     * @param takenAt       撮影日時
      * @return {@link Image} インスタンス
      * @throws IllegalArgumentException バリデーションエラーの場合
      */
     public static Image of(
-            final FilePath filePath,
+            final StorageObject storageObject,
             final String contentType,
             final Byte fileSize,
             final Pixel width,
@@ -98,7 +98,7 @@ public class Image {
             throw new IllegalArgumentException("Total pixels exceed the limit of 40MP: " + totalPixels);
         }
 
-        return new Image(filePath, contentType, fileSize, width, height, location, takenAt, hasEXIF);
+        return new Image(storageObject, contentType, fileSize, width, height, location, takenAt, hasEXIF);
     }
 
     /**

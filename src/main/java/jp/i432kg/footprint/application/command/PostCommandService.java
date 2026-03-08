@@ -44,12 +44,11 @@ public class PostCommandService {
 
 
         // 画像ファイルを物理ストレージに保存する
-        final FileName savedFileName =
+        final StorageObject storageObject =
                 imageRepository.save(command.getImageStream(), command.getOriginalFilename());
-        final FilePath filePath = FilePath.of(savedFileName.value());
 
         // 保存された実ファイルからメタ情報を抽出して Image ドメインモデルを生成する
-        final Image image = imageRepository.extractImageMetadata(filePath);
+        final Image image = imageRepository.extractImageMetadata(storageObject);
 
         // Post ドメインモデルを構築し、DBに永続化する
         final Post post = Post.of(
