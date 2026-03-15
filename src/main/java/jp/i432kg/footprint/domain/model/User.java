@@ -3,8 +3,6 @@ package jp.i432kg.footprint.domain.model;
 import jp.i432kg.footprint.domain.value.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 /**
  * ユーザードメインモデル
  */

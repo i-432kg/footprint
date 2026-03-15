@@ -21,6 +21,5 @@ public class ReplyRequest {
     /**
      * 返信本文
      */
-    @NonNull
     private String message;
 }

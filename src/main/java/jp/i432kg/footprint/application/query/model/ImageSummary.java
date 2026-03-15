@@ -1,6 +1,5 @@
 package jp.i432kg.footprint.application.query.model;
 
-import jp.i432kg.footprint.domain.value.FileExtension;
 import jp.i432kg.footprint.domain.value.ObjectKey;
 import jp.i432kg.footprint.domain.value.StorageType;
 import lombok.Value;
