@@ -5,6 +5,10 @@ spring:
     name: footprint
   jackson:
     property-naming-strategy: LOWER_CAMEL_CASE
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 # 共通のビジネスロジック用設定
 app:

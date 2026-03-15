@@ -30,7 +30,7 @@ public class PostRepositoryImpl implements PostRepository {
 
         // 画像情報の保存
         final PostMapper.PostImageInsertEntity postImageEntity =
-                PostMapper.PostImageInsertEntity.from(postEntity.getId(), post);
+                PostMapper.PostImageInsertEntity.from(post);
         postMapper.insertPostImages(postImageEntity);
     }
 

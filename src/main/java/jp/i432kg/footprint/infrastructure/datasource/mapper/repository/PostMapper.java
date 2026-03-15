@@ -78,7 +78,7 @@ public interface PostMapper {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     class PostImageInsertEntity {
         private Long id; // MyBatis が書き込むため final にしない
-        private final Long postId;
+        private final PostId postId;
         private final int sortOrder;
         private final StorageType storageType;
         private final ObjectKey objectKey;
@@ -89,13 +89,13 @@ public interface PostMapper {
         private final boolean exifAvailable;
         private final LocalDateTime createdAt;
 
-        public static PostImageInsertEntity from(final Long postId, final Post post) {
+        public static PostImageInsertEntity from(final Post post) {
 
             final Image image = post.getImage();
 
             return new PostImageInsertEntity(
                     null, // Insert 前なので ID は null
-                    postId,
+                    post.getPostId(),
                     0,
                     image.getStorageObject().getStorageType(),
                     image.getStorageObject().getObjectKey(),
