@@ -7,8 +7,8 @@
                u.username,
                u.email,
                u.birthdate,
-               (SELECT COUNT(*) FROM posts WHERE user_id = u.id)   AS postCount,
-               (SELECT COUNT(*) FROM replies WHERE user_id = u.id) AS replyCount
+               (SELECT COUNT(*) FROM posts WHERE user_id = u.public_id)   AS postCount,
+               (SELECT COUNT(*) FROM replies WHERE user_id = u.public_id) AS replyCount
         FROM users u
         WHERE u.public_id = #{userId}
     </select>
