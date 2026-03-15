@@ -1,42 +1,18 @@
-server:
-  port: 8080
-
 spring:
+  profiles:
+    active: dev # デフォルトは開発用
   application:
     name: footprint
-  datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+  jackson:
+    property-naming-strategy: LOWER_CAMEL_CASE
 
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-
-  sql:
-    init:
-      schema-locations: classpath:sql/schema.sql
-      data-locations: classpath:sql/data.sql
-      encoding: UTF-8
-
-  # ファイルアップロードサイズの制限
-  servlet:
-    multipart:
-      max-file-size: 5MB
-      max-request-size: 5MB
+# 共通のビジネスロジック用設定
+app:
+  image:
+    max-size: 10MB
 
 mybatis:
-  type-handlers-package: jp.i432kg.footprint.infrastructure.datasource.typehandler
   configuration:
-    map-underscore-to-camel-case: true # DBの項目名(user_id)をJavaのフィールド(userId)に自動変換
-
-logging:
-  level:
-    org.springframework.web: DEBUG
-
-# 画像保存先の設定
-storage:
-  location: ./upload-images
-  public-path: /images/
+    map-underscore-to-camel-case: true
+  type-handlers-package: jp.i432kg.footprint.infrastructure.datasource.typehandler
+  mapper-locations: classpath:jp/i432kg/footprint/infrastructure/datasource/mapper/**/*.xml
