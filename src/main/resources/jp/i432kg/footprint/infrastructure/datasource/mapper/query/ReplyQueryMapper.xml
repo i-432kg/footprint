@@ -4,10 +4,10 @@
 
     <!-- マッピング定義 -->
     <resultMap id="ReplySummaryResultMap" type="jp.i432kg.footprint.application.query.model.ReplySummary">
-        <id property="id" column="id"/>
+        <id property="id" column="public_id"/>
         <result property="postId" column="post_id"/>
         <result property="userId" column="user_id"/>
-        <result property="parentReplyId" column="parent_reply_id"/>
+        <result property="parentReplyId" column="parent_id"/>
         <result property="message" column="message"/>
         <result property="childCount" column="child_count"/>
         <result property="createdAt" column="created_at"/>
@@ -15,40 +15,43 @@
     </resultMap>
 
     <select id="findTopLevelRepliesByPostId" resultMap="ReplySummaryResultMap">
-        SELECT id,
+        SELECT public_id,
                post_id,
-               parent_reply_id,
+               user_id,
+               parent_id,
                message,
                child_count,
                created_at
         FROM replies
         WHERE post_id = #{postId}
-          AND parent_reply_id IS NULL
+          AND parent_id IS NULL
     </select>
 
     <select id="findNestedRepliesByParentId" resultMap="ReplySummaryResultMap">
-        SELECT id,
+        SELECT public_id,
                post_id,
-               parent_reply_id,
+               user_id,
+               parent_id,
                message,
                child_count,
                created_at
         FROM replies
-        WHERE parent_reply_id = #{parentReplyId}
+        WHERE parent_id = #{parentReplyId}
     </select>
 
     <select id="findMyReplies" resultMap="ReplySummaryResultMap">
-        SELECT id,
+        SELECT public_id,
         post_id,
-        parent_reply_id,
+        user_id,
+        parent_id,
         message,
         child_count,
         created_at
         FROM replies
         <where>
-            AND user_id = #{userId.value}
+            AND user_id = #{userId}
             <if test="lastId != null">
-                AND id &lt; #{lastId.value}
+                AND created_at &lt; (SELECT created_at FROM replies WHERE public_id = #{lastId.value})
             </if>
         </where>
         ORDER BY created_at DESC, id DESC

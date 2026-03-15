@@ -18,26 +18,25 @@ import java.nio.file.Paths;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    private final String storageLocation;
-
-    private final String publicPath;
-
+    private final String storageType;
+    private final String localRootDir;
+    private final String imageBaseUrl;
     private final LatitudeConverter latitudeConverter;
-
     private final LongitudeConverter longitudeConverter;
-
     private final PostIdConverter postIdConverter;
-
     private final ReplyIdConverter replyIdConverter;
 
-    public WebMvcConfig(@Value("${storage.location}") String storageLocation,
-                        @Value("${storage.public-path}") String publicPath,
-                        LatitudeConverter latitudeConverter,
-                        LongitudeConverter longitudeConverter,
-                        PostIdConverter postIdConverter,
-                        ReplyIdConverter replyIdConverter) {
-        this.storageLocation = storageLocation;
-        this.publicPath = publicPath;
+    public WebMvcConfig(
+            @Value("${app.storage.type}") String storageType,
+            @Value("${app.storage.local.root-dir:}") String localRootDir,
+            @Value("${app.storage.image-base-url}") String imageBaseUrl,
+            LatitudeConverter latitudeConverter,
+            LongitudeConverter longitudeConverter,
+            PostIdConverter postIdConverter,
+            ReplyIdConverter replyIdConverter) {
+        this.storageType = storageType;
+        this.localRootDir = localRootDir;
+        this.imageBaseUrl = imageBaseUrl;
         this.latitudeConverter = latitudeConverter;
         this.longitudeConverter = longitudeConverter;
         this.postIdConverter = postIdConverter;
@@ -51,13 +50,21 @@ public class WebMvcConfig implements WebMvcConfigurer {
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        Path path = Paths.get(storageLocation);
-        String absolutePath = path.toFile().getAbsolutePath();
-
+        if (!"LOCAL".equals(storageType)) {
+            // S3 等を使用する場合は、Spring MVC 経由で配信しないため登録しない
+            return;
+        }
         // 外部ストレージ（物理ディレクトリ）を Web のパスにマッピングする
-        // "/images/**" へのリクエストを物理ディレクトリ "file:///.../upload-images/" にマッピング
-        registry.addResourceHandler(publicPath + "**")
-                .addResourceLocations("file:" + absolutePath + "/");
+        // 例: "/images/**" へのリクエストを物理ディレクトリ "storage/local/" にマッピング
+        String absolutePath = Paths.get(localRootDir).toAbsolutePath().normalize().toString();
+        if (!absolutePath.endsWith("/")) {
+            absolutePath += "/";
+        }
+
+        registry.addResourceHandler(imageBaseUrl + "**")
+                .addResourceLocations("file:" + absolutePath)
+                .setCachePeriod(0)
+                .resourceChain(true);
     }
 
     /**

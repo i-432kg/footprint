@@ -12,7 +12,7 @@
     <select id="countByUserId" resultType="int">
         SELECT COUNT(*)
         FROM users
-        WHERE id = #{userId}
+        WHERE public_id = #{userId}
           AND disabled = false
     </select>
 
@@ -23,25 +23,24 @@
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO users (
-            username,
-            email,
-            password_hash,
-            birthdate,
-            is_active,
-            disabled,
-            created_at,
-            updated_at
-        ) VALUES (
-            #{username},
-            #{email},
-            #{passwordHash},
-            #{birthdate},
-            #{isActive},
-            #{isDisabled},
-            #{createdAt},
-            #{updatedAt}
-        )
+        INSERT INTO users (public_id,
+                           username,
+                           email,
+                           password_hash,
+                           birthdate,
+                           is_active,
+                           disabled,
+                           created_at,
+                           updated_at)
+        VALUES (#{userId},
+                #{username},
+                #{email},
+                #{passwordHash},
+                #{birthdate},
+                #{isActive},
+                #{isDisabled},
+                #{createdAt},
+                #{updatedAt})
     </insert>
 
 </mapper>

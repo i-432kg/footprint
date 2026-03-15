@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.application.command;
 
+import com.github.f4b6a3.ulid.UlidCreator;
 import jakarta.transaction.Transactional;
 import jp.i432kg.footprint.application.command.model.CreateUserCommand;
 import jp.i432kg.footprint.domain.model.User;
@@ -36,7 +37,12 @@ public class UserCommandService {
             throw new Exception();
         }
 
+        // UserId を生成 (ULID)
+        final UserId userId = UserId.of(UlidCreator.getUlid().toString());
+
+        // User ドメインモデルを構築し、DBに永続化する
         final User user = User.of(
+                userId,
                 command.getUserName(),
                 command.getEmail(),
                 toHashedPassword(command.getRawPassword()),

@@ -13,7 +13,7 @@ public class UserProfileItemResponse {
     /**
      * ユーザー ID
      */
-    Integer id;
+    String id;
 
     /**
      * ユーザー名

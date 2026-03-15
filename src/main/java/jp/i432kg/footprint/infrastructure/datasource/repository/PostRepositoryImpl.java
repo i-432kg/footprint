@@ -28,12 +28,9 @@ public class PostRepositoryImpl implements PostRepository {
         final PostMapper.PostInsertEntity postEntity = PostMapper.PostInsertEntity.from(post);
         postMapper.insertPosts(postEntity); // 呼び出し後、entity.id に採番された値がセットされる
 
-        // 自動採番されたIDを PostId に変換 (Long -> int)
-        final PostId generatedPostId = PostId.of(postEntity.getId().intValue());
-
         // 画像情報の保存
         final PostMapper.PostImageInsertEntity postImageEntity =
-                PostMapper.PostImageInsertEntity.from(generatedPostId, post);
+                PostMapper.PostImageInsertEntity.from(postEntity.getId(), post);
         postMapper.insertPostImages(postImageEntity);
     }
 

@@ -14,6 +14,11 @@ import java.time.LocalDateTime;
 public class User {
 
     /**
+     * 外部公開用のユーザー ID
+     */
+    UserId userId;
+
+    /**
      * ユーザー名
      */
     UserName userName;
@@ -36,6 +41,7 @@ public class User {
     /**
      * ユーザードメインモデルを生成します。
      *
+     * @param userId         外部公開用のユーザー ID
      * @param userName       ユーザー名
      * @param email          メールアドレス
      * @param hashedPassword 暗号化されたパスワード
@@ -43,11 +49,12 @@ public class User {
      * @return {@link User} インスタンス
      */
     public static User of(
+            final UserId userId,
             final UserName userName,
             final EmailAddress email,
             final HashedPassword hashedPassword,
             final BirthDate birthDate
     ) {
-        return new User(userName, email, hashedPassword, birthDate);
+        return new User(userId, userName, email, hashedPassword, birthDate);
     }
 }

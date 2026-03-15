@@ -18,24 +18,24 @@ public class ReplyIdTypeHandler extends BaseTypeHandler<ReplyId> {
 
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, ReplyId parameter, JdbcType jdbcType) throws SQLException {
-        ps.setInt(i, parameter.value());
+        ps.setString(i, parameter.value());
     }
 
     @Override
     public ReplyId getNullableResult(ResultSet rs, String columnName) throws SQLException {
-        int value = rs.getInt(columnName);
-        return rs.wasNull() ? null : ReplyId.of(value);
+        String value = rs.getString(columnName);
+        return value == null ? null : ReplyId.of(value);
     }
 
     @Override
     public ReplyId getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
-        int value = rs.getInt(columnIndex);
-        return rs.wasNull() ? null : ReplyId.of(value);
+        String value = rs.getString(columnIndex);
+        return value == null ? null : ReplyId.of(value);
     }
 
     @Override
     public ReplyId getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
-        int value = cs.getInt(columnIndex);
-        return cs.wasNull() ? null : ReplyId.of(value);
+        String value = cs.getString(columnIndex);
+        return value == null ? null : ReplyId.of(value);
     }
 }

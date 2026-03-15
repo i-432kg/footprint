@@ -16,7 +16,7 @@ public class ReplyRequest {
      * 返信元の返信 ID
      */
     @Nullable
-    private Integer parentReplyId;
+    private String parentReplyId;
 
     /**
      * 返信本文

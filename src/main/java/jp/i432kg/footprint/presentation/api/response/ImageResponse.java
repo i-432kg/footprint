@@ -12,7 +12,7 @@ public class ImageResponse {
     /**
      * 画像 ID
      */
-    Integer id;
+    String id;
 
     /**
      * 画像の並び順
@@ -25,9 +25,9 @@ public class ImageResponse {
     String url;
 
     /**
-     * 画像の MIME タイプ
+     * 画像の拡張子
      */
-    String contentType;
+    String fileExtension;
 
     /**
      * 画像のサイズ（Byte）

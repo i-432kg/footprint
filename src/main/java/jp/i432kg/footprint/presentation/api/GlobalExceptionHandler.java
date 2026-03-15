@@ -5,6 +5,7 @@ import jp.i432kg.footprint.domain.exception.PostNotFoundException;
 import jp.i432kg.footprint.domain.exception.ReplyNotFoundException;
 import jp.i432kg.footprint.domain.exception.ReplyPostMismatchException;
 import jp.i432kg.footprint.domain.exception.UserNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 /**
  * API 全体の例外をハンドリングする ControllerAdvice
  */
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -79,6 +81,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleException(final Exception ex) {
+        log.error("e: ", ex);
         return createProblemDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Internal Server Error",

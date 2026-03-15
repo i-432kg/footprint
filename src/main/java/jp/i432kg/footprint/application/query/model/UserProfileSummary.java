@@ -13,7 +13,7 @@ public class UserProfileSummary {
     /**
      * ユーザー ID
      */
-    Integer id;
+    String id;
 
     /**
      * ユーザー名

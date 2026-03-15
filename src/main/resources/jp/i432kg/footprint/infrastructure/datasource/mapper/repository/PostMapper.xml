@@ -5,19 +5,21 @@
     <select id="countByPostId" resultType="int">
         SELECT COUNT(*)
         FROM posts
-        WHERE id = #{postId}
+        WHERE public_id = #{postId}
     </select>
 
     <insert id="insertPosts" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO posts (user_id, caption, has_location, latitude, longitude, taken_at, created_at, updated_at)
-        VALUES (#{userId}, #{caption}, #{hasLocation}, #{latitude}, #{longitude}, #{takenAt}, #{createdAt},
+        INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude, taken_at, created_at,
+                           updated_at)
+        VALUES (#{postId}, #{userId}, #{caption}, #{hasLocation}, #{latitude}, #{longitude}, #{takenAt}, #{createdAt},
                 #{updatedAt})
     </insert>
 
     <insert id="insertPostImages" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available,
+        INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes,
+                                 exif_available,
                                  created_at)
-        VALUES (#{postId}, #{sortOrder}, #{storageType}, #{objectKey}, #{contentType}, #{sizeBytes}, #{exifAvailable},
+        VALUES (#{postId}, #{sortOrder}, #{storageType}, #{objectKey}, #{fileExtension}, #{sizeBytes}, #{exifAvailable},
                 #{createdAt})
     </insert>
 

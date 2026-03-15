@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.application.command;
 
+import com.github.f4b6a3.ulid.UlidCreator;
 import jp.i432kg.footprint.application.command.model.CreatePostCommand;
 import jp.i432kg.footprint.domain.model.Image;
 import jp.i432kg.footprint.domain.model.Post;
@@ -42,16 +43,24 @@ public class PostCommandService {
             throw new RuntimeException(e);
         }
 
+        // PostId を生成 (ULID)
+        final PostId postId = PostId.of(UlidCreator.getUlid().toString());
 
         // 画像ファイルを物理ストレージに保存する
         final StorageObject storageObject =
-                imageRepository.save(command.getImageStream(), command.getOriginalFilename());
+                imageRepository.save(
+                        command.getImageStream(),
+                        command.getOriginalFilename(),
+                        command.getUserId(),
+                        postId
+                );
 
         // 保存された実ファイルからメタ情報を抽出して Image ドメインモデルを生成する
         final Image image = imageRepository.extractImageMetadata(storageObject);
 
         // Post ドメインモデルを構築し、DBに永続化する
         final Post post = Post.of(
+                postId,
                 command.getUserId(),
                 image,
                 command.getComment(),

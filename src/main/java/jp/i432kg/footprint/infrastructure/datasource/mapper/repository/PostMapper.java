@@ -45,6 +45,7 @@ public interface PostMapper {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     class PostInsertEntity {
         private Long id; // MyBatis が書き込むため final にしない
+        private final PostId postId;
         private final UserId userId;
         private final Comment caption;
         private final boolean hasLocation;
@@ -57,6 +58,7 @@ public interface PostMapper {
         public static PostInsertEntity from(final Post post) {
             return new PostInsertEntity(
                     null, // Insert 前なので ID は null
+                    post.getPostId(),
                     post.getUserId(),
                     post.getCaption(),
                     post.getImage().hasLocation(),
@@ -76,18 +78,18 @@ public interface PostMapper {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     class PostImageInsertEntity {
         private Long id; // MyBatis が書き込むため final にしない
-        private final PostId postId;
+        private final Long postId;
         private final int sortOrder;
         private final StorageType storageType;
         private final ObjectKey objectKey;
-        private final String contentType;
+        private final FileExtension fileExtension;
         private final Byte sizeBytes;
         private final Pixel width;
         private final Pixel height;
         private final boolean exifAvailable;
         private final LocalDateTime createdAt;
 
-        public static PostImageInsertEntity from(final PostId postId, final Post post) {
+        public static PostImageInsertEntity from(final Long postId, final Post post) {
 
             final Image image = post.getImage();
 
@@ -97,7 +99,7 @@ public interface PostMapper {
                     0,
                     image.getStorageObject().getStorageType(),
                     image.getStorageObject().getObjectKey(),
-                    image.getContentType(),
+                    image.getFileExtension(),
                     image.getFileSize(),
                     image.getWidth(),
                     image.getHeight(),

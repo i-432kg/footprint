@@ -16,7 +16,7 @@ public class PostSummary {
     /**
      * 投稿 ID
      */
-    Integer id;
+    String id;
 
     /**
      * 投稿コメント

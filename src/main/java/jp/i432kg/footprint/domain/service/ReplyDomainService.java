@@ -37,13 +37,13 @@ public class ReplyDomainService {
             throws Exception {
 
         // 返信先の投稿が存在するか確認
-        if (postDomainService.isExistPost(postId)) {
+        if (!postDomainService.isExistPost(postId)) {
             // TODO 独自例外にする
             throw new Exception();
         }
 
         // 返信者が存在するか確認（有効なユーザーか）
-        if (userDomainService.isExistUser(userId)) {
+        if (!userDomainService.isExistUser(userId)) {
             // TODO 独自例外にする
             throw new Exception();
         }

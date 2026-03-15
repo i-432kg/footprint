@@ -14,6 +14,11 @@ import java.time.LocalDateTime;
 public class Post {
 
     /**
+     * 投稿の外部公開用 ID
+     */
+    PostId postId;
+
+    /**
      * 投稿者
      */
     UserId userId;
@@ -36,6 +41,7 @@ public class Post {
     /**
      * 投稿ドメインモデルを生成します。
      *
+     * @param postId    投稿の外部公開用 ID
      * @param userId    投稿者
      * @param image     投稿画像
      * @param caption   投稿コメント
@@ -43,11 +49,12 @@ public class Post {
      * @return {@link Post} インスタンス
      */
     public static Post of(
+            final PostId postId,
             final UserId userId,
             final Image image,
             final Comment caption,
             final LocalDateTime createdAt
     ) {
-        return new Post(userId, image, caption, createdAt);
+        return new Post(postId, userId, image, caption, createdAt);
     }
 }

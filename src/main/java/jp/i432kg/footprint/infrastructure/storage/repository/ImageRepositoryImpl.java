@@ -1,11 +1,15 @@
 package jp.i432kg.footprint.infrastructure.storage.repository;
 
+import com.drew.imaging.FileType;
+import com.drew.imaging.FileTypeDetector;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDirectory;
 import com.drew.metadata.jpeg.JpegDirectory;
+import com.github.f4b6a3.ulid.UlidCreator;
+import jp.i432kg.footprint.domain.ObjectKeyFactory;
 import jp.i432kg.footprint.domain.model.Image;
 import jp.i432kg.footprint.domain.model.Location;
 import jp.i432kg.footprint.domain.repository.ImageRepository;
@@ -15,6 +19,7 @@ import jp.i432kg.footprint.infrastructure.storage.LocalStoragePathResolver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -36,9 +41,11 @@ public class ImageRepositoryImpl implements ImageRepository {
     private final LocalStoragePathResolver localStoragePathResolver;
 
     // final フィールドにするためにコンストラクタで注入
-    public ImageRepositoryImpl(@Value("${storage.location}") String storageLocation) {
+    public ImageRepositoryImpl(
+            @Value("${app.storage.local.root-dir:}") String storageLocation,
+            LocalStoragePathResolver localStoragePathResolver) {
         this.storageRoot = Paths.get(storageLocation);
-        this.localStoragePathResolver = new LocalStoragePathResolver(this.storageRoot);
+        this.localStoragePathResolver = localStoragePathResolver;
     }
 
     @Override
@@ -83,10 +90,15 @@ public class ImageRepositoryImpl implements ImageRepository {
 
             // 4. ファイルシステムおよびその他の属性取得
             final Byte fileSize = Byte.of(Files.size(path));
-            final String contentType = Files.probeContentType(path);
+
+            // Content-Type から拡張子を特定
+            final String fileName = path.getFileName().toString();
+            final String extensionStr = fileName.substring(fileName.lastIndexOf(".") + 1);
+            final FileExtension fileExtension = FileExtension.of(extensionStr);
+
             final boolean hasEXIF = metadata.containsDirectoryOfType(ExifIFD0Directory.class) || gpsDir.isPresent();
 
-            return Image.of(storageObject, contentType, fileSize, width, height, location, hasEXIF, takenAt);
+            return Image.of(storageObject, fileExtension, fileSize, width, height, location, hasEXIF, takenAt);
 
         } catch (final Exception e) {
             throw new RuntimeException("画像メタデータの抽出に失敗しました: " + storageObject.getObjectKey().getValue(), e);
@@ -94,25 +106,75 @@ public class ImageRepositoryImpl implements ImageRepository {
     }
 
     @Override
-    public StorageObject save(final InputStream imageStream, final FileName originalFilename) {
+    public StorageObject save(
+            final InputStream imageStream,
+            final FileName originalFilename,
+            final UserId userId,
+            final PostId postId
+    ) {
         try {
-            // ファイル名の競合を避けるため UUID をプレフィックスとして付与
-            final FileName fileName = FileName.of(UUID.randomUUID() + "_" + originalFilename.value());
-            final StorageObject storageObject = StorageObject.local(ObjectKey.of(fileName.value()));
-            final Path path = localStoragePathResolver.resolve(storageObject);
+            // 1. 一時ファイルとして保存
+            final String tempId = UUID.randomUUID().toString();
+            final Path tempPath = storageRoot.resolve(tempId + ".tmp");
 
-            // 保存先ディレクトリが存在しない場合は作成する
-            final Path parent = path.getParent();
-            if (parent != null && !Files.exists(parent)) {
-                Files.createDirectories(parent);
+            if (!Files.exists(storageRoot)) {
+                Files.createDirectories(storageRoot);
+            }
+            Files.copy(imageStream, tempPath);
+
+            // 2. ファイル形式の判定
+            final FileType fileType;
+            try (InputStream is = Files.newInputStream(tempPath);
+                 BufferedInputStream bis = new BufferedInputStream(is)) {
+                fileType = FileTypeDetector.detectFileType(bis);
             }
 
-            // ストリームの内容を指定したパスにコピー（保存）する
-            Files.copy(imageStream, path);
+            // 3. 正しい拡張子の特定
+            final String extensionStr = determineExtension(fileType, originalFilename);
+            final FileExtension extension = FileExtension.of(extensionStr);
+
+            // 4. ドメインルールに基づいた ObjectKey の生成
+            final ImageId imageId = ImageId.of(UlidCreator.getUlid().toString());
+            final ObjectKey objectKey = ObjectKeyFactory.createPostImageKey(userId, postId, imageId, extension);
+
+            final StorageObject storageObject = StorageObject.local(objectKey);
+            final Path finalPath = localStoragePathResolver.resolve(storageObject);
+
+            // 5. 保存先ディレクトリの作成と移動
+            if (finalPath.getParent() != null) {
+                Files.createDirectories(finalPath.getParent());
+            }
+            Files.move(tempPath, finalPath);
 
             return storageObject;
         } catch (final IOException e) {
-            throw new RuntimeException("ファイルの物理保存に失敗しました", e);
+            throw new RuntimeException("ファイルの保存に失敗しました", e);
         }
+    }
+
+    private String determineExtension(final FileType fileType, final FileName originalFilename) {
+        // FileType からドメインの Allowed Enum へのマッピングを試みる
+        final Optional<FileExtension.Allowed> allowed = switch (fileType) {
+            case Jpeg -> Optional.of(FileExtension.Allowed.JPG);
+            case Png -> Optional.of(FileExtension.Allowed.PNG);
+            case Gif -> Optional.of(FileExtension.Allowed.GIF);
+            case WebP -> Optional.of(FileExtension.Allowed.WEBP);
+            default -> Optional.empty();
+        };
+
+        return allowed
+                .map(FileExtension.Allowed::getValue)
+                .orElseGet(() -> {
+                    // 特定できなかった場合、元のファイル名の拡張子が許可されているか確認
+                    final String name = originalFilename.value();
+                    final int lastDotIndex = name.lastIndexOf(".");
+                    final String ext = (lastDotIndex != -1) ? name.substring(lastDotIndex + 1).toLowerCase() : "";
+
+                    try {
+                        return FileExtension.of(ext).value();
+                    } catch (IllegalArgumentException e) {
+                        throw new RuntimeException("サポートされていないファイル形式です: " + fileType, e);
+                    }
+                });
     }
 }

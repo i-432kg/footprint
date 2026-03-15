@@ -1,11 +1,11 @@
 package jp.i432kg.footprint.domain.value;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Value;
+import lombok.*;
 
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * ファイル拡張子を表す値オブジェクト
@@ -20,6 +20,27 @@ public class FileExtension {
     private static final int MAX_LENGTH = 10;
 
     String value;
+
+    /**
+     * 許可された拡張子の定義
+     */
+    @Getter
+    @RequiredArgsConstructor
+    public enum Allowed {
+        JPG("jpg"),
+        JPEG("jpeg"),
+        PNG("png"),
+        GIF("gif"),
+        WEBP("webp");
+
+        private final String value;
+
+        public static Optional<Allowed> fromString(final String extension) {
+            return Arrays.stream(values())
+                    .filter(e -> e.value.equalsIgnoreCase(extension))
+                    .findFirst();
+        }
+    }
 
     /**
      * 拡張子を指定して {@link FileExtension} インスタンスを生成します。
@@ -48,7 +69,9 @@ public class FileExtension {
             throw new IllegalArgumentException("Extension contains invalid characters: " + normalized);
         }
 
-        return new FileExtension(normalized);
+        return Allowed.fromString(normalized)
+                .map(allowed -> new FileExtension(allowed.getValue()))
+                .orElseThrow(() -> new IllegalArgumentException("Unsupported extension: " + normalized));
     }
 
     /**

@@ -17,6 +17,11 @@ import java.util.Objects;
 public class Reply {
 
     /**
+     * 外部公開用の投稿 ID
+     */
+    ReplyId replyId;
+
+    /**
      * 返信元の投稿
      */
     PostId postId;
@@ -46,13 +51,14 @@ public class Reply {
      * インスタンスを生成します。
      */
     public static Reply of(
+            final ReplyId replyId,
             final PostId postId,
             final UserId userId,
             final ReplyId parentReplyId,
             final Comment message,
             final LocalDateTime createdAt
     ) {
-        return new Reply(postId, userId, parentReplyId, message, createdAt);
+        return new Reply(replyId, postId, userId, parentReplyId, message, createdAt);
     }
 
     /**

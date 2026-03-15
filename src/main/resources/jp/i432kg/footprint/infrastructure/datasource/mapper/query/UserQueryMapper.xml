@@ -3,14 +3,14 @@
 <mapper namespace="jp.i432kg.footprint.infrastructure.datasource.mapper.query.UserQueryMapper">
 
     <select id="findProfileByUserId" resultType="jp.i432kg.footprint.application.query.model.UserProfileSummary">
-        SELECT u.id,
+        SELECT u.public_id as id,
                u.username,
                u.email,
                u.birthdate,
                (SELECT COUNT(*) FROM posts WHERE user_id = u.id)   AS postCount,
                (SELECT COUNT(*) FROM replies WHERE user_id = u.id) AS replyCount
         FROM users u
-        WHERE u.id = #{userId}
+        WHERE u.public_id = #{userId}
     </select>
 
 </mapper>

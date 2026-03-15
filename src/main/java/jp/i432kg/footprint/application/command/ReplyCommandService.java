@@ -1,9 +1,11 @@
 package jp.i432kg.footprint.application.command;
 
+import com.github.f4b6a3.ulid.UlidCreator;
 import jp.i432kg.footprint.application.command.model.CreateReplyCommand;
 import jp.i432kg.footprint.domain.model.Reply;
 import jp.i432kg.footprint.domain.repository.ReplyRepository;
 import jp.i432kg.footprint.domain.service.ReplyDomainService;
+import jp.i432kg.footprint.domain.value.ReplyId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +39,12 @@ public class ReplyCommandService {
             throw new RuntimeException(e);
         }
 
+        // ReplyId を生成 (ULID)
+        final ReplyId replyId = ReplyId.of(UlidCreator.getUlid().toString());
+
         // Reply ドメインモデルを構築し、DBに永続化する
         final Reply reply = Reply.of(
+                replyId,
                 command.getPostId(),
                 command.getUserId(),
                 command.getParentReplyId(),

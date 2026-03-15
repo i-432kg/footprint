@@ -73,7 +73,7 @@ public class PostResponseMapper {
                             s.getId(),
                             s.getSortOrder(),
                             imageUrlConverter.convert(storageObject),
-                            s.getContentType(),
+                            s.getFileExtension(),
                             s.getSizeBytes(),
                             s.getWidth(),
                             s.getHeight()

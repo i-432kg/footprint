@@ -11,6 +11,6 @@ public class ReplyIdConverter implements Converter<String, ReplyId> {
 
     @Override
     public ReplyId convert(final String source) {
-        return Objects.isNull(source) || source.isBlank() ? null : ReplyId.of(Integer.parseInt(source));
+        return Objects.isNull(source) || source.isBlank() ? null : ReplyId.of(source);
     }
 }

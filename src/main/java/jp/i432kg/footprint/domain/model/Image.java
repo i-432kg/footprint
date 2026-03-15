@@ -1,6 +1,7 @@
 package jp.i432kg.footprint.domain.model;
 
 import jp.i432kg.footprint.domain.value.Byte;
+import jp.i432kg.footprint.domain.value.FileExtension;
 import jp.i432kg.footprint.domain.value.Pixel;
 import jp.i432kg.footprint.domain.value.StorageObject;
 import lombok.*;
@@ -35,7 +36,7 @@ public class Image {
     /**
      * 画像の拡張子
      */
-    String contentType;
+    FileExtension fileExtension;
 
     /**
      * 画像のファイルサイズ
@@ -71,7 +72,7 @@ public class Image {
      * 画像ドメインモデルを生成します。
      *
      * @param storageObject 画像のストレージ保存先
-     * @param contentType   画像の MIME タイプ
+     * @param fileExtension 画像の拡張子
      * @param fileSize      画像のファイルサイズ
      * @param width         画像の横幅
      * @param height        画像の高さ
@@ -83,7 +84,7 @@ public class Image {
      */
     public static Image of(
             final StorageObject storageObject,
-            final String contentType,
+            final FileExtension fileExtension,
             final Byte fileSize,
             final Pixel width,
             final Pixel height,
@@ -98,7 +99,7 @@ public class Image {
             throw new IllegalArgumentException("Total pixels exceed the limit of 40MP: " + totalPixels);
         }
 
-        return new Image(storageObject, contentType, fileSize, width, height, location, takenAt, hasEXIF);
+        return new Image(storageObject, fileExtension, fileSize, width, height, location, takenAt, hasEXIF);
     }
 
     /**

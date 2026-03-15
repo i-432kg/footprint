@@ -17,7 +17,7 @@
             <result property="sortOrder" column="sort_order"/>
             <result property="storageType" column="image_storage_type"/>
             <result property="objectKey" column="image_object_key"/>
-            <result property="contentType" column="content_type"/>
+            <result property="fileExtension" column="file_extension"/>
             <result property="sizeBytes" column="size_bytes"/>
             <result property="width" column="width"/>
             <result property="height" column="height"/>
@@ -25,7 +25,7 @@
     </resultMap>
 
     <select id="findPostById" resultMap="PostSummaryResultMap">
-        SELECT p.id   AS post_id,
+        SELECT p.public_id   AS post_id,
                p.caption,
                p.has_location,
                p.latitude,
@@ -35,18 +35,18 @@
                i.sort_order,
                i.storage_type AS image_storage_type,
                i.object_key AS image_object_key,
-               i.content_type,
+               i.file_extension,
                i.size_bytes,
                i.width,
                i.height
         FROM posts p
-                 LEFT JOIN post_images i ON p.id = i.post_id
-        WHERE p.id = #{postId}
+                 LEFT JOIN post_images i ON p.public_id = i.post_id
+        WHERE p.public_id = #{postId}
     </select>
 
     <select id="findRecentPosts" resultMap="PostSummaryResultMap">
         SELECT
-        p.id AS post_id,
+        p.public_id AS post_id,
         p.caption,
         p.has_location,
         p.latitude,
@@ -56,15 +56,15 @@
         i.sort_order,
         i.storage_type AS image_storage_type,
         i.object_key AS image_object_key,
-        i.content_type,
+        i.file_extension,
         i.size_bytes,
         i.width,
         i.height
         FROM posts p
-        LEFT JOIN post_images i ON p.id = i.post_id
+        LEFT JOIN post_images i ON p.public_id = i.post_id
         <where>
             <if test="lastId != null">
-                AND p.id &lt; #{lastId.value}
+                AND p.created_at &lt; (SELECT created_at FROM posts WHERE public_id = #{lastId.value})
             </if>
         </where>
         ORDER BY p.created_at DESC, p.id DESC
@@ -73,7 +73,7 @@
 
     <select id="findMyPosts" resultMap="PostSummaryResultMap">
         SELECT
-        p.id AS post_id,
+        p.public_id AS post_id,
         p.caption,
         p.has_location,
         p.latitude,
@@ -83,16 +83,16 @@
         i.sort_order,
         i.storage_type AS image_storage_type,
         i.object_key AS image_object_key,
-        i.content_type,
+        i.file_extension,
         i.size_bytes,
         i.width,
         i.height
         FROM posts p
-        LEFT JOIN post_images i ON p.id = i.post_id
+        LEFT JOIN post_images i ON p.public_id = i.post_id
         <where>
-            AND p.user_id = #{userId.value}
+            AND p.user_id = #{userId}
             <if test="lastId != null">
-                AND p.id &lt; #{lastId.value}
+                AND p.created_at &lt; (SELECT created_at FROM posts WHERE public_id = #{lastId.value})
             </if>
         </where>
         ORDER BY p.created_at DESC, p.id DESC
@@ -101,7 +101,7 @@
 
     <select id="findPostsByKeyword" resultMap="PostSummaryResultMap">
         SELECT
-        p.id AS post_id,
+        p.public_id AS post_id,
         p.caption,
         p.has_location,
         p.latitude,
@@ -111,15 +111,15 @@
         i.sort_order,
         i.storage_type AS image_storage_type,
         i.object_key AS image_object_key,
-        i.content_type,
+        i.file_extension,
         i.size_bytes,
         i.width,
         i.height
         FROM posts p
-        LEFT JOIN post_images i ON p.id = i.post_id
+        LEFT JOIN post_images i ON p.public_id = i.post_id
         WHERE p.caption LIKE CONCAT('%', #{keyword}, '%')
         <if test="lastId != null">
-            AND p.id &lt; #{lastId}
+            AND p.created_at &lt; (SELECT created_at FROM posts WHERE public_id = #{lastId.value})
         </if>
         ORDER BY p.created_at DESC, p.id DESC
         LIMIT #{size}
@@ -127,7 +127,7 @@
 
     <select id="findPostsByBBox" resultMap="PostSummaryResultMap">
         SELECT
-            p.id AS post_id,
+            p.public_id AS post_id,
             p.caption,
             p.has_location,
             p.latitude,
@@ -137,12 +137,12 @@
             i.sort_order,
             i.storage_type AS image_storage_type,
             i.object_key AS image_object_key,
-            i.content_type,
+            i.file_extension,
             i.size_bytes,
             i.width,
             i.height
         FROM posts p
-                 LEFT JOIN post_images i ON p.id = i.post_id
+                 LEFT JOIN post_images i ON p.public_id = i.post_id
         WHERE p.has_location = true
           AND p.latitude BETWEEN #{minLat} AND #{maxLat}
           AND p.longitude BETWEEN #{minLng} AND #{maxLng}

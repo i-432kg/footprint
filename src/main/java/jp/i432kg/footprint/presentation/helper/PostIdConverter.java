@@ -11,6 +11,6 @@ public class PostIdConverter implements Converter<String, PostId> {
 
     @Override
     public PostId convert(final String source) {
-        return Objects.isNull(source) || source.isBlank() ? null : PostId.of(Integer.parseInt(source));
+        return Objects.isNull(source) || source.isBlank() ? null : PostId.of(source);
     }
 }

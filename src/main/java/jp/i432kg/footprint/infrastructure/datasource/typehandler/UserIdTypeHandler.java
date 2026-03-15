@@ -18,24 +18,24 @@ public class UserIdTypeHandler extends BaseTypeHandler<UserId> {
 
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, UserId parameter, JdbcType jdbcType) throws SQLException {
-        ps.setInt(i, parameter.value());
+        ps.setString(i, parameter.value());
     }
 
     @Override
     public UserId getNullableResult(ResultSet rs, String columnName) throws SQLException {
-        int value = rs.getInt(columnName);
-        return rs.wasNull() ? null : UserId.of(value);
+        String value = rs.getString(columnName);
+        return value == null ? null : UserId.of(value);
     }
 
     @Override
     public UserId getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
-        int value = rs.getInt(columnIndex);
-        return rs.wasNull() ? null : UserId.of(value);
+        String value = rs.getString(columnIndex);
+        return value == null ? null : UserId.of(value);
     }
 
     @Override
     public UserId getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
-        int value = cs.getInt(columnIndex);
-        return cs.wasNull() ? null : UserId.of(value);
+        String value = cs.getString(columnIndex);
+        return value == null ? null : UserId.of(value);
     }
 }

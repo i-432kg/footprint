@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.application.query.model;
 
+import jp.i432kg.footprint.domain.value.FileExtension;
 import jp.i432kg.footprint.domain.value.ObjectKey;
 import jp.i432kg.footprint.domain.value.StorageType;
 import lombok.Value;
@@ -15,7 +16,7 @@ public class ImageSummary {
     /**
      * 画像 ID
      */
-    Integer id;
+    String id;
 
     /**
      * 表示順
@@ -33,9 +34,9 @@ public class ImageSummary {
     ObjectKey objectKey;
 
     /**
-     * MIME タイプ
+     * 画像の拡張子
      */
-    String contentType;
+    String fileExtension;
 
     /**
      * ファイルサイズ

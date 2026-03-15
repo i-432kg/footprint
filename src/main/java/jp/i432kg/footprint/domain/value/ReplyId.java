@@ -5,19 +5,21 @@ import lombok.AllArgsConstructor;
 import lombok.Value;
 
 /**
- * 返信 ID を表す値オブジェクト。
+ * 返信を一意に識別するための ID を表す値オブジェクト
+ * <p>
+ * フロント側に公開する ID として扱う
  */
 @Value
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReplyId {
 
-    int value;
+    String value;
 
-    public static ReplyId of(final int value) {
+    public static ReplyId of(final String value) {
         return new ReplyId(value);
     }
 
-    public int value() {
+    public String value() {
         return value;
     }
 }

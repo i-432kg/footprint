@@ -40,6 +40,7 @@ public interface ReplyMapper {
     @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
     class ReplyInsertEntity {
         private Long id;
+        private ReplyId replyId;
         private final PostId postId;
         private final UserId userId;
         private final ReplyId parentReplyId;
@@ -51,6 +52,7 @@ public interface ReplyMapper {
         public static ReplyInsertEntity from(final Reply reply) {
             return new ReplyInsertEntity(
                     null, // insert 前なので null
+                    reply.getReplyId(),
                     reply.getPostId(),
                     reply.getUserId(),
                     reply.getParentReplyId(),

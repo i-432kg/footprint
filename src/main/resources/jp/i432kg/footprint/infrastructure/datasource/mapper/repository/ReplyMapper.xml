@@ -4,33 +4,37 @@
 
     <resultMap id="ReplyResultMap" type="jp.i432kg.footprint.domain.model.Reply">
         <constructor>
+            <arg column="public_id" javaType="jp.i432kg.footprint.domain.value.ReplyId"/>
             <arg column="post_id" javaType="jp.i432kg.footprint.domain.value.PostId"/>
             <arg column="user_id" javaType="jp.i432kg.footprint.domain.value.UserId"/>
-            <arg column="parent_reply_id" javaType="jp.i432kg.footprint.domain.value.ReplyId"/>
+            <arg column="parent_id" javaType="jp.i432kg.footprint.domain.value.ReplyId"/>
             <arg column="message" javaType="jp.i432kg.footprint.domain.value.Comment"/>
             <arg column="created_at" javaType="java.time.LocalDateTime"/>
         </constructor>
     </resultMap>
 
     <select id="findReplyById" resultMap="ReplyResultMap">
-        SELECT post_id,
+        SELECT public_id,
+               post_id,
                user_id,
-               parent_reply_id,
+               parent_id,
                message,
                created_at
         FROM replies
-        WHERE id = #{replyId}
+        WHERE public_id = #{replyId}
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO replies (post_id,
+        INSERT INTO replies (public_id,
+                             post_id,
                              user_id,
-                             parent_reply_id,
+                             parent_id,
                              message,
                              child_count,
                              created_at,
                              updated_at)
-        VALUES (#{postId},
+        VALUES (#{replyId},
+                #{postId},
                 #{userId},
                 #{parentReplyId},
                 #{message},
@@ -43,7 +47,7 @@
         UPDATE
             replies
         SET child_count = child_count + 1
-        WHERE id = #{id}
+        WHERE public_id = #{id}
     </update>
 
 </mapper>

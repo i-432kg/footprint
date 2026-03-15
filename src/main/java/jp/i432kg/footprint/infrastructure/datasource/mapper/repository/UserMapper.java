@@ -42,6 +42,7 @@ public interface UserMapper {
     @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
     class UserInsertEntity {
         private Long id;
+        private UserId userId;
         private final UserName username;
         private final EmailAddress email;
         private final HashedPassword passwordHash;
@@ -56,6 +57,7 @@ public interface UserMapper {
         public static UserInsertEntity from(final User user) {
             return new UserInsertEntity(
                     null,
+                    user.getUserId(),
                     user.getUserName(),
                     user.getEmail(),
                     user.getHashedPassword(),

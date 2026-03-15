@@ -4,20 +4,23 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
+
 /**
- * ユーザー ID を表す値オブジェクト。
+ * ユーザーを一意に識別するための ID を表す値オブジェクト
+ * <p>
+ * フロント側に公開する ID として扱う
  */
 @Value
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserId {
 
-    int value;
+    String value;
 
-    public static UserId of(final int value) {
+    public static UserId of(final String value) {
         return new UserId(value);
     }
 
-    public int value() {
+    public String value() {
         return value;
     }
 }

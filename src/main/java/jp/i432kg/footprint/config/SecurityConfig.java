@@ -21,7 +21,11 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/css/**");
+        // CSS、画像パス、favicon.icoをセキュリティフィルタの対象外にする
+        return (web) -> web.ignoring()
+                .requestMatchers("/css/**")
+                .requestMatchers("/images/**")
+                .requestMatchers("/favicon.ico");
     }
 
     @Bean
@@ -34,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/signup", "/login").permitAll()
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/**").permitAll() // 開発用にapiリクエスト許可
+                        .requestMatchers("/images/**").permitAll() // 開発用に画像パスを許可
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

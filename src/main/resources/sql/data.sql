@@ -1,179 +1,111 @@
--- ユーザ
-INSERT INTO users(username, email, password_hash, birthdate, is_active)
-VALUES ('test', 'test@example.com', '$2a$10$c/xgJEeLdWay1Qv/mVP1WurNreZ32vuNeRxSTCEQ30c/gY75RQLwe', '2000-01-01', TRUE);
-
--- 投稿と画像データの流し込み
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_025_IMG_1222.jpeg', TRUE, 36.310883, 140.165206, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (1, 0, 'LOCAL', 'test_image_025_IMG_1222.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_007_IMG_0322.jpeg', TRUE, 34.675072, 138.945586, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (2, 0, 'LOCAL', 'test_image_007_IMG_0322.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_042_IMG_3317.jpeg', TRUE, 35.313003, 139.785994, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (3, 0, 'LOCAL', 'test_image_042_IMG_3317.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_011_IMG_0481.jpeg', TRUE, 36.061189, 140.327178, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (4, 0, 'LOCAL', 'test_image_011_IMG_0481.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_023_IMG_1105.jpeg', TRUE, 36.127994, 140.590483, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (5, 0, 'LOCAL', 'test_image_023_IMG_1105.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_002_IMG_0090.jpeg', TRUE, 36.310897, 140.584625, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (6, 0, 'LOCAL', 'test_image_002_IMG_0090.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_046_IMG_4128.jpeg', TRUE, 36.232692, 140.090911, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (7, 0, 'LOCAL', 'test_image_046_IMG_4128.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_035_IMG_2680.jpeg', TRUE, 35.938122, 139.119050, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (8, 0, 'LOCAL', 'test_image_035_IMG_2680.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_052_IMG_5430.jpeg', TRUE, 35.757911, 138.236800, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (9, 0, 'LOCAL', 'test_image_052_IMG_5430.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_022_IMG_1042.jpeg', TRUE, 36.081219, 140.180831, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (10, 0, 'LOCAL', 'test_image_022_IMG_1042.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_054_IMG_5644.jpeg', TRUE, 35.883158, 138.726350, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (11, 0, 'LOCAL', 'test_image_054_IMG_5644.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_036_IMG_2767.jpeg', TRUE, 35.948364, 139.104692, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (12, 0, 'LOCAL', 'test_image_036_IMG_2767.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_043_IMG_3467.jpeg', TRUE, 35.446639, 139.180161, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (13, 0, 'LOCAL', 'test_image_043_IMG_3467.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_047_IMG_4731.jpeg', TRUE, 36.799317, 139.390883, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (14, 0, 'LOCAL', 'test_image_047_IMG_4731.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_040_IMG_3237.jpeg', TRUE, 35.120822, 138.919053, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (15, 0, 'LOCAL', 'test_image_040_IMG_3237.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_024_IMG_1154.jpeg', TRUE, 37.338603, 140.669511, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (16, 0, 'LOCAL', 'test_image_024_IMG_1154.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_048_IMG_5021.jpeg', TRUE, 36.931058, 139.317842, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (17, 0, 'LOCAL', 'test_image_048_IMG_5021.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_003_IMG_0165.jpeg', TRUE, 36.087600, 140.081803, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (18, 0, 'LOCAL', 'test_image_003_IMG_0165.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_041_IMG_3274.jpeg', TRUE, 35.252056, 140.163483, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (19, 0, 'LOCAL', 'test_image_041_IMG_3274.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_050_IMG_5228.jpeg', TRUE, 36.902531, 139.172622, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (20, 0, 'LOCAL', 'test_image_050_IMG_5228.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_006_IMG_0260.jpeg', TRUE, 36.761642, 140.402878, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (21, 0, 'LOCAL', 'test_image_006_IMG_0260.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_012_IMG_0522.jpeg', TRUE, 34.799689, 135.245178, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (22, 0, 'LOCAL', 'test_image_012_IMG_0522.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_029_IMG_1995.jpeg', TRUE, 35.695989, 140.857103, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (23, 0, 'LOCAL', 'test_image_029_IMG_1995.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_026_IMG_1315.jpeg', TRUE, 36.727853, 140.624236, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (24, 0, 'LOCAL', 'test_image_026_IMG_1315.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_005_IMG_0257.jpeg', TRUE, 34.715350, 138.987747, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (25, 0, 'LOCAL', 'test_image_005_IMG_0257.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_053_IMG_5637.jpeg', TRUE, 35.880767, 138.726944, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (26, 0, 'LOCAL', 'test_image_053_IMG_5637.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_044_IMG_3649.jpeg', TRUE, 36.794750, 139.121444, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (27, 0, 'LOCAL', 'test_image_044_IMG_3649.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_027_IMG_1414.jpeg', TRUE, 36.737747, 139.504014, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (28, 0, 'LOCAL', 'test_image_027_IMG_1414.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_028_IMG_1503.jpeg', TRUE, 35.456081, 139.637358, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (29, 0, 'LOCAL', 'test_image_028_IMG_1503.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_019_IMG_0751.jpeg', TRUE, 36.180050, 140.201111, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (30, 0, 'LOCAL', 'test_image_019_IMG_0751.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_021_IMG_0877.jpeg', TRUE, 35.064853, 135.824631, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (31, 0, 'LOCAL', 'test_image_021_IMG_0877.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_045_IMG_3846.jpeg', TRUE, 37.129781, 139.974319, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (32, 0, 'LOCAL', 'test_image_045_IMG_3846.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_004_IMG_0222.jpeg', TRUE, 34.969831, 138.926103, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (33, 0, 'LOCAL', 'test_image_004_IMG_0222.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_049_IMG_5149.jpeg', TRUE, 36.921975, 139.210189, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (34, 0, 'LOCAL', 'test_image_049_IMG_5149.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_010_IMG_0468.jpeg', TRUE, 36.360694, 140.621078, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (35, 0, 'LOCAL', 'test_image_010_IMG_0468.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_014_IMG_0556.jpeg', TRUE, 35.807597, 137.240936, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (36, 0, 'LOCAL', 'test_image_014_IMG_0556.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_032_IMG_2162.jpeg', TRUE, 35.159728, 139.834258, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (37, 0, 'LOCAL', 'test_image_032_IMG_2162.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_015_IMG_0587.jpeg', TRUE, 36.027175, 138.077317, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (38, 0, 'LOCAL', 'test_image_015_IMG_0587.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_020_IMG_0804.jpeg', TRUE, 36.339939, 140.602494, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (39, 0, 'LOCAL', 'test_image_020_IMG_0804.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_013_IMG_0527.jpeg', TRUE, 36.354747, 140.611708, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (40, 0, 'LOCAL', 'test_image_013_IMG_0527.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_018_IMG_0667.jpeg', TRUE, 37.124986, 139.962831, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (41, 0, 'LOCAL', 'test_image_018_IMG_0667.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_038_IMG_2850.jpeg', TRUE, 36.748222, 139.488694, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (42, 0, 'LOCAL', 'test_image_038_IMG_2850.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_033_IMG_2321.jpeg', TRUE, 35.624447, 139.243256, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (43, 0, 'LOCAL', 'test_image_033_IMG_2321.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_051_IMG_5408.jpeg', TRUE, 35.764194, 138.247528, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (44, 0, 'LOCAL', 'test_image_051_IMG_5408.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_016_IMG_0637.jpeg', TRUE, 35.115775, 140.120178, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (45, 0, 'LOCAL', 'test_image_016_IMG_0637.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_030_IMG_2048.jpeg', TRUE, 35.698339, 140.845794, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (46, 0, 'LOCAL', 'test_image_030_IMG_2048.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_001_IMG_0066.jpeg', TRUE, 36.225414, 140.110764, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (47, 0, 'LOCAL', 'test_image_001_IMG_0066.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_009_IMG_0432.jpeg', TRUE, 35.090278, 136.879897, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (48, 0, 'LOCAL', 'test_image_009_IMG_0432.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_039_IMG_2868.jpeg', TRUE, 36.758731, 139.488983, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (49, 0, 'LOCAL', 'test_image_039_IMG_2868.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_008_IMG_0344.jpeg', TRUE, 35.027611, 138.900344, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (50, 0, 'LOCAL', 'test_image_008_IMG_0344.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_017_IMG_0667.jpeg', TRUE, 36.195397, 140.216003, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (51, 0, 'LOCAL', 'test_image_017_IMG_0667.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_000_IMG_0009.jpeg', TRUE, 36.063225, 140.352828, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (52, 0, 'LOCAL', 'test_image_000_IMG_0009.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_031_IMG_2066.jpeg', TRUE, 35.712578, 140.834794, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (53, 0, 'LOCAL', 'test_image_031_IMG_2066.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_037_IMG_2793.jpeg', TRUE, 35.984506, 139.279647, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (54, 0, 'LOCAL', 'test_image_037_IMG_2793.jpeg', 'image/jpeg', 1024000, TRUE);
-
-INSERT INTO posts (user_id, caption, has_location, latitude, longitude, created_at) VALUES (1, 'Auto generated post for test_image_034_IMG_2383.jpeg', TRUE, 35.652114, 139.166625, CURRENT_TIMESTAMP);
-INSERT INTO post_images (post_id, sort_order, storage_type, object_key, content_type, size_bytes, exif_available) VALUES (55, 0, 'LOCAL', 'test_image_034_IMG_2383.jpeg', 'image/jpeg', 1024000, TRUE);
-
--- 返信
--- 投稿1への返信
-INSERT INTO replies(post_id, user_id, parent_reply_id, message, child_count) VALUES (1, 1, null, 'いちこめ', 2);
-INSERT INTO replies(post_id, user_id, parent_reply_id, message, child_count) VALUES (1, 1, 1, 'にこめ', 0);
-INSERT INTO replies(post_id, user_id, parent_reply_id, message, child_count) VALUES (1, 1, 1, 'にこめ2', 0);
--- 投稿2への返信
-INSERT INTO replies(post_id, user_id, parent_reply_id, message, child_count) VALUES (2, 1, null, '1get', 2);
-INSERT INTO replies(post_id, user_id, parent_reply_id, message, child_count) VALUES (2, 1, 4, '2get', 0);
-INSERT INTO replies(post_id, user_id, parent_reply_id, message, child_count) VALUES (2, 1, 4, '2get2', 0);
+INSERT INTO users(public_id, username, email, password_hash, birthdate, is_active) VALUES ('01KKR4D5SX90RCZGJR29AYEGV1', 'test', 'test@example.com', '$2a$10$c/xgJEeLdWay1Qv/mVP1WurNreZ32vuNeRxSTCEQ30c/gY75RQLwe', '2000-01-01', TRUE);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D5TN50D7WJRZSEVCXBRH', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_000_IMG_0009.jpeg', true, 36.063225, 140.352828);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D5TN50D7WJRZSEVCXBRH', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D5TN50D7WJRZSEVCXBRH/images/01KKR4D5TNSAJ3BMH6V1PRD4DC.jpg', 'jpg', 2509787, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6194Q5EHCYEFSC1RHXG', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_001_IMG_0066.jpeg', true, 36.225414, 140.110764);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6194Q5EHCYEFSC1RHXG', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6194Q5EHCYEFSC1RHXG/images/01KKR4D6190VCJ48MAG24BG6H0.jpg', 'jpg', 4971930, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D61SG8JQX05488FW99WK', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_002_IMG_0090.jpeg', true, 36.310897, 140.584625);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D61SG8JQX05488FW99WK', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D61SG8JQX05488FW99WK/images/01KKR4D61SMD1T7116CBMJ8JER.jpg', 'jpg', 3040108, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D62KNKM7SPDHMYTNKQKR', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_003_IMG_0165.jpeg', true, 36.087600, 140.081803);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D62KNKM7SPDHMYTNKQKR', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D62KNKM7SPDHMYTNKQKR/images/01KKR4D62KZEF76BBA65B8CAVS.jpg', 'jpg', 3468311, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D637ZYRQTJC0N7MPWFP9', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_004_IMG_0222.jpeg', true, 34.969831, 138.926103);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D637ZYRQTJC0N7MPWFP9', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D637ZYRQTJC0N7MPWFP9/images/01KKR4D6373YW0ATKBHVQB4CHM.jpg', 'jpg', 6318410, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6435EADVSNSTBEG2SEC', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_005_IMG_0257.jpeg', true, 34.715350, 138.987747);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6435EADVSNSTBEG2SEC', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6435EADVSNSTBEG2SEC/images/01KKR4D643RH5RTFQHMA25D5VY.jpg', 'jpg', 2672790, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D64WAZRDEJWQZDHCKY78', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_006_IMG_0260.jpeg', true, 36.761642, 140.402878);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D64WAZRDEJWQZDHCKY78', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D64WAZRDEJWQZDHCKY78/images/01KKR4D64XBPWKGMJ86JG8T0A6.jpg', 'jpg', 4862135, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D65G04Y7QXVEWDRQGEHC', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_007_IMG_0322.jpeg', true, 34.675072, 138.945586);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D65G04Y7QXVEWDRQGEHC', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D65G04Y7QXVEWDRQGEHC/images/01KKR4D65GRV4D2ZM0606D0BY1.jpg', 'jpg', 3774338, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6686WZ0H3ZK7N1DBK5B', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_008_IMG_0344.jpeg', true, 35.027611, 138.900344);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6686WZ0H3ZK7N1DBK5B', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6686WZ0H3ZK7N1DBK5B/images/01KKR4D6681WQZ54ANQ15NPN35.jpg', 'jpg', 1673300, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D66TAV8GRGTNP93K5FM1', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_009_IMG_0432.jpeg', true, 35.090278, 136.879897);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D66TAV8GRGTNP93K5FM1', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D66TAV8GRGTNP93K5FM1/images/01KKR4D66TA7EE37Q1F5H200HA.jpg', 'jpg', 2611088, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D67A4T3VBDC9QKVWBY9M', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_010_IMG_0468.jpeg', true, 36.360694, 140.621078);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D67A4T3VBDC9QKVWBY9M', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D67A4T3VBDC9QKVWBY9M/images/01KKR4D67AAKW63GAXHABNMNN9.jpg', 'jpg', 2989656, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D67W341XTY5163KMWHKR', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_011_IMG_0481.jpeg', true, 36.061189, 140.327178);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D67W341XTY5163KMWHKR', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D67W341XTY5163KMWHKR/images/01KKR4D67WD9T8YDAJBNMC5259.jpg', 'jpg', 1168545, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6CTNS23HS986SQARSY2', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_012_IMG_0522.jpeg', true, 34.799689, 135.245178);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6CTNS23HS986SQARSY2', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6CTNS23HS986SQARSY2/images/01KKR4D6CT86F6PS93H7RFF1X9.jpg', 'jpg', 4022917, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6D3SS6ZW3E1NTZHDXJ8', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_013_IMG_0527.jpeg', true, 36.354747, 140.611708);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6D3SS6ZW3E1NTZHDXJ8', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6D3SS6ZW3E1NTZHDXJ8/images/01KKR4D6D3HA8NXWDWBZWWC14B.jpg', 'jpg', 5875103, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6DW4T26RQF31S8RJ37W', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_014_IMG_0556.jpeg', true, 35.807597, 137.240936);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6DW4T26RQF31S8RJ37W', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6DW4T26RQF31S8RJ37W/images/01KKR4D6DW1Y85V9NHC93RMMQV.jpg', 'jpg', 2562382, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6EGQ4C9FT7Y5N6NVEZ7', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_015_IMG_0587.jpeg', true, 36.027175, 138.077317);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6EGQ4C9FT7Y5N6NVEZ7', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6EGQ4C9FT7Y5N6NVEZ7/images/01KKR4D6EG6D6M2JKJVF99YE8V.jpg', 'jpg', 1710812, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6F5WJEWKVWZGAYS0H06', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_016_IMG_0637.jpeg', true, 35.115775, 140.120178);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6F5WJEWKVWZGAYS0H06', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6F5WJEWKVWZGAYS0H06/images/01KKR4D6F5B60ZH6QTHR49J32F.jpg', 'jpg', 3048416, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6FF1XNYJT7BFD6J8XDG', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_017_IMG_0667.jpeg', true, 36.195397, 140.216003);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6FF1XNYJT7BFD6J8XDG', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6FF1XNYJT7BFD6J8XDG/images/01KKR4D6FF3WSJPD5RBZDYGBPV.jpg', 'jpg', 2764032, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6G5FET30DT3W4F1STHP', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_018_IMG_0667.jpeg', true, 37.124986, 139.962831);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6G5FET30DT3W4F1STHP', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6G5FET30DT3W4F1STHP/images/01KKR4D6G5NBNWGWQ6KHV4CG5S.jpg', 'jpg', 2824515, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6GM2AVQHNGH9PEM2EEM', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_019_IMG_0751.jpeg', true, 36.180050, 140.201111);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6GM2AVQHNGH9PEM2EEM', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6GM2AVQHNGH9PEM2EEM/images/01KKR4D6GMDA07PQPNSGB43F8T.jpg', 'jpg', 3424050, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6H819GRMAKE7K1F8WG6', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_020_IMG_0804.jpeg', true, 36.339939, 140.602494);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6H819GRMAKE7K1F8WG6', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6H819GRMAKE7K1F8WG6/images/01KKR4D6H81T6BZ8E3F5E7Q35R.jpg', 'jpg', 3242512, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6HX9NV0Z2Z74ZNGZBXP', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_021_IMG_0877.jpeg', true, 35.064853, 135.824631);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6HX9NV0Z2Z74ZNGZBXP', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6HX9NV0Z2Z74ZNGZBXP/images/01KKR4D6HXYW3QH62ZFZJ5ZJ82.jpg', 'jpg', 8073166, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6JHX7Z87TF5QRXD2JCJ', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_022_IMG_1042.jpeg', true, 36.081219, 140.180831);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6JHX7Z87TF5QRXD2JCJ', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6JHX7Z87TF5QRXD2JCJ/images/01KKR4D6JJZ8ZD4GEQ9ZP6N111.jpg', 'jpg', 2004540, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6KA60R3FSNXMJNTQ5B3', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_023_IMG_1105.jpeg', true, 36.127994, 140.590483);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6KA60R3FSNXMJNTQ5B3', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6KA60R3FSNXMJNTQ5B3/images/01KKR4D6KAVDGPR1ZV09ZTP8HB.jpg', 'jpg', 5142028, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6KWKXZNK4930V8X1RF9', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_024_IMG_1154.jpeg', true, 37.338603, 140.669511);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6KWKXZNK4930V8X1RF9', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6KWKXZNK4930V8X1RF9/images/01KKR4D6KWRW2MNDTEEFHB02XT.jpg', 'jpg', 4109932, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6MNB709D1GY2CY831QH', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_025_IMG_1222.jpeg', true, 36.310883, 140.165206);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6MNB709D1GY2CY831QH', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6MNB709D1GY2CY831QH/images/01KKR4D6MN6QJTYC42TSNZGHT5.jpg', 'jpg', 4163977, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6N81M80VEAPB6PKMBZZ', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_026_IMG_1315.jpeg', true, 36.727853, 140.624236);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6N81M80VEAPB6PKMBZZ', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6N81M80VEAPB6PKMBZZ/images/01KKR4D6N8VMQXMFH17CX6SBGP.jpg', 'jpg', 4441334, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6NS15JM797QCA4F9WCV', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_027_IMG_1414.jpeg', true, 36.737747, 139.504014);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6NS15JM797QCA4F9WCV', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6NS15JM797QCA4F9WCV/images/01KKR4D6NSQAP3E67526KNK0JW.jpg', 'jpg', 4046554, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6P4K0F10PEP6C20WAVQ', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_028_IMG_1503.jpeg', true, 35.456081, 139.637358);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6P4K0F10PEP6C20WAVQ', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6P4K0F10PEP6C20WAVQ/images/01KKR4D6P41YDPQST8ER65M388.jpg', 'jpg', 3728382, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6PF4DQB7GH488K1YHFP', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_029_IMG_1995.jpeg', true, 35.695989, 140.857103);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6PF4DQB7GH488K1YHFP', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6PF4DQB7GH488K1YHFP/images/01KKR4D6PF33ED4ZRRPZNDHCP4.jpg', 'jpg', 5594143, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6QSN7BTPNDGMBJXDNAH', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_030_IMG_2048.jpeg', true, 35.698339, 140.845794);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6QSN7BTPNDGMBJXDNAH', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6QSN7BTPNDGMBJXDNAH/images/01KKR4D6QSJS1K1PMK224YNGCZ.jpg', 'jpg', 3451145, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6R78D4B5KNEXVDKZ4WA', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_031_IMG_2066.jpeg', true, 35.712578, 140.834794);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6R78D4B5KNEXVDKZ4WA', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6R78D4B5KNEXVDKZ4WA/images/01KKR4D6R7ZC6Q7XNNMCFE59KV.jpg', 'jpg', 3908892, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6RY10AVK960QR80BZPF', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_032_IMG_2162.jpeg', true, 35.159728, 139.834258);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6RY10AVK960QR80BZPF', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6RY10AVK960QR80BZPF/images/01KKR4D6RZEV12EW6SV034GGN8.jpg', 'jpg', 7115039, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6SNGT0P89V12RWN3MJ9', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_033_IMG_2321.jpeg', true, 35.624447, 139.243256);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6SNGT0P89V12RWN3MJ9', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6SNGT0P89V12RWN3MJ9/images/01KKR4D6SN7716C6KPB3FEZAXW.jpg', 'jpg', 1948485, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6T8S0XBGBBXS9WDJZCD', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_034_IMG_2383.jpeg', true, 35.652114, 139.166625);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6T8S0XBGBBXS9WDJZCD', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6T8S0XBGBBXS9WDJZCD/images/01KKR4D6T8E3XWGD1TJMVS61NV.jpg', 'jpg', 2743830, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6TTWQ4HA3K6WHT9RDBJ', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_035_IMG_2680.jpeg', true, 35.938122, 139.119050);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6TTWQ4HA3K6WHT9RDBJ', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6TTWQ4HA3K6WHT9RDBJ/images/01KKR4D6TTMMN01W6CDS0S4W3A.jpg', 'jpg', 6144242, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6VC1BEA7F424SBN9DWC', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_036_IMG_2767.jpeg', true, 35.948364, 139.104692);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6VC1BEA7F424SBN9DWC', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6VC1BEA7F424SBN9DWC/images/01KKR4D6VC21Q9WEYY920FVFRQ.jpg', 'jpg', 5236826, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6W670C6YK3FRDCR5XMG', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_037_IMG_2793.jpeg', true, 35.984506, 139.279647);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6W670C6YK3FRDCR5XMG', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6W670C6YK3FRDCR5XMG/images/01KKR4D6W6EW3QP41EFERB0CD3.jpg', 'jpg', 2374723, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6WV5EBT97MPD68WNCFK', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_038_IMG_2850.jpeg', true, 36.748222, 139.488694);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6WV5EBT97MPD68WNCFK', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6WV5EBT97MPD68WNCFK/images/01KKR4D6WVG54HHAEZK0T8NJBZ.jpg', 'jpg', 2523431, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6XA7DNCXBHXMZRGSZKE', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_039_IMG_2868.jpeg', true, 36.758731, 139.488983);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6XA7DNCXBHXMZRGSZKE', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6XA7DNCXBHXMZRGSZKE/images/01KKR4D6XADVEA7SQDCJTHFMKS.jpg', 'jpg', 4828741, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6YNHQ14S21HG9JJV419', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_040_IMG_3237.jpeg', true, 35.120822, 138.919053);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6YNHQ14S21HG9JJV419', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6YNHQ14S21HG9JJV419/images/01KKR4D6YND1RQS4S2NJP7QR53.jpg', 'jpg', 2624238, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D6ZD518H33EJKHSTWFXP', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_041_IMG_3274.jpeg', true, 35.252056, 140.163483);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D6ZD518H33EJKHSTWFXP', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D6ZD518H33EJKHSTWFXP/images/01KKR4D6ZDG71S8TJ0WS9AH0TQ.jpg', 'jpg', 4051040, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D702RK2DA3QE55EHAPM8', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_042_IMG_3317.jpeg', true, 35.313003, 139.785994);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D702RK2DA3QE55EHAPM8', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D702RK2DA3QE55EHAPM8/images/01KKR4D70210E0MG057K9AYHP4.jpg', 'jpg', 2661150, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D70N63KP9ZQH400CA8MS', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_043_IMG_3467.jpeg', true, 35.446639, 139.180161);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D70N63KP9ZQH400CA8MS', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D70N63KP9ZQH400CA8MS/images/01KKR4D70NPYCZZG2CVNRM5P08.jpg', 'jpg', 3998240, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D716JCHMW6QZZQD83CCK', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_044_IMG_3649.jpeg', true, 36.794750, 139.121444);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D716JCHMW6QZZQD83CCK', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D716JCHMW6QZZQD83CCK/images/01KKR4D716Y4GB5JT1VYEAGW5W.jpg', 'jpg', 2922225, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D71W3NE7RKS6JGBKD0EY', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_045_IMG_3846.jpeg', true, 37.129781, 139.974319);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D71W3NE7RKS6JGBKD0EY', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D71W3NE7RKS6JGBKD0EY/images/01KKR4D71WFQ78751XZK9N9TVE.jpg', 'jpg', 3598802, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D72STMBDVHFZHHPV2F0M', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_046_IMG_4128.jpeg', true, 36.232692, 140.090911);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D72STMBDVHFZHHPV2F0M', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D72STMBDVHFZHHPV2F0M/images/01KKR4D72S67M8VA38SV5CNP6D.jpg', 'jpg', 5213627, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D73CHP2V8MJ5WC6MEXV8', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_047_IMG_4731.jpeg', true, 36.799317, 139.390883);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D73CHP2V8MJ5WC6MEXV8', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D73CHP2V8MJ5WC6MEXV8/images/01KKR4D73CD9MCWH68NZNJGNYT.jpg', 'jpg', 4673100, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D744XPTFV23KEZNVKC0G', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_048_IMG_5021.jpeg', true, 36.931058, 139.317842);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D744XPTFV23KEZNVKC0G', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D744XPTFV23KEZNVKC0G/images/01KKR4D7443CP4Z2ZYNH25DT83.jpg', 'jpg', 2929317, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D74RBNYF0P46QNGEG3KY', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_049_IMG_5149.jpeg', true, 36.921975, 139.210189);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D74RBNYF0P46QNGEG3KY', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D74RBNYF0P46QNGEG3KY/images/01KKR4D74RV2B4M1PVQFC8HFFT.jpg', 'jpg', 3052586, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D758XRNRHZAK20RZW85A', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_050_IMG_5228.jpeg', true, 36.902531, 139.172622);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D758XRNRHZAK20RZW85A', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D758XRNRHZAK20RZW85A/images/01KKR4D75849XE8V1ASJBMGTBS.jpg', 'jpg', 2686240, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D75R676SCFKKTAGRACQZ', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_051_IMG_5408.jpeg', true, 35.764194, 138.247528);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D75R676SCFKKTAGRACQZ', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D75R676SCFKKTAGRACQZ/images/01KKR4D75R8KCSK5MX2XASDHRV.jpg', 'jpg', 5929801, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D76CZRFS958T5M5HB2RD', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_052_IMG_5430.jpeg', true, 35.757911, 138.236800);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D76CZRFS958T5M5HB2RD', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D76CZRFS958T5M5HB2RD/images/01KKR4D76DPZY8FGE49VSZZ22M.jpg', 'jpg', 3639175, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D773J98PHN1VT8XDFVKZ', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_053_IMG_5637.jpeg', true, 35.880767, 138.726944);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D773J98PHN1VT8XDFVKZ', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D773J98PHN1VT8XDFVKZ/images/01KKR4D773TAFTJQQEB7842R7B.jpg', 'jpg', 3712221, true);
+INSERT INTO posts (public_id, user_id, caption, has_location, latitude, longitude) VALUES ('01KKR4D77NPBZ240H7V0EH446C', '01KKR4D5SX90RCZGJR29AYEGV1', 'Post: test_image_054_IMG_5644.jpeg', true, 35.883158, 138.726350);
+INSERT INTO post_images (post_id, sort_order, storage_type, object_key, file_extension, size_bytes, exif_available) VALUES ('01KKR4D77NPBZ240H7V0EH446C', 0, 'LOCAL', 'users/01KKR4D5SX90RCZGJR29AYEGV1/posts/01KKR4D77NPBZ240H7V0EH446C/images/01KKR4D77NXYXZA894QKXJFPHM.jpg', 'jpg', 7595521, true);

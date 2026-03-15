@@ -15,17 +15,17 @@ public class ReplyItemResponse {
     /**
      * 返信 ID
      */
-    Integer id;
+    String id;
 
     /**
      * 投稿 ID
      */
-    Integer postId;
+    String postId;
 
     /**
      * この返信の親返信 ID
      */
-    Integer parentReplyId;
+    String parentReplyId;
 
     /**
      * 返信本文

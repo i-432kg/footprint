@@ -18,24 +18,24 @@ public class PostIdTypeHandler extends BaseTypeHandler<PostId> {
 
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, PostId parameter, JdbcType jdbcType) throws SQLException {
-        ps.setInt(i, parameter.value());
+        ps.setString(i, parameter.value());
     }
 
     @Override
     public PostId getNullableResult(ResultSet rs, String columnName) throws SQLException {
-        int value = rs.getInt(columnName);
-        return rs.wasNull() ? null : PostId.of(value);
+        String value = rs.getString(columnName);
+        return value == null ? null : PostId.of(value);
     }
 
     @Override
     public PostId getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
-        int value = rs.getInt(columnIndex);
-        return rs.wasNull() ? null : PostId.of(value);
+        String value = rs.getString(columnIndex);
+        return value == null ? null : PostId.of(value);
     }
 
     @Override
     public PostId getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
-        int value = cs.getInt(columnIndex);
-        return cs.wasNull() ? null : PostId.of(value);
+        String value = cs.getString(columnIndex);
+        return value == null ? null : PostId.of(value);
     }
 }

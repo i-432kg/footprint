@@ -9,7 +9,7 @@ public class ImageUrlConverter {
 
     private final String publicPath;
 
-    public ImageUrlConverter(@Value("${storage.public-path}") String publicPath) {
+    public ImageUrlConverter(@Value("${app.storage.image-base-url}") String publicPath) {
         this.publicPath = publicPath;
     }
 
