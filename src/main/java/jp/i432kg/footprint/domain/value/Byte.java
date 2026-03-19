@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.domain.value;
 
+import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -23,20 +24,19 @@ public class Byte {
      *
      * @param value バイト値（0以上）
      * @return {@link Byte} インスタンス
-     * @throws IllegalArgumentException バリデーションエラーの場合
+     * @throws InvalidValueException バリデーションエラーの場合
      */
     public static Byte of(long value) {
 
         // 負の値を不許可
         if (value < 0) {
-            throw new IllegalArgumentException("Byte size cannot be negative: " + value);
+            throw new InvalidValueException("byte.invalid.negative", value);
         }
 
         // 上限サイズ のチェック
         if (MAX_VALUE < value) {
-            throw new IllegalArgumentException("Byte size exceeds the limit of 5MB: " + value);
+            throw new InvalidValueException("byte.invalid.exceed", value);
         }
-
 
         return new Byte(value);
     }

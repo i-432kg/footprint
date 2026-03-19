@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.domain.value;
 
+import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -17,6 +18,6 @@ public enum StorageType {
         return Arrays.stream(values())
                 .filter(v -> v.value.equalsIgnoreCase(value))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Unknown storage type: " + value));
+                .orElseThrow(() -> new InvalidValueException("storage.type.invalid.unknown", value));
     }
 }

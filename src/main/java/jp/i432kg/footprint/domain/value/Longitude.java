@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.domain.value;
 
+import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -38,13 +39,13 @@ public class Longitude {
      *
      * @param value 経度
      * @return {@link Longitude} インスタンス
-     * @throws IllegalArgumentException バリデーションエラーの場合
+     * @throws InvalidValueException バリデーションエラーの場合
      */
     public static Longitude of(final BigDecimal value) {
 
         // null 禁止
         if (Objects.isNull(value)) {
-            throw new IllegalArgumentException("Longitude cannot be null");
+            throw new InvalidValueException("common.invalid.null", "field.longitude");
         }
 
         // 小数第6位で四捨五入
@@ -52,7 +53,7 @@ public class Longitude {
 
         // 範囲内のチェック
         if (value.compareTo(MIN) < 0 || 0 < value.compareTo(MAX)) {
-            throw new IllegalArgumentException("Longitude must be between -180 and 180: " + value);
+            throw new InvalidValueException("common.invalid.range", "field.longitude", MIN, MAX, value);
         }
 
         return new Longitude(roundedValue);

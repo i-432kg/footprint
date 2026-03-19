@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.domain.value;
 
+import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -38,13 +39,13 @@ public class Latitude {
      *
      * @param value 緯度
      * @return {@link Latitude} インスタンス
-     * @throws IllegalArgumentException バリデーションエラーの場合
+     * @throws InvalidValueException バリデーションエラーの場合
      */
     public static Latitude of(final BigDecimal value) {
 
         // null 禁止
         if (Objects.isNull(value)) {
-            throw new IllegalArgumentException("Latitude cannot be null");
+            throw new InvalidValueException("common.invalid.null", "field.latitude");
         }
 
         // 小数第6位で四捨五入
@@ -52,7 +53,7 @@ public class Latitude {
 
         // 範囲内のチェック
         if (value.compareTo(MIN) < 0 || 0 < value.compareTo(MAX)) {
-            throw new IllegalArgumentException("Latitude must be between -90 and 90: " + value);
+            throw new InvalidValueException("common.invalid.range", "field.latitude", MIN, MAX, value);
         }
 
         return new Latitude(roundedValue);

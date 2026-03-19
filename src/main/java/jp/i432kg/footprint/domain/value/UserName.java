@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.domain.value;
 
+import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -36,13 +37,13 @@ public class UserName {
      *
      * @param value ユーザー名
      * @return {@link UserName} インスタンス
-     * @throws IllegalArgumentException バリデーションエラーの場合
+     * @throws InvalidValueException バリデーションエラーの場合
      */
     public static UserName of(final String value) {
 
         // null 禁止
-        if (Objects.isNull(value)) {
-            throw new IllegalArgumentException("UserName cannot be null");
+        if (value == null) {
+            throw new InvalidValueException("common.invalid.null", "field.username");
         }
 
         // 空白・改行のトリム
@@ -50,14 +51,12 @@ public class UserName {
 
         // 文字数チェック
         if (trimmed.length() < MIN_LENGTH || trimmed.length() > MAX_LENGTH) {
-            throw new IllegalArgumentException(
-                    String.format("UserName must be between %d and %d characters: %s", MIN_LENGTH, MAX_LENGTH, trimmed)
-            );
+            throw new InvalidValueException("common.invalid.length", MIN_LENGTH, MAX_LENGTH, "field.username");
         }
 
         // 英数記号のみ（空白・制御文字不可）のチェック
         if (!trimmed.matches(ALLOWED_PATTERN)) {
-            throw new IllegalArgumentException("UserName contains invalid characters. Only alphanumeric and symbols are allowed.");
+            throw new InvalidValueException("common.invalid.chars", "field.username");
         }
 
         return new UserName(trimmed);

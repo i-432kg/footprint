@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.domain.value;
 
+import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -42,13 +43,13 @@ public class EmailAddress {
      *
      * @param value メールアドレス
      * @return {@link EmailAddress} インスタンス
-     * @throws IllegalArgumentException バリデーションエラーの場合
+     * @throws InvalidValueException バリデーションエラーの場合
      */
     public static EmailAddress of(final String value) {
 
         // null 禁止
         if (Objects.isNull(value)) {
-            throw new IllegalArgumentException("EmailAddress cannot be null");
+            throw new InvalidValueException("common.invalid.null", "field.email");
         }
 
         // 空白・改行のトリムおよび小文字化
@@ -56,18 +57,18 @@ public class EmailAddress {
 
         // 空文字のみを不許可
         if (normalized.isBlank()) {
-            throw new IllegalArgumentException("EmailAddress cannot be empty");
+            throw new InvalidValueException("common.invalid.blank", "field.email");
         }
 
         // 最大文字数のチェック
         if (normalized.length() > MAX_LENGTH) {
-            throw new IllegalArgumentException("EmailAddress exceeds the limit of " + MAX_LENGTH + " characters");
+            throw new InvalidValueException("common.invalid.length", "field.email", MAX_LENGTH);
         }
 
         // @ の個数チェック
         final String[] parts = normalized.split("@");
         if (parts.length != 2) {
-            throw new IllegalArgumentException("EmailAddress must contain exactly one '@'");
+            throw new InvalidValueException("email.invalid.format");
         }
 
         // ローカル部のバリデーション
@@ -92,14 +93,14 @@ public class EmailAddress {
      */
     private static void validateLocalPart(final String localPart) {
         if (localPart.isBlank() || localPart.length() > LOCAL_PART_MAX_LENGTH) {
-            throw new IllegalArgumentException("Local part is too long or empty");
+            throw new InvalidValueException("email.invalid.local.length");
         }
         if (!localPart.matches(LOCAL_PART_PATTERN)) {
-            throw new IllegalArgumentException("Local part contains invalid characters");
+            throw new InvalidValueException("common.invalid.chars", "field.email");
         }
         // ドットの連続、先頭末尾禁止
         if (localPart.startsWith(".") || localPart.endsWith(".") || localPart.contains("..")) {
-            throw new IllegalArgumentException("Local part has invalid dot placement");
+            throw new InvalidValueException("email.invalid.local.dot");
         }
     }
 
@@ -110,14 +111,14 @@ public class EmailAddress {
      */
     private static void validateDomainPart(final String domainPart) {
         if (domainPart.isBlank()) {
-            throw new IllegalArgumentException("Domain part cannot be empty");
+            throw new InvalidValueException("common.invalid.blank", "field.email");
         }
         if (!domainPart.matches(DOMAIN_PART_PATTERN)) {
-            throw new IllegalArgumentException("Domain part contains invalid characters");
+            throw new InvalidValueException("common.invalid.chars", "field.email");
         }
         // ドットが少なくとも1つある、ドットの連続禁止、先頭末尾禁止
         if (!domainPart.contains(".") || domainPart.startsWith(".") || domainPart.endsWith(".") || domainPart.contains("..")) {
-            throw new IllegalArgumentException("Domain part is invalid or has invalid dot placement");
+            throw new InvalidValueException("email.invalid.domain.dot");
         }
     }
 }

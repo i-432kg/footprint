@@ -1,8 +1,11 @@
 package jp.i432kg.footprint.domain.value;
 
+import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+
+import java.util.Objects;
 
 /**
  * ハッシュ化済みのパスワードを表す値オブジェクト
@@ -27,11 +30,15 @@ public class HashedPassword {
      *
      * @param hashedValue ハッシュ化済みの文字列
      * @return {@link HashedPassword} インスタンス
-     * @throws IllegalArgumentException バリデーションエラーの場合
+     * @throws InvalidValueException バリデーションエラーの場合
      */
     public static HashedPassword of(final String hashedValue) {
-        if (hashedValue == null || hashedValue.isBlank()) {
-            throw new IllegalArgumentException("Hashed password value cannot be null or empty");
+        if (Objects.isNull(hashedValue)) {
+            throw new InvalidValueException("common.invalid.null", "field.hashedpassword");
+        }
+
+        if (hashedValue.isBlank()) {
+            throw new InvalidValueException("common.invalid.blank", "field.hashedpassword");
         }
         return new HashedPassword(hashedValue);
     }

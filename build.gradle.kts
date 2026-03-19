@@ -48,6 +48,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("com.drewnoakes:metadata-extractor:2.19.0")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0")
+    implementation("org.jspecify:jspecify:1.0.0")
 }
 
 tasks.withType<Test> {

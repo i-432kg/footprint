@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.domain.value;
 
+import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -24,17 +25,17 @@ public class ImageId {
     public static ImageId of(String value) {
 
         if (Objects.isNull(value)) {
-            throw new IllegalArgumentException("imageId must not be null");
+            throw new InvalidValueException("common.invalid.null", "field.imageId");
         }
 
         final String normalized = value.trim();
 
         if (normalized.isEmpty()) {
-            throw new IllegalArgumentException("imageId must not be empty");
+            throw new InvalidValueException("common.invalid.blank", "field.imageId");
         }
 
         if (!ULID_PATTERN.matcher(normalized).matches()) {
-            throw new IllegalArgumentException("imageId must be ULID format");
+            throw new InvalidValueException("common.invalid.format", "field.imageId");
         }
 
         return new ImageId(normalized);

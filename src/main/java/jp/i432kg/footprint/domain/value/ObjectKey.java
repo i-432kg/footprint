@@ -1,6 +1,6 @@
 package jp.i432kg.footprint.domain.value;
 
-import jp.i432kg.footprint.domain.exception.DomainException;
+import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.*;
 
 import java.util.Objects;
@@ -35,7 +35,7 @@ public class ObjectKey {
 
         // null 禁止
         if (Objects.isNull(value)) {
-            throw new DomainException("objectKey must not be null.");
+            throw new InvalidValueException("common.invalid.null", "field.objectkey");
         }
 
         // 正規化
@@ -43,48 +43,45 @@ public class ObjectKey {
 
         // 空文字チェック
         if (normalized.isEmpty()) {
-            throw new DomainException("objectKey must not be empty.");
+            throw new InvalidValueException("common.invalid.blank", "field.objectkey");
         }
 
         // 最大長チェック
         if (normalized.length() > MAX_LENGTH) {
-            throw new DomainException("objectKey length must be less than or equal to " + MAX_LENGTH + ".");
+            throw new InvalidValueException("common.invalid.length", "field.objectkey", MAX_LENGTH);
         }
 
         // 絶対パス攻撃の防止チェック
         if (normalized.startsWith("/")) {
-            throw new DomainException("objectKey must not start with '/'.");
+            throw new InvalidValueException("objectkey.invalid.absolute");
         }
 
         // Windows パス混入のチェック
         if (normalized.contains("\\")) {
-            throw new DomainException("objectKey must not contain '\\'.");
+            throw new InvalidValueException("objectkey.invalid.windows");
         }
 
         // 許可文字チェック
         if (!ALLOWED_PATTERN.matcher(normalized).matches()) {
-            throw new DomainException("objectKey contains invalid characters.");
+            throw new InvalidValueException("common.invalid.chars", "field.objectkey");
         }
 
         // パスの正規化
         if (normalized.contains("//")) {
-            throw new DomainException("objectKey must not contain '//'.");
+            throw new InvalidValueException("objectkey.invalid.double_slash");
         }
 
         // パストラバーサル攻撃の防止チェック
         final String[] segments = normalized.split("/");
         for (final String segment : segments) {
-            if (segment.equals(".") || segment.equals("..")) {
-                throw new DomainException("objectKey must not contain '.' or '..' path segments.");
-            }
-            if (segment.isEmpty()) {
-                throw new DomainException("objectKey must not contain empty path segments.");
+            if (segment.equals(".") || segment.equals("..") || segment.isEmpty()) {
+                throw new InvalidValueException("objectkey.invalid.segment");
             }
         }
 
         // ディレクトリとして保存禁止のチェック
         if (normalized.endsWith("/")) {
-            throw new DomainException("objectKey must not end with '/'.");
+            throw new InvalidValueException("objectkey.invalid.directory");
         }
 
         return new ObjectKey(normalized);

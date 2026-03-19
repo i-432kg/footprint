@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.domain.value;
 
+import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -32,33 +33,33 @@ public class FileName {
      *
      * @param value ファイル名
      * @return {@link FileName} インスタンス
-     * @throws IllegalArgumentException バリデーションエラーの場合
+     * @throws InvalidValueException バリデーションエラーの場合
      */
     public static FileName of(final String value) {
 
         // null 禁止
         if (Objects.isNull(value)) {
-            throw new IllegalArgumentException("File name cannot be null");
+            throw new InvalidValueException("common.invalid.null", "field.filename");
         }
 
         // 空文字のみを不許可
         if (value.isBlank()) {
-            throw new IllegalArgumentException("File name cannot be empty");
+            throw new InvalidValueException("common.invalid.blank", "field.filename");
         }
 
         // 文字数上限チェック
         if (value.length() > MAX_LENGTH) {
-            throw new IllegalArgumentException("File name exceeds the limit of " + MAX_LENGTH + " characters");
+            throw new InvalidValueException("common.invalid.length", "field.filename", MAX_LENGTH);
         }
 
         // 禁止文字（OS/URL危険文字）チェック
         if (value.matches(INVALID_CHARS_PATTERN)) {
-            throw new IllegalArgumentException("File name contains invalid characters: / \\ : * ? \" < > |");
+            throw new InvalidValueException("common.invalid.chars", "field.filename", value);
         }
 
         // パストラバーサル要素（..）の禁止
         if (value.contains("..")) {
-            throw new IllegalArgumentException("File name cannot contain path traversal elements ('..')");
+            throw new InvalidValueException("filename.invalid.traversal");
         }
 
         return new FileName(value);

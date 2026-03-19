@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.domain.value;
 
+import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.*;
 
 import java.util.Arrays;
@@ -47,31 +48,31 @@ public class FileExtension {
      *
      * @param value 拡張子
      * @return {@link FileExtension} インスタンス
-     * @throws IllegalArgumentException バリデーションエラーの場合
+     * @throws InvalidValueException バリデーションエラーの場合
      */
     public static FileExtension of(final String value) {
 
         if (Objects.isNull(value)) {
-            throw new IllegalArgumentException("Extension cannot be null");
+            throw new InvalidValueException("common.invalid.null", "field.extension");
         }
 
         final String normalized = normalize(value);
 
         if (normalized.isEmpty()) {
-            throw new IllegalArgumentException("Extension cannot be empty");
+            throw new InvalidValueException("common.invalid.blank", "field.extension");
         }
 
         if (normalized.length() > MAX_LENGTH) {
-            throw new IllegalArgumentException("Extension exceeds the limit of " + MAX_LENGTH + " characters");
+            throw new InvalidValueException("common.invalid.length", "field.extension", MAX_LENGTH);
         }
 
         if (!normalized.matches("^[a-z0-9]+$")) {
-            throw new IllegalArgumentException("Extension contains invalid characters: " + normalized);
+            throw new InvalidValueException("common.invalid.chars", "field.extension", normalized);
         }
 
         return Allowed.fromString(normalized)
                 .map(allowed -> new FileExtension(allowed.getValue()))
-                .orElseThrow(() -> new IllegalArgumentException("Unsupported extension: " + normalized));
+                .orElseThrow(() -> new InvalidValueException("extension.invalid.unsupported", normalized));
     }
 
     /**

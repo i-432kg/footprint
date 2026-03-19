@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.domain.value;
 
+import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
@@ -36,19 +37,19 @@ public class RawPassword {
      *
      * @param value パスワード文字列
      * @return {@link RawPassword} インスタンス
-     * @throws IllegalArgumentException バリデーションエラーの場合
+     * @throws InvalidValueException バリデーションエラーの場合
      */
     public static RawPassword of(final String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("Password cannot be null or empty");
+            throw new InvalidValueException("common.invalid.blank", "field.password");
         }
 
         if (value.length() < MIN_LENGTH || value.length() > MAX_LENGTH) {
-            throw new IllegalArgumentException("Password must be between " + MIN_LENGTH + " and " + MAX_LENGTH + " characters");
+            throw new InvalidValueException("common.invalid.length", MIN_LENGTH, MAX_LENGTH);
         }
 
         if (!value.matches(ALLOWED_PATTERN)) {
-            throw new IllegalArgumentException("Password contains invalid characters. Only alphanumeric and symbols are allowed.");
+            throw new InvalidValueException("common.invalid.chars", "field.password");
         }
 
         return new RawPassword(value);

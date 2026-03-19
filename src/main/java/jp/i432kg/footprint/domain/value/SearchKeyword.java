@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.domain.value;
 
+import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -28,28 +29,28 @@ public class SearchKeyword {
      *
      * @param value 検索キーワード
      * @return {@link SearchKeyword} インスタンス
-     * @throws IllegalArgumentException バリデーションエラーの場合
+     * @throws InvalidValueException バリデーションエラーの場合
      */
     public static SearchKeyword of(final String value) {
 
         // null 禁止
         if (value == null) {
-            throw new IllegalArgumentException("Search keyword cannot be null");
+            throw new InvalidValueException("common.invalid.null", "field.search_keyword");
         }
 
         // 空白・改行のみを禁止
         if (value.isBlank()) {
-            throw new IllegalArgumentException("Search keyword cannot be empty or blank");
+            throw new InvalidValueException("common.invalid.blank", "field.search_keyword");
         }
 
         // 最大文字数チェック
         if (value.length() > MAX_LENGTH) {
-            throw new IllegalArgumentException("Search keyword exceeds the limit of " + MAX_LENGTH + " characters");
+            throw new InvalidValueException("commnon.invalid.length", MAX_LENGTH, "field.search_keyword");
         }
 
         // 制御文字禁止
         if (value.matches(CONTROL_CHARS_PATTERN)) {
-            throw new IllegalArgumentException("Search keyword contains invalid control characters");
+            throw new InvalidValueException("searchkeyword.invalid.control.chars", "field.search_keyword");
         }
 
         return new SearchKeyword(value);

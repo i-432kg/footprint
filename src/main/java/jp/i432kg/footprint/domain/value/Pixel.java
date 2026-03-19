@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.domain.value;
 
+import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -27,15 +28,16 @@ public class Pixel {
      * ピクセル値を指定して {@link Pixel} インスタンスを生成します。
      *
      * @param value ピクセル値
-     * @return {@link Pixel} インスタンスバリデーションエラーの場合
+     * @return {@link Pixel} インスタンス
+     * @throws InvalidValueException バリデーションエラーの場合
      */
     public static Pixel of(final int value) {
         if (value < MIN_VALUE) {
-            throw new IllegalArgumentException("Pixel value must be at least " + MIN_VALUE + "px: " + value);
+            throw new InvalidValueException("pixel.invalid.min", MIN_VALUE, value);
         }
 
         if (value > MAX_VALUE) {
-            throw new IllegalArgumentException("Pixel value exceeds the limit of " + MAX_VALUE + "px: " + value);
+            throw new InvalidValueException("pixel.invalid.max", MAX_VALUE, value);
         }
 
         return new Pixel(value);
