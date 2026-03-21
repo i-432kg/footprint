@@ -1,7 +1,9 @@
 package jp.i432kg.footprint.application.command;
 
+import com.drew.imaging.ImageProcessingException;
 import com.github.f4b6a3.ulid.UlidCreator;
 import jp.i432kg.footprint.application.command.model.CreatePostCommand;
+import jp.i432kg.footprint.application.exception.usecase.PostCommandFailedException;
 import jp.i432kg.footprint.domain.model.Image;
 import jp.i432kg.footprint.domain.model.Post;
 import jp.i432kg.footprint.domain.repository.ImageRepository;
@@ -9,9 +11,11 @@ import jp.i432kg.footprint.domain.repository.PostRepository;
 import jp.i432kg.footprint.domain.service.PostDomainService;
 import jp.i432kg.footprint.domain.value.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 /**
@@ -37,26 +41,38 @@ public class PostCommandService {
     public void createPost(final CreatePostCommand command) {
 
         // 投稿作成時のバリデーション
-        try {
-            postDomainService.isValidCreatePost(command.getUserId());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        postDomainService.validateCreatePost(command.getUserId());
 
         // PostId を生成 (ULID)
         final PostId postId = PostId.of(UlidCreator.getUlid().toString());
 
-        // 画像ファイルを物理ストレージに保存する
-        final StorageObject storageObject =
-                imageRepository.save(
-                        command.getImageStream(),
-                        command.getOriginalFilename(),
-                        command.getUserId(),
-                        postId
-                );
+        final StorageObject storageObject;
+        try {
+            // 画像ファイルを物理ストレージに保存する
+            storageObject =
+                    imageRepository.save(
+                            command.getImageStream(),
+                            command.getOriginalFilename(),
+                            command.getUserId(),
+                            postId
+                    );
+        } catch (IOException e) {
+            throw PostCommandFailedException.imageSaveFailed(
+                    command.getOriginalFilename().value(),
+                    e
+            );
+        }
 
-        // 保存された実ファイルからメタ情報を抽出して Image ドメインモデルを生成する
-        final Image image = imageRepository.extractImageMetadata(storageObject);
+        final Image image;
+        try {
+            // 保存された実ファイルからメタ情報を抽出して Image ドメインモデルを生成する
+            image = imageRepository.extractImageMetadata(storageObject);
+        } catch (ImageProcessingException | IOException e) {
+            throw PostCommandFailedException.imageMetadataExtractFailed(
+                    storageObject.getObjectKey().getValue(),
+                    e
+            );
+        }
 
         // Post ドメインモデルを構築し、DBに永続化する
         final Post post = Post.of(
@@ -67,7 +83,14 @@ public class PostCommandService {
                 LocalDateTime.now()
         );
 
-        postRepository.savePost(post);
+        try {
+            postRepository.savePost(post);
+        } catch (DataAccessException e) {
+            throw PostCommandFailedException.persistenceFailed(
+                    postId.value(),
+                    e
+            );
+        }
     }
 
 }

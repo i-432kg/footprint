@@ -1,5 +1,9 @@
 package jp.i432kg.footprint.domain.service;
 
+import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;
+import jp.i432kg.footprint.application.exception.resource.ReplyNotFoundException;
+import jp.i432kg.footprint.application.exception.resource.UserNotFoundException;
+import jp.i432kg.footprint.domain.exception.ReplyPostMismatchException;
 import jp.i432kg.footprint.domain.model.Reply;
 import jp.i432kg.footprint.domain.repository.ReplyRepository;
 import jp.i432kg.footprint.domain.value.PostId;
@@ -26,26 +30,27 @@ public class ReplyDomainService {
     private final UserDomainService userDomainService;
 
     /**
-     * 返信が正当な状態であるか検証します。
+     * 返信作成時のバリデーションを行います。
      *
      * @param postId        返信先の投稿 ID
      * @param userId        返信者のユーザー ID
-     * @param parentReplyId 親返信のID（存在する場合のみ）
-     * @return すべての条件を満たす場合は true
+     * @param parentReplyId 親となる返信の返信ID（存在する場合のみ）
+     * @throws PostNotFoundException      返信対象の投稿が存在しなかった場合の例外
+     * @throws UserNotFoundException      返信を行うユーザーが存在しなかった場合の例外
+     * @throws ReplyNotFoundException     返信対象の返信が存在しなかった場合の例外
+     * @throws ReplyPostMismatchException 返信対象の返信と元の投稿が一致しなかった場合の例外
      */
-    public boolean isValidCreateReply(final PostId postId, final UserId userId, @Nullable final ReplyId parentReplyId)
-            throws Exception {
+    public void validateCreateReply(final PostId postId, final UserId userId, @Nullable final ReplyId parentReplyId)
+            throws PostNotFoundException, UserNotFoundException, ReplyNotFoundException, ReplyPostMismatchException {
 
         // 返信先の投稿が存在するか確認
         if (!postDomainService.isExistPost(postId)) {
-            // TODO 独自例外にする
-            throw new Exception();
+            throw new PostNotFoundException(postId);
         }
 
         // 返信者が存在するか確認（有効なユーザーか）
         if (!userDomainService.isExistUser(userId)) {
-            // TODO 独自例外にする
-            throw new Exception();
+            throw new UserNotFoundException(userId);
         }
 
         // 親返信がある場合、それが同じ投稿に属しているか確認
@@ -54,18 +59,15 @@ public class ReplyDomainService {
 
             // 返信先の返信が存在するか確認
             if (parentReply.isEmpty()) {
-                // TODO 独自例外にする
-                throw new Exception();
+                throw new ReplyNotFoundException(parentReplyId);
             }
 
             // 返信先の返信が同一の投稿であるか確認
-            if (!parentReply.get().getPostId().equals(postId)) {
-                // TODO 独自例外にする
-                throw new Exception();
+            final PostId expectedPostId = parentReply.get().getPostId();
+            if (!expectedPostId.equals(postId)) {
+                throw new ReplyPostMismatchException(expectedPostId, postId);
             }
         }
-
-        return true;
     }
 }
 

@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.domain.service;
 
+import jp.i432kg.footprint.application.exception.resource.UserNotFoundException;
 import jp.i432kg.footprint.domain.repository.PostRepository;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.UserId;
@@ -28,20 +29,16 @@ public class PostDomainService {
     }
 
     /**
-     * 投稿作成が有効かどうか判定します。
+     * 投稿作成時のバリデーションを行います。
      *
      * @param userId ユーザー ID
-     * @return 投稿作成が有効な場合 true / 無効の場合 false
-     * @throws Exception
+     * @throws UserNotFoundException 投稿を行うユーザーが存在しなかった場合の例外
      */
-    public boolean isValidCreatePost(final UserId userId) throws Exception {
+    public void validateCreatePost(final UserId userId) throws UserNotFoundException {
 
         // 投稿を行うユーザー IDが存在するか確認
         if (!userDomainService.isExistUser(userId)) {
-            // TODO 独自例外にする
-            throw new Exception();
+            throw new UserNotFoundException(userId);
         }
-
-        return true;
     }
 }

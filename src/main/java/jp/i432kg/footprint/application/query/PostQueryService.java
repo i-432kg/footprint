@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.application.query;
 
+import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;
 import jp.i432kg.footprint.application.query.model.PostSummary;
 import jp.i432kg.footprint.domain.value.*;
 
@@ -62,8 +63,9 @@ public interface PostQueryService {
      *
      * @param postId 投稿 ID
      * @return 投稿
+     * @throws PostNotFoundException 投稿が存在しない場合
      */
-    PostSummary getPost(PostId postId);
+    PostSummary getPost(PostId postId) throws PostNotFoundException;
 
     /**
      * 投稿を検索する。

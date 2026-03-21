@@ -18,7 +18,14 @@ public class FileExtension {
     /**
      * 拡張子の最大文字数
      */
-    private static final int MAX_LENGTH = 10;
+    static int MAX_LENGTH = 10;
+
+    /**
+     * 許可文字パターン
+     */
+    static String ALLOWED_PATTERN = "^[a-z0-9]+$";
+
+    static String FIELD_NAME = "extension";
 
     String value;
 
@@ -52,27 +59,28 @@ public class FileExtension {
      */
     public static FileExtension of(final String value) {
 
+        // null 禁止
         if (Objects.isNull(value)) {
-            throw new InvalidValueException("common.invalid.null", "field.extension");
+            throw InvalidValueException.required(FIELD_NAME);
         }
 
         final String normalized = normalize(value);
 
         if (normalized.isEmpty()) {
-            throw new InvalidValueException("common.invalid.blank", "field.extension");
+            throw InvalidValueException.blank(FIELD_NAME);
         }
 
         if (normalized.length() > MAX_LENGTH) {
-            throw new InvalidValueException("common.invalid.length", "field.extension", MAX_LENGTH);
+            throw InvalidValueException.tooLong(FIELD_NAME, normalized, MAX_LENGTH);
         }
 
-        if (!normalized.matches("^[a-z0-9]+$")) {
-            throw new InvalidValueException("common.invalid.chars", "field.extension", normalized);
+        if (!normalized.matches(ALLOWED_PATTERN)) {
+            throw InvalidValueException.invalidFormat(FIELD_NAME, normalized, ALLOWED_PATTERN);
         }
 
         return Allowed.fromString(normalized)
                 .map(allowed -> new FileExtension(allowed.getValue()))
-                .orElseThrow(() -> new InvalidValueException("extension.invalid.unsupported", normalized));
+                .orElseThrow(() -> InvalidValueException.invalid(FIELD_NAME, normalized, "unsupported extension"));
     }
 
     /**

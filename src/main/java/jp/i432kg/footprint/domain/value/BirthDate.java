@@ -15,6 +15,8 @@ import java.util.Objects;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class BirthDate {
 
+    static String FIELD_NAME = "birthdate";
+
     LocalDate value;
 
     /**
@@ -28,12 +30,12 @@ public class BirthDate {
 
         // null 禁止
         if (Objects.isNull(value)) {
-            throw new InvalidValueException("common.invalid.null", "field.birthdate");
+            throw InvalidValueException.required(FIELD_NAME);
         }
 
         // 未来日を不許可
         if (value.isAfter(LocalDate.now())) {
-            throw new InvalidValueException("birthdate.invalid.future");
+            throw InvalidValueException.invalid(FIELD_NAME, value, "must not be in the future");
         }
 
         return new BirthDate(value);

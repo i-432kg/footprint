@@ -14,6 +14,8 @@ import java.util.Objects;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class HashedPassword {
 
+    static String FIELD_NAME = "hashed_password";
+
     String value;
 
     /**
@@ -33,13 +35,16 @@ public class HashedPassword {
      * @throws InvalidValueException バリデーションエラーの場合
      */
     public static HashedPassword of(final String hashedValue) {
+
+        // null 禁止
         if (Objects.isNull(hashedValue)) {
-            throw new InvalidValueException("common.invalid.null", "field.hashedpassword");
+            throw InvalidValueException.required(FIELD_NAME);
         }
 
         if (hashedValue.isBlank()) {
-            throw new InvalidValueException("common.invalid.blank", "field.hashedpassword");
+            throw  InvalidValueException.blank(FIELD_NAME);
         }
+
         return new HashedPassword(hashedValue);
     }
 

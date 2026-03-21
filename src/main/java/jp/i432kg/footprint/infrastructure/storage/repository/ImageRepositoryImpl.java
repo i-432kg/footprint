@@ -3,6 +3,7 @@ package jp.i432kg.footprint.infrastructure.storage.repository;
 import com.drew.imaging.FileType;
 import com.drew.imaging.FileTypeDetector;
 import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
@@ -49,7 +50,8 @@ public class ImageRepositoryImpl implements ImageRepository {
     }
 
     @Override
-    public Image extractImageMetadata(final StorageObject storageObject) {
+    public Image extractImageMetadata(final StorageObject storageObject) throws ImageProcessingException, IOException {
+
         try {
             final Path path = localStoragePathResolver.resolve(storageObject);
             final Metadata metadata = ImageMetadataReader.readMetadata(path.toFile());
@@ -100,8 +102,8 @@ public class ImageRepositoryImpl implements ImageRepository {
 
             return Image.of(storageObject, fileExtension, fileSize, width, height, location, hasEXIF, takenAt);
 
-        } catch (final Exception e) {
-            throw new RuntimeException("画像メタデータの抽出に失敗しました: " + storageObject.getObjectKey().getValue(), e);
+        } catch (IllegalArgumentException e) {
+            throw new ImageProcessingException("画像メタデータの解析に失敗しました: " + storageObject.getObjectKey().getValue(), e);
         }
     }
 
@@ -111,7 +113,8 @@ public class ImageRepositoryImpl implements ImageRepository {
             final FileName originalFilename,
             final UserId userId,
             final PostId postId
-    ) {
+    ) throws IOException {
+
         try {
             // 1. 一時ファイルとして保存
             final String tempId = UUID.randomUUID().toString();
@@ -147,8 +150,8 @@ public class ImageRepositoryImpl implements ImageRepository {
             Files.move(tempPath, finalPath);
 
             return storageObject;
-        } catch (final IOException e) {
-            throw new RuntimeException("ファイルの保存に失敗しました", e);
+        } catch (IllegalArgumentException e) {
+            throw new IOException("サポートされていない画像形式です。", e);
         }
     }
 
@@ -169,12 +172,7 @@ public class ImageRepositoryImpl implements ImageRepository {
                     final String name = originalFilename.value();
                     final int lastDotIndex = name.lastIndexOf(".");
                     final String ext = (lastDotIndex != -1) ? name.substring(lastDotIndex + 1).toLowerCase() : "";
-
-                    try {
-                        return FileExtension.of(ext).value();
-                    } catch (IllegalArgumentException e) {
-                        throw new RuntimeException("サポートされていないファイル形式です: " + fileType, e);
-                    }
+                    return FileExtension.of(ext).value();
                 });
     }
 }

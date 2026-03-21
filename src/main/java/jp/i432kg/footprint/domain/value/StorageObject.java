@@ -6,6 +6,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
+import java.util.Objects;
+
 /**
  * ファイルの保存場所を表す値オブジェクト
  */
@@ -13,16 +15,22 @@ import lombok.Value;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class StorageObject {
 
+    static String FIELD_NAME_STORAGE_TYPE = "storage_type";
+    static String FIELD_NAME_OBJECT_KEY = "object_key";
+
     StorageType storageType;
     ObjectKey objectKey;
 
     public static StorageObject of(final StorageType storageType, final ObjectKey objectKey) {
 
-        if (storageType == null) {
-            throw new InvalidValueException("common.invalid.null", "field.storage_type");
+        // null 禁止
+        if (Objects.isNull(storageType)) {
+            throw InvalidValueException.required(FIELD_NAME_STORAGE_TYPE);
         }
-        if (objectKey == null) {
-            throw new InvalidValueException("common.invalid.null", "field.objectkey");
+
+        // null 禁止
+        if (Objects.isNull(objectKey)) {
+            throw InvalidValueException.required(FIELD_NAME_OBJECT_KEY);
         }
 
         return new StorageObject(storageType, objectKey);

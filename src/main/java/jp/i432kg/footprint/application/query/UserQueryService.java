@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.application.query;
 
+import jp.i432kg.footprint.application.exception.resource.UserNotFoundException;
 import jp.i432kg.footprint.application.query.model.UserProfileSummary;
 import jp.i432kg.footprint.domain.value.UserId;
 
@@ -16,8 +17,9 @@ public interface UserQueryService {
      *
      * @param userId 取得対象のユーザ ID
      * @return 指定したユーザのプロフィール情報
+     * @throws UserNotFoundException ユーザーが存在しない場合
      */
-    UserProfileSummary getUserProfile(UserId userId);
+    UserProfileSummary getUserProfile(UserId userId) throws UserNotFoundException;
 
     /**
      * ユーザープロフィールを検索する。

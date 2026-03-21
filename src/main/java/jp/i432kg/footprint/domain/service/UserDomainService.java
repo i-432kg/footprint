@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.domain.service;
 
+import jp.i432kg.footprint.domain.exception.EmailAlreadyUsedException;
 import jp.i432kg.footprint.domain.repository.UserRepository;
 import jp.i432kg.footprint.domain.value.EmailAddress;
 import jp.i432kg.footprint.domain.value.UserId;
@@ -26,12 +27,16 @@ public class UserDomainService {
     }
 
     /**
-     * 指定されたメールアドレスが既に登録済み（重複）かどうかを判定します。
+     * 指定されたメールアドレスが既に登録済みかどうかを判定します。
      *
-     * @param email メールアドレス
-     * @return 登録済みの場合は true / 未登録の場合は false
+     * @param email 登録済みか確認するメールアドレス
+     * @throws EmailAlreadyUsedException 指定のメールアドレスが使用済みだった場合の例外
      */
-    public boolean isEmailAlreadyUsed(final EmailAddress email) {
-        return userRepository.existsByEmail(email);
+    public void ensureEmailNotAlreadyUsed(final EmailAddress email)
+            throws EmailAlreadyUsedException{
+
+        if (userRepository.existsByEmail(email)) {
+            throw new EmailAlreadyUsedException(email);
+        }
     }
 }

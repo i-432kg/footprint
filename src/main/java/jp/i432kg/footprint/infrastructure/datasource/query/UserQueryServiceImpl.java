@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.infrastructure.datasource.query;
 
+import jp.i432kg.footprint.application.exception.resource.UserNotFoundException;
 import jp.i432kg.footprint.application.query.UserQueryService;
 import jp.i432kg.footprint.application.query.model.UserProfileSummary;
 import jp.i432kg.footprint.domain.value.UserId;
@@ -21,8 +22,8 @@ public class UserQueryServiceImpl implements UserQueryService {
     final private UserQueryMapper userQueryMapper;
 
     @Override
-    public UserProfileSummary getUserProfile(final UserId userId) {
-        return findUserProfile(userId).orElseThrow();
+    public UserProfileSummary getUserProfile(final UserId userId) throws UserNotFoundException{
+        return findUserProfile(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
 
     @Override

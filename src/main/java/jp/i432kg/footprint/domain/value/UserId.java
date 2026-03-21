@@ -5,6 +5,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
+import java.util.Objects;
+import java.util.regex.Pattern;
+
 
 /**
  * ユーザーを一意に識別するための ID を表す値オブジェクト
@@ -15,15 +18,33 @@ import lombok.Value;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserId {
 
+    /**
+     * ULID の生成パターン
+     */
+    static Pattern ULID_PATTERN = Pattern.compile("^[0-9A-HJKMNP-TV-Z]{26}$");
+
+    static String FIELD_NAME = "user_id";
+
     String value;
 
     public static UserId of(final String value) {
-        if (value == null) {
-            throw new InvalidValueException("common.invalid.null", "field.user_id");
+
+        // null 禁止
+        if (Objects.isNull(value)) {
+            throw InvalidValueException.required(FIELD_NAME);
         }
-        if (value.isBlank()) {
-            throw new InvalidValueException("common.invalid.blank", "field.user_id");
+
+        final String normalized = value.trim();
+
+        // 空文字のみを不許可
+        if (normalized.isBlank()) {
+            throw InvalidValueException.blank(FIELD_NAME);
         }
+
+        if (!ULID_PATTERN.matcher(normalized).matches()) {
+            throw InvalidValueException.invalidFormat(FIELD_NAME, normalized, ULID_PATTERN.pattern());
+        }
+
         return new UserId(value);
     }
 

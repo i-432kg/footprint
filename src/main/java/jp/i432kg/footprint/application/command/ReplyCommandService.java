@@ -2,11 +2,13 @@ package jp.i432kg.footprint.application.command;
 
 import com.github.f4b6a3.ulid.UlidCreator;
 import jp.i432kg.footprint.application.command.model.CreateReplyCommand;
+import jp.i432kg.footprint.application.exception.usecase.ReplyCommandFailedException;
 import jp.i432kg.footprint.domain.model.Reply;
 import jp.i432kg.footprint.domain.repository.ReplyRepository;
 import jp.i432kg.footprint.domain.service.ReplyDomainService;
 import jp.i432kg.footprint.domain.value.ReplyId;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,11 +35,12 @@ public class ReplyCommandService {
     public void createReply(final CreateReplyCommand command){
 
         // 返信作成時のバリデーション
-        try {
-            replyDomainService.isValidCreateReply(command.getPostId(), command.getUserId(), command.getParentReplyId());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        replyDomainService.validateCreateReply(
+                command.getPostId(),
+                command.getUserId(),
+                command.getParentReplyId()
+        );
+
 
         // ReplyId を生成 (ULID)
         final ReplyId replyId = ReplyId.of(UlidCreator.getUlid().toString());
@@ -51,11 +54,23 @@ public class ReplyCommandService {
                 command.getMessage(),
                 LocalDateTime.now()
         );
-        replyRepository.saveReply(reply);
+
+        try {
+            replyRepository.saveReply(reply);
+        } catch (DataAccessException e) {
+            throw ReplyCommandFailedException.saveFailed(replyId.value(), e);
+        }
 
         // 親返信の子返信カウントを増やす
-        if(command.hasParentReply()){
-            replyRepository.increaseReplyCount(command.getParentReplyId());
+        if (command.hasParentReply()) {
+            try {
+                replyRepository.increaseReplyCount(command.getParentReplyId());
+            } catch (DataAccessException e) {
+                throw ReplyCommandFailedException.increaseReplyCountFailed(
+                        command.getParentReplyId().value(),
+                        e
+                );
+            }
         }
     }
 

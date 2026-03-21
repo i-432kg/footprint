@@ -5,6 +5,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
+import java.util.Objects;
+import java.util.regex.Pattern;
+
 /**
  * 検索キーワードを表す値オブジェクト
  */
@@ -15,12 +18,14 @@ public class SearchKeyword {
     /**
      * 最大文字数：100文字
      */
-    private static final int MAX_LENGTH = 100;
+    static int MAX_LENGTH = 100;
 
     /**
      * 制御文字（U+0000-U+001F, U+007F）を検知するための正規表現
      */
-    private static final String CONTROL_CHARS_PATTERN = ".*[\\x00-\\x1F\\x7F].*";
+    static Pattern CONTROL_CHARS_PATTERN = Pattern.compile(".*[\\x00-\\x1F\\x7F].*");
+
+    static String FIELD_NAME = "search_keyword";
 
     String value;
 
@@ -34,23 +39,23 @@ public class SearchKeyword {
     public static SearchKeyword of(final String value) {
 
         // null 禁止
-        if (value == null) {
-            throw new InvalidValueException("common.invalid.null", "field.search_keyword");
+        if (Objects.isNull(value)) {
+            throw InvalidValueException.required(FIELD_NAME);
         }
 
-        // 空白・改行のみを禁止
+        // 空文字のみを不許可
         if (value.isBlank()) {
-            throw new InvalidValueException("common.invalid.blank", "field.search_keyword");
+            throw InvalidValueException.blank(FIELD_NAME);
         }
 
         // 最大文字数チェック
         if (value.length() > MAX_LENGTH) {
-            throw new InvalidValueException("commnon.invalid.length", MAX_LENGTH, "field.search_keyword");
+            throw InvalidValueException.tooLong(FIELD_NAME, value, MAX_LENGTH);
         }
 
         // 制御文字禁止
-        if (value.matches(CONTROL_CHARS_PATTERN)) {
-            throw new InvalidValueException("searchkeyword.invalid.control.chars", "field.search_keyword");
+        if (!CONTROL_CHARS_PATTERN.matcher(value).matches()) {
+            throw InvalidValueException.invalidFormat(FIELD_NAME, value, CONTROL_CHARS_PATTERN.pattern());
         }
 
         return new SearchKeyword(value);

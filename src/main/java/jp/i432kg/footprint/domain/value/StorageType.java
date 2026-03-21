@@ -9,6 +9,7 @@ import java.util.Arrays;
 @Getter
 @AllArgsConstructor
 public enum StorageType {
+
     LOCAL("LOCAL"),
     S3("S3");
 
@@ -18,6 +19,6 @@ public enum StorageType {
         return Arrays.stream(values())
                 .filter(v -> v.value.equalsIgnoreCase(value))
                 .findFirst()
-                .orElseThrow(() -> new InvalidValueException("storage.type.invalid.unknown", value));
+                .orElseThrow(() ->  InvalidValueException.invalid("storage_type", value, "unknown storage type"));
     }
 }

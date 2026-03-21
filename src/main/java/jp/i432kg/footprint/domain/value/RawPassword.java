@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.Value;
 
+import java.util.Objects;
+import java.util.regex.Pattern;
+
 /**
  * 生パスワードを表す値オブジェクト
  */
@@ -17,18 +20,19 @@ public class RawPassword {
     /**
      * 最小文字数
      */
-    private static final int MIN_LENGTH = 8;
+    static int MIN_LENGTH = 8;
 
     /**
      * 最大文字数 (BCrypt の上限を考慮)
      */
-    private static final int MAX_LENGTH = 72;
+    static int MAX_LENGTH = 72;
 
     /**
      * 許可文字パターン (英数記号)
      */
-    private static final String ALLOWED_PATTERN = "^[\\x21-\\x7E]+$";
+    static Pattern ALLOWED_PATTERN = Pattern.compile("^[\\x21-\\x7E]+$");
 
+    static String FIELD_NAME = "password";
 
     String value;
 
@@ -40,16 +44,23 @@ public class RawPassword {
      * @throws InvalidValueException バリデーションエラーの場合
      */
     public static RawPassword of(final String value) {
-        if (value == null || value.isBlank()) {
-            throw new InvalidValueException("common.invalid.blank", "field.password");
+
+        // null 禁止
+        if (Objects.isNull(value)) {
+            throw InvalidValueException.required(FIELD_NAME);
+        }
+
+        // 空文字のみを不許可
+        if (value.isBlank()) {
+            throw InvalidValueException.blank(FIELD_NAME);
         }
 
         if (value.length() < MIN_LENGTH || value.length() > MAX_LENGTH) {
-            throw new InvalidValueException("common.invalid.length", MIN_LENGTH, MAX_LENGTH);
+            throw InvalidValueException.outOfRange(FIELD_NAME, value.length(), MIN_LENGTH, MAX_LENGTH);
         }
 
-        if (!value.matches(ALLOWED_PATTERN)) {
-            throw new InvalidValueException("common.invalid.chars", "field.password");
+        if (!ALLOWED_PATTERN.matcher(value).matches()) {
+            throw InvalidValueException.invalidFormat(FIELD_NAME, value, ALLOWED_PATTERN.pattern());
         }
 
         return new RawPassword(value);

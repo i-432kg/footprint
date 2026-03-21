@@ -20,17 +20,19 @@ public class Longitude {
     /**
      * 経度の有効範囲下限：-180度
      */
-    private static final BigDecimal MIN = new BigDecimal("-180");
+    static BigDecimal MIN = new BigDecimal("-180");
 
     /**
      * 経度の有効範囲上限：180度
      */
-    private static final BigDecimal MAX = new BigDecimal("180");
+    static BigDecimal MAX = new BigDecimal("180");
 
     /**
      * 小数点以下の有効桁数：6桁
      */
-    private static final int SCALE = 6;
+    static int SCALE = 6;
+
+    static String FIELD_NAME = "longitude";
 
     BigDecimal value;
 
@@ -45,7 +47,7 @@ public class Longitude {
 
         // null 禁止
         if (Objects.isNull(value)) {
-            throw new InvalidValueException("common.invalid.null", "field.longitude");
+            throw InvalidValueException.required(FIELD_NAME);
         }
 
         // 小数第6位で四捨五入
@@ -53,7 +55,7 @@ public class Longitude {
 
         // 範囲内のチェック
         if (value.compareTo(MIN) < 0 || 0 < value.compareTo(MAX)) {
-            throw new InvalidValueException("common.invalid.range", "field.longitude", MIN, MAX, value);
+            throw InvalidValueException.outOfRange(FIELD_NAME, roundedValue, MIN, MAX);
         }
 
         return new Longitude(roundedValue);

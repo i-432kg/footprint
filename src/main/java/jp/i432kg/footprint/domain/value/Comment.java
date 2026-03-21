@@ -17,7 +17,15 @@ public class Comment {
     /**
      * 最大文字長：100文字
      */
-    static final int MAX_LENGTH = 100;
+    static int MAX_LENGTH = 100;
+
+    /**
+     * 許可文字パターン：
+     * \n (U+000A) と \r (U+000D) を除く、C0制御文字 (U+0000-U+001F) と DEL (U+007F) を禁止する。
+     */
+    static String ALLOWED_PATTERN = ".*[\\x00-\\x09\\x0B\\x0C\\x0E-\\x1F\\x7F].*";
+
+    static String FIELD_NAME = "comment";
 
     String value;
 
@@ -32,23 +40,22 @@ public class Comment {
 
         // null 禁止
         if (Objects.isNull(value)) {
-            throw new InvalidValueException("common.invalid.null", "field.comment");
+            throw InvalidValueException.required(FIELD_NAME);
         }
 
-        // 空文字・空白・改行のみを不許可
-        if (value.strip().isBlank()) {
-            throw new InvalidValueException("common.invalid.blank", "field.comment");
-        }
+//        // 空文字・空白・改行のみを不許可
+//        if (value.strip().isBlank()) {
+//            throw new InvalidValueException("common.invalid.blank", "field.comment");
+//        }
 
         // 制御文字のチェック
-        // \n (U+000A) と \r (U+000D) を除く、C0制御文字 (U+0000-U+001F) と DEL (U+007F) を禁止
-        if (value.matches(".*[\\x00-\\x09\\x0B\\x0C\\x0E-\\x1F\\x7F].*")) {
-            throw new InvalidValueException("common.invalid.chars", "field.comment");
+        if (value.matches(ALLOWED_PATTERN)) {
+            throw  InvalidValueException.invalidFormat(FIELD_NAME, value, ALLOWED_PATTERN);
         }
 
         // 上限文字数のチェック
         if (MAX_LENGTH < value.length()) {
-            throw new InvalidValueException("common.invalid.length", "field.comment", MAX_LENGTH);
+            throw  InvalidValueException.tooLong(FIELD_NAME, value, MAX_LENGTH);
         }
 
         return new Comment(value);

@@ -20,17 +20,19 @@ public class Latitude {
     /**
      * 緯度の有効範囲下限：-90度
      */
-    private static final BigDecimal MIN = new BigDecimal("-90");
+    static BigDecimal MIN = new BigDecimal("-90");
 
     /**
      * 緯度の有効範囲上限：90度
      */
-    private static final BigDecimal MAX = new BigDecimal("90");
+    static BigDecimal MAX = new BigDecimal("90");
 
     /**
      * 小数点以下の有効桁数：6桁
      */
-    private static final int SCALE = 6;
+    static int SCALE = 6;
+
+    static String FIELD_NAME = "latitude";
 
     BigDecimal value;
 
@@ -45,7 +47,7 @@ public class Latitude {
 
         // null 禁止
         if (Objects.isNull(value)) {
-            throw new InvalidValueException("common.invalid.null", "field.latitude");
+            throw InvalidValueException.required(FIELD_NAME);
         }
 
         // 小数第6位で四捨五入
@@ -53,7 +55,7 @@ public class Latitude {
 
         // 範囲内のチェック
         if (value.compareTo(MIN) < 0 || 0 < value.compareTo(MAX)) {
-            throw new InvalidValueException("common.invalid.range", "field.latitude", MIN, MAX, value);
+            throw InvalidValueException.outOfRange(FIELD_NAME, roundedValue, MIN, MAX);
         }
 
         return new Latitude(roundedValue);

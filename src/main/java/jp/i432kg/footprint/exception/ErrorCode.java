@@ -1,0 +1,19 @@
+package jp.i432kg.footprint.exception;
+
+/**
+ * 独自例外を分類するエラーコード
+ */
+public enum ErrorCode {
+    POST_COMMAND_FAILED,
+    REPLY_COMMAND_FAILED,
+    USER_COMMAND_FAILED,
+    FILE_STORAGE_ERROR,
+    PERSISTENCE_ERROR,
+    DOMAIN_INVALID_VALUE,
+    POST_NOT_FOUND,
+    REPLY_NOT_FOUND,
+    USER_NOT_FOUND,
+    REPLY_POST_MISMATCH,
+    EMAIL_ALREADY_USED,
+    UNEXPECTED_ERROR
+}

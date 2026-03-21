@@ -13,9 +13,16 @@ import lombok.Value;
 public class Byte {
 
     /**
+     * 最小サイズ：0MB
+     */
+    static long MIN_VALUE = 0;
+
+    /**
      * 最大サイズ：5MB (5 * 1024 * 1024)
      */
     static long MAX_VALUE = 5_242_880;
+
+    static String FIELD_NAME = "byte";
 
     long value;
 
@@ -28,14 +35,9 @@ public class Byte {
      */
     public static Byte of(long value) {
 
-        // 負の値を不許可
-        if (value < 0) {
-            throw new InvalidValueException("byte.invalid.negative", value);
-        }
-
-        // 上限サイズ のチェック
-        if (MAX_VALUE < value) {
-            throw new InvalidValueException("byte.invalid.exceed", value);
+        // サイズ上限下限のチェック
+        if (value < MIN_VALUE || MAX_VALUE < value) {
+            throw InvalidValueException.outOfRange(FIELD_NAME, value, MIN_VALUE, MAX_VALUE);
         }
 
         return new Byte(value);

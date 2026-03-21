@@ -18,7 +18,7 @@ public class ObjectKey {
      * <p>
      * S3 キーの最大長 1024 byte を上限とする。
      */
-    private static final int MAX_LENGTH = 1024;
+    static int MAX_LENGTH = 1024;
 
     /**
      * 許可文字パターン
@@ -27,7 +27,9 @@ public class ObjectKey {
      * 例:
      * users/123/posts/456/images/abc123.jpg
      */
-    private static final Pattern ALLOWED_PATTERN = Pattern.compile("^[A-Za-z0-9._/-]+$");
+    static Pattern ALLOWED_PATTERN = Pattern.compile("^[A-Za-z0-9._/-]+$");
+
+    static String FIELD_NAME = "object_key";
 
     String value;
 
@@ -35,7 +37,7 @@ public class ObjectKey {
 
         // null 禁止
         if (Objects.isNull(value)) {
-            throw new InvalidValueException("common.invalid.null", "field.objectkey");
+            throw InvalidValueException.required(FIELD_NAME);
         }
 
         // 正規化
@@ -43,45 +45,45 @@ public class ObjectKey {
 
         // 空文字チェック
         if (normalized.isEmpty()) {
-            throw new InvalidValueException("common.invalid.blank", "field.objectkey");
+            throw InvalidValueException.blank(FIELD_NAME);
         }
 
         // 最大長チェック
         if (normalized.length() > MAX_LENGTH) {
-            throw new InvalidValueException("common.invalid.length", "field.objectkey", MAX_LENGTH);
+            throw InvalidValueException.tooLong(FIELD_NAME, normalized, MAX_LENGTH);
         }
 
         // 絶対パス攻撃の防止チェック
         if (normalized.startsWith("/")) {
-            throw new InvalidValueException("objectkey.invalid.absolute");
+            throw InvalidValueException.invalid(FIELD_NAME, normalized, "cannot start with \"/\"");
         }
 
         // Windows パス混入のチェック
         if (normalized.contains("\\")) {
-            throw new InvalidValueException("objectkey.invalid.windows");
+            throw InvalidValueException.invalid(FIELD_NAME, normalized, "cannot contain \"\\\\\"");
         }
 
         // 許可文字チェック
         if (!ALLOWED_PATTERN.matcher(normalized).matches()) {
-            throw new InvalidValueException("common.invalid.chars", "field.objectkey");
+            throw InvalidValueException.invalidFormat(FIELD_NAME, normalized, ALLOWED_PATTERN.pattern());
         }
 
         // パスの正規化
         if (normalized.contains("//")) {
-            throw new InvalidValueException("objectkey.invalid.double_slash");
+            throw InvalidValueException.invalid(FIELD_NAME, normalized, "cannot contain \"//\"");
         }
 
         // パストラバーサル攻撃の防止チェック
         final String[] segments = normalized.split("/");
         for (final String segment : segments) {
             if (segment.equals(".") || segment.equals("..") || segment.isEmpty()) {
-                throw new InvalidValueException("objectkey.invalid.segment");
+                throw InvalidValueException.invalid(FIELD_NAME, normalized, "cannot contain \".\" or \"..\" or empty segment");
             }
         }
 
         // ディレクトリとして保存禁止のチェック
         if (normalized.endsWith("/")) {
-            throw new InvalidValueException("objectkey.invalid.directory");
+            throw InvalidValueException.invalid(FIELD_NAME, normalized, "cannot end with \"/\"");
         }
 
         return new ObjectKey(normalized);

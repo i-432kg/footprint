@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.infrastructure.datasource.query;
 
+import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;
 import jp.i432kg.footprint.application.query.PostQueryService;
 import jp.i432kg.footprint.application.query.model.PostSummary;
 import jp.i432kg.footprint.domain.value.*;
@@ -46,8 +47,8 @@ public class PostQueryServiceImpl implements PostQueryService {
     }
 
     @Override
-    public PostSummary getPost(final PostId postId) {
-        return findPost(postId).orElseThrow();
+    public PostSummary getPost(final PostId postId) throws PostNotFoundException{
+        return findPost(postId).orElseThrow(() -> new PostNotFoundException(postId));
     }
 
     @Override

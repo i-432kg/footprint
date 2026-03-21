@@ -1,15 +1,17 @@
 package jp.i432kg.footprint.application.command;
 
 import com.github.f4b6a3.ulid.UlidCreator;
-import jakarta.transaction.Transactional;
 import jp.i432kg.footprint.application.command.model.CreateUserCommand;
+import jp.i432kg.footprint.application.exception.usecase.UserCommandFailedException;
 import jp.i432kg.footprint.domain.model.User;
 import jp.i432kg.footprint.domain.repository.UserRepository;
 import jp.i432kg.footprint.domain.service.UserDomainService;
 import jp.i432kg.footprint.domain.value.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * ユーザーに関するユースケースを実行するアプリケーションサービス。
@@ -27,15 +29,12 @@ public class UserCommandService {
      * 登録前にメールアドレスの重複チェックを行い、パスワードをセキュアにハッシュ化した上で保存します。
      *
      * @param command ユーザー作成に必要な情報を含むコマンドオブジェクト
-     * @throws Exception 指定されたメールアドレスが既に登録されている場合
      */
     @Transactional
-    public void createUser(final CreateUserCommand command) throws Exception {
+    public void createUser(final CreateUserCommand command) {
 
         // メールアドレスの重複チェック
-        if (userDomainService.isEmailAlreadyUsed(command.getEmail())) {
-            throw new Exception();
-        }
+        userDomainService.ensureEmailNotAlreadyUsed(command.getEmail());
 
         // UserId を生成 (ULID)
         final UserId userId = UserId.of(UlidCreator.getUlid().toString());
@@ -49,7 +48,11 @@ public class UserCommandService {
                 command.getBirthDate()
         );
 
-        userRepository.saveUser(user);
+        try {
+            userRepository.saveUser(user);
+        } catch (DataAccessException e) {
+            throw UserCommandFailedException.saveFailed(userId.value(), e);
+        }
     }
 
     /**

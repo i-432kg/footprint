@@ -15,12 +15,14 @@ public class Pixel {
     /**
      * 最大ピクセル数：8192px
      */
-    private static final int MAX_VALUE = 8192;
+    static int MAX_VALUE = 8192;
 
     /**
      * 最小ピクセル数：320px
      */
-    private static final int MIN_VALUE = 320;
+    static int MIN_VALUE = 320;
+
+    static String FIELD_NAME = "pixel";
 
     int value;
 
@@ -32,12 +34,9 @@ public class Pixel {
      * @throws InvalidValueException バリデーションエラーの場合
      */
     public static Pixel of(final int value) {
-        if (value < MIN_VALUE) {
-            throw new InvalidValueException("pixel.invalid.min", MIN_VALUE, value);
-        }
 
-        if (value > MAX_VALUE) {
-            throw new InvalidValueException("pixel.invalid.max", MAX_VALUE, value);
+        if (value < MIN_VALUE || value > MAX_VALUE) {
+            throw InvalidValueException.outOfRange(FIELD_NAME, value, MIN_VALUE, MAX_VALUE);
         }
 
         return new Pixel(value);

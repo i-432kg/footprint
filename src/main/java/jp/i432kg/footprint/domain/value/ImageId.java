@@ -17,25 +17,31 @@ import java.util.regex.Pattern;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ImageId {
 
-    static final Pattern ULID_PATTERN =
-            Pattern.compile("^[0-9A-HJKMNP-TV-Z]{26}$");
+    /**
+     * ULID の生成パターン
+     */
+    static Pattern ULID_PATTERN = Pattern.compile("^[0-9A-HJKMNP-TV-Z]{26}$");
+
+    static String FIELD_NAME = "image_id";
 
     String value;
 
     public static ImageId of(String value) {
 
+        // null 禁止
         if (Objects.isNull(value)) {
-            throw new InvalidValueException("common.invalid.null", "field.imageId");
+            throw InvalidValueException.required(FIELD_NAME);
         }
 
         final String normalized = value.trim();
 
-        if (normalized.isEmpty()) {
-            throw new InvalidValueException("common.invalid.blank", "field.imageId");
+        // 空文字のみを不許可
+        if (normalized.isBlank()) {
+            throw InvalidValueException.blank(FIELD_NAME);
         }
 
         if (!ULID_PATTERN.matcher(normalized).matches()) {
-            throw new InvalidValueException("common.invalid.format", "field.imageId");
+            throw InvalidValueException.invalidFormat(FIELD_NAME, normalized, ULID_PATTERN.pattern());
         }
 
         return new ImageId(normalized);
