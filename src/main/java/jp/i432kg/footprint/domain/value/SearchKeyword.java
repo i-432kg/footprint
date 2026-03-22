@@ -54,7 +54,7 @@ public class SearchKeyword {
         }
 
         // 制御文字禁止
-        if (!CONTROL_CHARS_PATTERN.matcher(value).matches()) {
+        if (CONTROL_CHARS_PATTERN.matcher(value).matches()) {
             throw InvalidValueException.invalidFormat(FIELD_NAME, value, CONTROL_CHARS_PATTERN.pattern());
         }
 

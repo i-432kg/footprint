@@ -24,6 +24,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private final LongitudeConverter longitudeConverter;
     private final PostIdConverter postIdConverter;
     private final ReplyIdConverter replyIdConverter;
+    private final SearchKeywordConverter searchKeywordConverter;
 
     public WebMvcConfig(
             @Value("${app.storage.type}") String storageType,
@@ -32,7 +33,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
             LatitudeConverter latitudeConverter,
             LongitudeConverter longitudeConverter,
             PostIdConverter postIdConverter,
-            ReplyIdConverter replyIdConverter) {
+            ReplyIdConverter replyIdConverter,
+            SearchKeywordConverter searchKeywordConverter) {
         this.storageType = storageType;
         this.localRootDir = localRootDir;
         this.imageBaseUrl = imageBaseUrl;
@@ -40,6 +42,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         this.longitudeConverter = longitudeConverter;
         this.postIdConverter = postIdConverter;
         this.replyIdConverter = replyIdConverter;
+        this.searchKeywordConverter = searchKeywordConverter;
     }
 
     /**
@@ -78,5 +81,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addConverter(longitudeConverter);
         registry.addConverter(postIdConverter);
         registry.addConverter(replyIdConverter);
+        registry.addConverter(searchKeywordConverter);
     }
 }
