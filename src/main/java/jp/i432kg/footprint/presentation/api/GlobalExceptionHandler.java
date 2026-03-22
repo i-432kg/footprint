@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.presentation.api;
 
+import jakarta.validation.ConstraintViolationException;
 import jp.i432kg.footprint.application.exception.ApplicationException;
 import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;
 import jp.i432kg.footprint.application.exception.resource.ReplyNotFoundException;
@@ -14,8 +15,18 @@ import jp.i432kg.footprint.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * API 全体の例外をハンドリングする ControllerAdvice。
@@ -38,6 +49,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final String ERROR_CODE_DOMAIN_INVALID_VALUE = "DOMAIN_INVALID_VALUE";
+    private static final String ERROR_CODE_UNEXPECTED_ERROR = "UNEXPECTED_ERROR";
 
     /**
      * 投稿が見つからない場合の例外を処理します。
@@ -106,6 +120,129 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * リクエストボディのバリデーション失敗を処理します。
+     *
+     * @param ex リクエストボディ検証失敗例外
+     * @return ProblemDetail
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ProblemDetail handleMethodArgumentNotValid(final MethodArgumentNotValidException ex) {
+        return createValidationProblemDetail(
+                "Validation Error",
+                "リクエストの形式が不正です。",
+                ex.getBindingResult().getFieldErrors().stream()
+                        .map(error -> validationError(
+                                error.getField(),
+                                error.getDefaultMessage(),
+                                error.getRejectedValue()
+                        ))
+                        .toList()
+        );
+    }
+
+    /**
+     * フォーム/クエリのバインド失敗を処理します。
+     *
+     * @param ex バインド失敗例外
+     * @return ProblemDetail
+     */
+    @ExceptionHandler(BindException.class)
+    public ProblemDetail handleBindException(final BindException ex) {
+        return createValidationProblemDetail(
+                "Validation Error",
+                "リクエストの形式が不正です。",
+                ex.getBindingResult().getFieldErrors().stream()
+                        .map(error -> validationError(
+                                error.getField(),
+                                error.getDefaultMessage(),
+                                error.getRejectedValue()
+                        ))
+                        .toList()
+        );
+    }
+
+    /**
+     * パラメータ制約違反を処理します。
+     *
+     * @param ex 制約違反例外
+     * @return ProblemDetail
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ProblemDetail handleConstraintViolation(final ConstraintViolationException ex) {
+        return createValidationProblemDetail(
+                "Validation Error",
+                "リクエストの形式が不正です。",
+                ex.getConstraintViolations().stream()
+                        .map(violation -> validationError(
+                                violation.getPropertyPath().toString(),
+                                violation.getMessage(),
+                                violation.getInvalidValue()
+                        ))
+                        .toList()
+        );
+    }
+
+    /**
+     * 必須リクエストパラメータ欠落を処理します。
+     *
+     * @param ex 欠落例外
+     * @return ProblemDetail
+     */
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ProblemDetail handleMissingRequestParameter(final MissingServletRequestParameterException ex) {
+        return createValidationProblemDetail(
+                "Validation Error",
+                "必須パラメータが不足しています。",
+                List.of(validationError(ex.getParameterName(), "required", null))
+        );
+    }
+
+    /**
+     * 必須リクエストパート欠落を処理します。
+     *
+     * @param ex 欠落例外
+     * @return ProblemDetail
+     */
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ProblemDetail handleMissingRequestPart(final MissingServletRequestPartException ex) {
+        return createValidationProblemDetail(
+                "Validation Error",
+                "必須ファイルが不足しています。",
+                List.of(validationError(ex.getRequestPartName(), "required", null))
+        );
+    }
+
+    /**
+     * リクエストの JSON 解析失敗を処理します。
+     *
+     * @param ex JSON 解析失敗例外
+     * @return ProblemDetail
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ProblemDetail handleHttpMessageNotReadable(final HttpMessageNotReadableException ex) {
+        return createValidationProblemDetail(
+                "Validation Error",
+                "リクエストボディを解析できませんでした。",
+                List.of(validationError("requestBody", "not readable", null))
+        );
+    }
+
+    /**
+     * 型不一致によるパラメータ変換失敗を処理します。
+     *
+     * @param ex 型不一致例外
+     * @return ProblemDetail
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ProblemDetail handleMethodArgumentTypeMismatch(final MethodArgumentTypeMismatchException ex) {
+        return createValidationProblemDetail(
+                "Validation Error",
+                "リクエストパラメータの型が不正です。",
+                List.of(validationError(ex.getName(), "type mismatch", ex.getValue()))
+        );
+    }
+
+    /**
      * ユースケース実行時の例外を処理します。
      *
      * @param ex ユースケース実行例外
@@ -152,7 +289,7 @@ public class GlobalExceptionHandler {
                 "サーバー内部でエラーが発生しました。"
         );
         problemDetail.setTitle("Internal Server Error");
-        problemDetail.setProperty("errorCode", "UNEXPECTED_ERROR");
+        problemDetail.setProperty("errorCode", ERROR_CODE_UNEXPECTED_ERROR);
         return problemDetail;
     }
 
@@ -174,6 +311,46 @@ public class GlobalExceptionHandler {
         problemDetail.setProperty("errorCode", ex.getErrorCode());
         problemDetail.setProperty("details", ex.getDetails());
         return problemDetail;
+    }
+
+    /**
+     * バリデーションエラーの ProblemDetail を生成します。
+     *
+     * @param title title
+     * @param detail detail
+     * @param errors エラー一覧
+     * @return ProblemDetail
+     */
+    private ProblemDetail createValidationProblemDetail(
+            final String title,
+            final String detail,
+            final List<Map<String, Object>> errors
+    ) {
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detail);
+        problemDetail.setTitle(title);
+        problemDetail.setProperty("errorCode", ERROR_CODE_DOMAIN_INVALID_VALUE);
+        problemDetail.setProperty("details", Map.of("errors", errors));
+        return problemDetail;
+    }
+
+    /**
+     * バリデーションエラー1件分の情報を作成します。
+     *
+     * @param field フィールド名
+     * @param message エラーメッセージ
+     * @param rejectedValue 入力値
+     * @return エラー情報
+     */
+    private Map<String, Object> validationError(
+            final String field,
+            final String message,
+            final Object rejectedValue
+    ) {
+        final Map<String, Object> error = new LinkedHashMap<>();
+        error.put("field", field);
+        error.put("message", message);
+        error.put("rejectedValue", rejectedValue);
+        return error;
     }
 
     /**

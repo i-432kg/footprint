@@ -1,6 +1,10 @@
 package jp.i432kg.footprint.presentation.api;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jp.i432kg.footprint.application.command.UserCommandService;
 import jp.i432kg.footprint.application.command.model.CreateUserCommand;
 import jp.i432kg.footprint.application.query.PostQueryService;
 import jp.i432kg.footprint.application.query.ReplyQueryService;
@@ -8,8 +12,12 @@ import jp.i432kg.footprint.application.query.UserQueryService;
 import jp.i432kg.footprint.application.query.model.PostSummary;
 import jp.i432kg.footprint.application.query.model.ReplySummary;
 import jp.i432kg.footprint.application.query.model.UserProfileSummary;
-import jp.i432kg.footprint.application.command.UserCommandService;
-import jp.i432kg.footprint.domain.value.*;
+import jp.i432kg.footprint.domain.value.PostId;
+import jp.i432kg.footprint.domain.value.ReplyId;
+import jp.i432kg.footprint.domain.value.UserName;
+import jp.i432kg.footprint.domain.value.EmailAddress;
+import jp.i432kg.footprint.domain.value.RawPassword;
+import jp.i432kg.footprint.domain.value.BirthDate;
 import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
 import jp.i432kg.footprint.presentation.api.request.SignUpRequest;
 import jp.i432kg.footprint.presentation.api.response.PostItemResponse;
@@ -19,10 +27,9 @@ import jp.i432kg.footprint.presentation.api.response.mapper.PostResponseMapper;
 import jp.i432kg.footprint.presentation.api.response.mapper.ReplyResponseMapper;
 import jp.i432kg.footprint.presentation.api.response.mapper.UserProfileResponseMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -71,23 +78,23 @@ public class UserRestController {
     /**
      * 自分の投稿一覧を取得します。
      *
-     * @param lastId 最後の投稿 ID
-     * @param size 取得する投稿数
+     * @param lastId      最後の投稿 ID
+     * @param size        取得する投稿数
      * @param userDetails 認証済みユーザーの詳細情報
      * @return 自分の投稿一覧のレスポンス
      */
     @GetMapping("/me/posts")
     public ResponseEntity<List<PostItemResponse>> getMyPosts(
             @RequestParam(required = false) final PostId lastId,
-            @RequestParam(defaultValue = "10") final int size,
+            @RequestParam(defaultValue = "10") @Min(1) @Max(20) final int size,
             @AuthenticationPrincipal final UserDetailsImpl userDetails) {
 
         // 自分の投稿一覧を取得する
-        List<PostSummary> postSummaries =
+        final List<PostSummary> postSummaries =
                 postQueryService.listMyPosts(userDetails.getUserId(), lastId, size);
 
         // レスポンス形式に変換する
-        List<PostItemResponse> responses = postResponseMapper.fromList(postSummaries);
+        final List<PostItemResponse> responses = postResponseMapper.fromList(postSummaries);
 
         return ResponseEntity.ok(responses);
     }
@@ -95,15 +102,15 @@ public class UserRestController {
     /**
      * 自分の返信一覧を取得します。
      *
-     * @param lastId 最後の返信 ID
-     * @param size 取得する返信数
+     * @param lastId      最後の返信 ID
+     * @param size        取得する返信数
      * @param userDetails 認証済みユーザーの詳細情報
      * @return 自分の返信一覧のレスポンス
      */
     @GetMapping("/me/replies")
     public ResponseEntity<List<ReplyItemResponse>> getMyReplies(
             @RequestParam(required = false) final ReplyId lastId,
-            @RequestParam(defaultValue = "10") final int size,
+            @RequestParam(defaultValue = "10") @Min(1) @Max(20) final int size,
             @AuthenticationPrincipal final UserDetailsImpl userDetails) {
 
         // 自分の返信一覧を取得する
@@ -120,19 +127,14 @@ public class UserRestController {
      * ユーザー登録処理を行います。
      *
      * @param signUpRequest ユーザー登録リクエスト
-     * @param result バリデーション結果
-     * @param request HTTP リクエスト
+     * @param request       HTTP リクエスト
      * @return ユーザー登録結果
+     * @throws Exception ログイン処理等で発生しうる例外
      */
     @PostMapping
-    public ResponseEntity<?> create(
-            @Validated @RequestBody final SignUpRequest signUpRequest,
-            final BindingResult result,
-            final HttpServletRequest request) {
-
-        if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body(result.getAllErrors());
-        }
+    public ResponseEntity<Void> create(
+            @Valid @RequestBody final SignUpRequest signUpRequest,
+            final HttpServletRequest request) throws Exception {
 
         // リクエスト情報をコマンド形式に変換する
         final CreateUserCommand command = CreateUserCommand.of(
@@ -142,15 +144,11 @@ public class UserRestController {
                 BirthDate.of(signUpRequest.getBirthDate())
         );
 
-        try {
-            userCommandService.createUser(command);
+        userCommandService.createUser(command);
 
-            // 登録後、そのままログイン状態にする
-            request.login(signUpRequest.getEmail(), signUpRequest.getPassword());
+        // 登録後、そのままログイン状態にする
+        request.login(signUpRequest.getEmail(), signUpRequest.getPassword());
 
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("ユーザー登録に失敗しました");
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

@@ -1,12 +1,14 @@
 package jp.i432kg.footprint.presentation.api;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jp.i432kg.footprint.application.command.PostCommandService;
 import jp.i432kg.footprint.application.command.model.CreatePostCommand;
 import jp.i432kg.footprint.application.query.PostQueryService;
 import jp.i432kg.footprint.application.query.ReplyQueryService;
 import jp.i432kg.footprint.application.query.model.PostSummary;
 import jp.i432kg.footprint.application.query.model.ReplySummary;
-import jp.i432kg.footprint.application.command.PostCommandService;
 import jp.i432kg.footprint.domain.value.*;
 import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
 import jp.i432kg.footprint.presentation.api.request.PostRequest;
@@ -51,7 +53,7 @@ public class PostRestController {
     @GetMapping
     public ResponseEntity<List<PostItemResponse>> getRecentPosts(
             @RequestParam(required = false) final PostId lastId,
-            @RequestParam(defaultValue = "10") final int size) {
+            @RequestParam(defaultValue = "10") @Min(1) @Max(20) final int size) {
 
         // 投稿一覧を取得する
         List<PostSummary> postSummaries = postQueryService.listRecentPosts(lastId, size);
@@ -74,7 +76,7 @@ public class PostRestController {
     public ResponseEntity<List<PostItemResponse>> search(
             @RequestParam final SearchKeyword keyword,
             @RequestParam(required = false) final PostId lastId,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") @Min(1) @Max(20) int size) {
 
         // 検索結果を取得する
         List<PostSummary> postSummaries = postQueryService.searchPosts(keyword, lastId, size);
@@ -87,6 +89,7 @@ public class PostRestController {
 
     /**
      * 指定された範囲内の投稿を検索します。
+     *
      * @param minLat 最小緯度
      * @param maxLat 最大緯度
      * @param minLng 最小経度
@@ -148,7 +151,7 @@ public class PostRestController {
     /**
      * 新しい投稿を作成します。
      *
-     * @param request 投稿作成リクエスト
+     * @param request     投稿作成リクエスト
      * @param userDetails 認証済みユーザーの詳細情報
      * @return 投稿作成結果
      * @throws IOException 画像処理時に発生した例外

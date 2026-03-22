@@ -1,5 +1,7 @@
 package jp.i432kg.footprint.presentation.api.request;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import jp.i432kg.footprint.presentation.validation.NotEmptyFile;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,12 +18,13 @@ public class PostRequest {
     /**
      * 投稿画像
      */
+    @NotNull
     @NotEmptyFile
     private MultipartFile imageFile;
 
     /**
      * 投稿本文
      */
-    @NonNull
+    @Size(max = 100)
     private String comment;
 }

@@ -1,9 +1,10 @@
 package jp.i432kg.footprint.presentation.api;
 
+import jakarta.validation.Valid;
+import jp.i432kg.footprint.application.command.ReplyCommandService;
 import jp.i432kg.footprint.application.command.model.CreateReplyCommand;
 import jp.i432kg.footprint.application.query.ReplyQueryService;
 import jp.i432kg.footprint.application.query.model.ReplySummary;
-import jp.i432kg.footprint.application.command.ReplyCommandService;
 import jp.i432kg.footprint.domain.value.Comment;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.ReplyId;
@@ -63,7 +64,7 @@ public class ReplyRestController {
     @PostMapping("/{postId}/reply")
     public ResponseEntity<Void> reply(
             @PathVariable final PostId postId,
-            @RequestBody final ReplyRequest request,
+            @Valid @RequestBody final ReplyRequest request,
             @AuthenticationPrincipal final UserDetailsImpl userDetails) {
 
         final CreateReplyCommand command = CreateReplyCommand.of(
