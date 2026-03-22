@@ -6,11 +6,13 @@ import jp.i432kg.footprint.domain.value.EmailAddress;
 import jp.i432kg.footprint.domain.value.UserId;
 import jp.i432kg.footprint.infrastructure.datasource.mapper.repository.UserMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 /**
  * ユーザーに関するリポジトリの実装クラス
  */
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
@@ -19,19 +21,38 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public boolean existsById(UserId userId) {
-        return userMapper.countByUserId(userId) > 0;
+        try {
+            return userMapper.countByUserId(userId) > 0;
+        } catch (RuntimeException e) {
+            log.error("Failed to check user existence by id. userId={}", userId.value(), e);
+            throw e;
+        }
     }
 
     @Override
     public boolean existsByEmail(EmailAddress email) {
-        return userMapper.countByEmail(email) > 0;
+        try {
+            return userMapper.countByEmail(email) > 0;
+        } catch (RuntimeException e) {
+            log.error("Failed to check user existence by email. email={}", email.value(), e);
+            throw e;
+        }
     }
 
     @Override
     public void saveUser(final User user) {
-
-        // ユーザーレコードを保存する
-        final UserMapper.UserInsertEntity entity = UserMapper.UserInsertEntity.from(user);
-        userMapper.insert(entity);
+        try {
+            // ユーザーレコードを保存する
+            final UserMapper.UserInsertEntity entity = UserMapper.UserInsertEntity.from(user);
+            userMapper.insert(entity);
+        } catch (RuntimeException e) {
+            log.error(
+                    "Failed to save user. userId={}, email={}",
+                    user.getUserId().value(),
+                    user.getEmail().value(),
+                    e
+            );
+            throw e;
+        }
     }
 }

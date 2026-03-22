@@ -5,6 +5,7 @@ import jp.i432kg.footprint.domain.repository.ReplyRepository;
 import jp.i432kg.footprint.domain.value.ReplyId;
 import jp.i432kg.footprint.infrastructure.datasource.mapper.repository.ReplyMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -12,6 +13,7 @@ import java.util.Optional;
 /**
  * 返信に関するリポジトリの実装クラス
  */
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class ReplyRepositoryImpl implements ReplyRepository {
@@ -20,20 +22,39 @@ public class ReplyRepositoryImpl implements ReplyRepository {
 
     @Override
     public Optional<Reply> findReplyById(ReplyId replyId) {
-        return replyMapper.findReplyById(replyId);
+        try {
+            return replyMapper.findReplyById(replyId);
+        } catch (RuntimeException e) {
+            log.error("Failed to find reply by id. replyId={}", replyId.value(), e);
+            throw e;
+        }
     }
 
     @Override
     public void saveReply(final Reply reply) {
-
-        // 返信レコードを保存する
-        final ReplyMapper.ReplyInsertEntity insertReplyEntity = ReplyMapper.ReplyInsertEntity.from(reply);
-        replyMapper.insert(insertReplyEntity);
+        try {
+            // 返信レコードを保存する
+            final ReplyMapper.ReplyInsertEntity insertReplyEntity = ReplyMapper.ReplyInsertEntity.from(reply);
+            replyMapper.insert(insertReplyEntity);
+        } catch (RuntimeException e) {
+            log.error(
+                    "Failed to save reply. replyId={}, postId={}, userId={}",
+                    reply.getReplyId().value(),
+                    reply.getPostId().value(),
+                    reply.getUserId().value(),
+                    e
+            );
+            throw e;
+        }
     }
 
     @Override
     public void increaseReplyCount(final ReplyId replyId) {
-        replyMapper.incrementChildCount(replyId);
+        try {
+            replyMapper.incrementChildCount(replyId);
+        } catch (RuntimeException e) {
+            log.error("Failed to increase reply count. replyId={}", replyId.value(), e);
+            throw e;
+        }
     }
-
 }

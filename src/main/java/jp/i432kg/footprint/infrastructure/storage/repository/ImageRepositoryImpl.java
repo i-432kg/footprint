@@ -17,6 +17,7 @@ import jp.i432kg.footprint.domain.repository.ImageRepository;
 import jp.i432kg.footprint.domain.value.*;
 import jp.i432kg.footprint.domain.value.Byte;
 import jp.i432kg.footprint.infrastructure.storage.LocalStoragePathResolver;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -35,6 +36,7 @@ import java.util.UUID;
 /**
  * 画像ファイルのリポジトリ実装クラス
  */
+@Slf4j
 @Repository
 public class ImageRepositoryImpl implements ImageRepository {
 
@@ -103,7 +105,15 @@ public class ImageRepositoryImpl implements ImageRepository {
             return Image.of(storageObject, fileExtension, fileSize, width, height, location, hasEXIF, takenAt);
 
         } catch (IllegalArgumentException e) {
-            throw new ImageProcessingException("画像メタデータの解析に失敗しました: " + storageObject.getObjectKey().getValue(), e);
+            log.error(
+                    "Failed to extract image metadata. storageObjectKey={}",
+                    storageObject.getObjectKey().getValue(),
+                    e
+            );
+            throw new ImageProcessingException(
+                    "画像メタデータの解析に失敗しました: " + storageObject.getObjectKey().getValue(),
+                    e
+            );
         }
     }
 
@@ -151,11 +161,28 @@ public class ImageRepositoryImpl implements ImageRepository {
 
             return storageObject;
         } catch (IllegalArgumentException e) {
+            log.error(
+                    "Failed to save image. userId={}, postId={}, originalFilename={}",
+                    userId.value(),
+                    postId.value(),
+                    originalFilename.value(),
+                    e
+            );
             throw new IOException("サポートされていない画像形式です。", e);
+        } catch (IOException e) {
+            log.error(
+                    "Failed to save image. userId={}, postId={}, originalFilename={}",
+                    userId.value(),
+                    postId.value(),
+                    originalFilename.value(),
+                    e
+            );
+            throw e;
         }
     }
 
-    private String determineExtension(final FileType fileType, final FileName originalFilename) {
+    private String determineExtension(final FileType fileType, final FileName originalFilename)
+            throws IllegalArgumentException{
         // FileType からドメインの Allowed Enum へのマッピングを試みる
         final Optional<FileExtension.Allowed> allowed = switch (fileType) {
             case Jpeg -> Optional.of(FileExtension.Allowed.JPG);

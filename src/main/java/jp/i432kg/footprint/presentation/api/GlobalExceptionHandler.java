@@ -61,7 +61,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(PostNotFoundException.class)
     public ProblemDetail handlePostNotFound(final PostNotFoundException ex) {
-        return createProblemDetail(HttpStatus.NOT_FOUND, "Post Not Found", ex);
+        log.warn("Post not found. errorCode={}, details={}", ex.getErrorCode(), ex.getDetails());
+        return createApplicationProblemDetail(HttpStatus.NOT_FOUND, "Post Not Found", ex);
     }
 
     /**
@@ -72,7 +73,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ReplyNotFoundException.class)
     public ProblemDetail handleReplyNotFound(final ReplyNotFoundException ex) {
-        return createProblemDetail(HttpStatus.NOT_FOUND, "Reply Not Found", ex);
+        log.warn("Reply not found. errorCode={}, details={}", ex.getErrorCode(), ex.getDetails());
+        return createApplicationProblemDetail(HttpStatus.NOT_FOUND, "Reply Not Found", ex);
     }
 
     /**
@@ -83,7 +85,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(UserNotFoundException.class)
     public ProblemDetail handleUserNotFound(final UserNotFoundException ex) {
-        return createProblemDetail(HttpStatus.NOT_FOUND, "User Not Found", ex);
+        log.warn("User not found. errorCode={}, details={}", ex.getErrorCode(), ex.getDetails());
+        return createApplicationProblemDetail(HttpStatus.NOT_FOUND, "User Not Found", ex);
     }
 
     /**
@@ -94,7 +97,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(EmailAlreadyUsedException.class)
     public ProblemDetail handleEmailAlreadyUsed(final EmailAlreadyUsedException ex) {
-        return createProblemDetail(HttpStatus.CONFLICT, "Email Already Used", ex);
+        log.warn("Email already used. errorCode={}, details={}", ex.getErrorCode(), ex.getDetails());
+        return createApplicationProblemDetail(HttpStatus.CONFLICT, "Email Already Used", ex);
     }
 
     /**
@@ -105,7 +109,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(InvalidValueException.class)
     public ProblemDetail handleInvalidValue(final InvalidValueException ex) {
-        return createProblemDetail(HttpStatus.BAD_REQUEST, "Invalid Value", ex);
+        log.warn("Invalid value. errorCode={}, details={}", ex.getErrorCode(), ex.getDetails());
+        return createApplicationProblemDetail(HttpStatus.BAD_REQUEST, "Invalid Value", ex);
     }
 
     /**
@@ -116,7 +121,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ReplyPostMismatchException.class)
     public ProblemDetail handleReplyPostMismatch(final ReplyPostMismatchException ex) {
-        return createProblemDetail(HttpStatus.BAD_REQUEST, "Reply Post Mismatch", ex);
+        log.warn("Reply post mismatch. errorCode={}, details={}", ex.getErrorCode(), ex.getDetails());
+        return createApplicationProblemDetail(HttpStatus.BAD_REQUEST, "Reply Post Mismatch", ex);
     }
 
     /**
@@ -127,16 +133,19 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleMethodArgumentNotValid(final MethodArgumentNotValidException ex) {
+        final List<Map<String, Object>> errors = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> validationError(
+                        error.getField(),
+                        error.getDefaultMessage(),
+                        error.getRejectedValue()
+                ))
+                .toList();
+
+        log.warn("Validation failed. errors={}", errors);
         return createValidationProblemDetail(
                 "Validation Error",
                 "リクエストの形式が不正です。",
-                ex.getBindingResult().getFieldErrors().stream()
-                        .map(error -> validationError(
-                                error.getField(),
-                                error.getDefaultMessage(),
-                                error.getRejectedValue()
-                        ))
-                        .toList()
+                errors
         );
     }
 
@@ -148,16 +157,19 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(BindException.class)
     public ProblemDetail handleBindException(final BindException ex) {
+        final List<Map<String, Object>> errors = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> validationError(
+                        error.getField(),
+                        error.getDefaultMessage(),
+                        error.getRejectedValue()
+                ))
+                .toList();
+
+        log.warn("Binding failed. errors={}", errors);
         return createValidationProblemDetail(
                 "Validation Error",
                 "リクエストの形式が不正です。",
-                ex.getBindingResult().getFieldErrors().stream()
-                        .map(error -> validationError(
-                                error.getField(),
-                                error.getDefaultMessage(),
-                                error.getRejectedValue()
-                        ))
-                        .toList()
+                errors
         );
     }
 
@@ -169,16 +181,19 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ProblemDetail handleConstraintViolation(final ConstraintViolationException ex) {
+        final List<Map<String, Object>> errors = ex.getConstraintViolations().stream()
+                .map(violation -> validationError(
+                        violation.getPropertyPath().toString(),
+                        violation.getMessage(),
+                        violation.getInvalidValue()
+                ))
+                .toList();
+
+        log.warn("Constraint violation. errors={}", errors);
         return createValidationProblemDetail(
                 "Validation Error",
                 "リクエストの形式が不正です。",
-                ex.getConstraintViolations().stream()
-                        .map(violation -> validationError(
-                                violation.getPropertyPath().toString(),
-                                violation.getMessage(),
-                                violation.getInvalidValue()
-                        ))
-                        .toList()
+                errors
         );
     }
 
@@ -190,10 +205,15 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ProblemDetail handleMissingRequestParameter(final MissingServletRequestParameterException ex) {
+        final List<Map<String, Object>> errors = List.of(
+                validationError(ex.getParameterName(), "required", null)
+        );
+
+        log.warn("Missing request parameter. parameter={}", ex.getParameterName());
         return createValidationProblemDetail(
                 "Validation Error",
                 "必須パラメータが不足しています。",
-                List.of(validationError(ex.getParameterName(), "required", null))
+                errors
         );
     }
 
@@ -205,10 +225,15 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MissingServletRequestPartException.class)
     public ProblemDetail handleMissingRequestPart(final MissingServletRequestPartException ex) {
+        final List<Map<String, Object>> errors = List.of(
+                validationError(ex.getRequestPartName(), "required", null)
+        );
+
+        log.warn("Missing request part. part={}", ex.getRequestPartName());
         return createValidationProblemDetail(
                 "Validation Error",
                 "必須ファイルが不足しています。",
-                List.of(validationError(ex.getRequestPartName(), "required", null))
+                errors
         );
     }
 
@@ -220,10 +245,15 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ProblemDetail handleHttpMessageNotReadable(final HttpMessageNotReadableException ex) {
+        final List<Map<String, Object>> errors = List.of(
+                validationError("requestBody", "not readable", null)
+        );
+
+        log.warn("Request body is not readable.");
         return createValidationProblemDetail(
                 "Validation Error",
                 "リクエストボディを解析できませんでした。",
-                List.of(validationError("requestBody", "not readable", null))
+                errors
         );
     }
 
@@ -235,10 +265,15 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ProblemDetail handleMethodArgumentTypeMismatch(final MethodArgumentTypeMismatchException ex) {
+        final List<Map<String, Object>> errors = List.of(
+                validationError(ex.getName(), "type mismatch", ex.getValue())
+        );
+
+        log.warn("Type mismatch. parameter={}, value={}", ex.getName(), ex.getValue());
         return createValidationProblemDetail(
                 "Validation Error",
                 "リクエストパラメータの型が不正です。",
-                List.of(validationError(ex.getName(), "type mismatch", ex.getValue()))
+                errors
         );
     }
 
@@ -250,7 +285,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(UseCaseExecutionException.class)
     public ProblemDetail handleUseCaseExecutionException(final UseCaseExecutionException ex) {
-        return createProblemDetail(resolveStatus(ex), "Use Case Error", ex);
+        log.warn("Use case failed. errorCode={}, details={}", ex.getErrorCode(), ex.getDetails());
+        return createApplicationProblemDetail(resolveStatus(ex), "Use Case Error", ex);
     }
 
     /**
@@ -261,7 +297,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(DomainException.class)
     public ProblemDetail handleDomainException(final DomainException ex) {
-        return createProblemDetail(resolveStatus(ex), "Domain Error", ex);
+        log.warn("Domain error occurred. errorCode={}, details={}", ex.getErrorCode(), ex.getDetails());
+        return createApplicationProblemDetail(resolveStatus(ex), "Domain Error", ex);
     }
 
     /**
@@ -272,7 +309,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ApplicationException.class)
     public ProblemDetail handleApplicationException(final ApplicationException ex) {
-        return createProblemDetail(resolveStatus(ex), "Application Error", ex);
+        log.warn("Application error occurred. errorCode={}, details={}", ex.getErrorCode(), ex.getDetails());
+        return createApplicationProblemDetail(resolveStatus(ex), "Application Error", ex);
     }
 
     /**
@@ -291,6 +329,14 @@ public class GlobalExceptionHandler {
         problemDetail.setTitle("Internal Server Error");
         problemDetail.setProperty("errorCode", ERROR_CODE_UNEXPECTED_ERROR);
         return problemDetail;
+    }
+
+    private ProblemDetail createApplicationProblemDetail(
+            final HttpStatus status,
+            final String title,
+            final BaseException ex
+    ) {
+        return createProblemDetail(status, title, ex);
     }
 
     /**
