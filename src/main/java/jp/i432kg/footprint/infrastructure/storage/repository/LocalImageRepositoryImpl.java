@@ -19,6 +19,7 @@ import jp.i432kg.footprint.domain.value.Byte;
 import jp.i432kg.footprint.infrastructure.storage.LocalStoragePathResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.io.BufferedInputStream;
@@ -38,14 +39,15 @@ import java.util.UUID;
  */
 @Slf4j
 @Repository
-public class ImageRepositoryImpl implements ImageRepository {
+@ConditionalOnProperty(name = "app.storage.type", havingValue = "LOCAL")
+public class LocalImageRepositoryImpl implements ImageRepository {
 
     private final Path storageRoot;
     private final LocalStoragePathResolver localStoragePathResolver;
 
     // final フィールドにするためにコンストラクタで注入
-    public ImageRepositoryImpl(
-            @Value("${app.storage.local.root-dir:}") String storageLocation,
+    public LocalImageRepositoryImpl(
+            @Value("${app.storage.local.root-dir}") String storageLocation,
             LocalStoragePathResolver localStoragePathResolver) {
         this.storageRoot = Paths.get(storageLocation);
         this.localStoragePathResolver = localStoragePathResolver;
