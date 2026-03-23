@@ -10,7 +10,7 @@ description = "Anonymous SNS for photo sharing on map"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
