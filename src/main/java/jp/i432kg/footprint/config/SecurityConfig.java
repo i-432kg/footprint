@@ -25,7 +25,8 @@ public class SecurityConfig {
         return (web) -> web.ignoring()
                 .requestMatchers("/css/**")
                 .requestMatchers("/images/**")
-                .requestMatchers("/favicon.ico");
+                .requestMatchers("/favicon.ico")
+                .requestMatchers("/actuator/health");
     }
 
     @Bean
