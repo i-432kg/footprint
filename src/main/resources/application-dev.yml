@@ -20,3 +20,16 @@ app:
     local:
       root-dir: storage/local
     image-base-url: /images/
+
+  frontend:
+    entries:
+      login:
+        js: "http://localhost:5173/src/entries/login/main.js"
+      map:
+        js: "http://localhost:5173/src/entries/map/main.js"
+      mypage:
+        js: "http://localhost:5173/src/entries/mypage/main.js"
+      search:
+        js: "http://localhost:5173/src/entries/search/main.js"
+      timeline:
+        js: "http://localhost:5173/src/entries/timeline/main.js"

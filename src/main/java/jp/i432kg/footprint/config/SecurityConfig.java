@@ -24,6 +24,7 @@ public class SecurityConfig {
         // CSS、画像パス、favicon.icoをセキュリティフィルタの対象外にする
         return (web) -> web.ignoring()
                 .requestMatchers("/css/**")
+                .requestMatchers("/assets/**")
                 .requestMatchers("/images/**")
                 .requestMatchers("/favicon.ico")
                 .requestMatchers("/actuator/health");
@@ -37,6 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/signup", "/login").permitAll()
+                        .requestMatchers("/assets/**").permitAll()
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/**").permitAll() // 開発用にapiリクエスト許可
                         .requestMatchers("/images/**").permitAll() // 開発用に画像パスを許可

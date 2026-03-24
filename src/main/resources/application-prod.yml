@@ -15,3 +15,16 @@ app:
       bucket-name: footprint-prod-bucket
       region: ap-northeast-1
     image-base-url: https://cdn.example.com/
+
+  frontend:
+    entries:
+      login:
+        js: "/assets/login.js"
+      map:
+        js: "/assets/map.js"
+      mypage:
+        js: "/assets/mypage.js"
+      search:
+        js: "/assets/search.js"
+      timeline:
+        js: "/assets/timeline.js"

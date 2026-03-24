@@ -2,21 +2,15 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>Footprint - login</title>
-  <!-- 開発中はViteのサーバーから、本番はSpringのstaticから読み込む -->
+  <title>Footprint - map</title>
   <link rel="stylesheet" th:href="@{/css/style.css}">
   <th:block th:replace="~{layout/assets :: header-assets}"></th:block>
 </head>
 <body>
 
-<!-- Vue.jsがマウントされる場所 -->
 <div id="app-map"></div>
 
-<!--
-  開発時は Vite のエントリーポイントを読み込む
-  (Vueプロジェクト側の main.js へのパス)
--->
-<script type="module" src="http://localhost:5173/src/entries/map/main.js"></script>
+<script type="module" th:src="${frontendAssets.entries.map.js}"></script>
 
 </body>
 </html>
