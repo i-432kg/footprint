@@ -9,16 +9,36 @@ on:
 jobs:
   deploy-stg:
     runs-on: ubuntu-latest
+    environment: stg
+
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout backend repository
         uses: actions/checkout@v4
 
+      - name: Validate environment variables
+        run: |
+          test -n "${{ vars.FRONTEND_REPO }}" || (echo "FRONTEND_REPO is not set" && exit 1)
+          test -n "${{ vars.FRONTEND_REF }}" || (echo "FRONTEND_REF is not set" && exit 1)
+          echo "FRONTEND_REPO=${{ vars.FRONTEND_REPO }}"
+          echo "FRONTEND_REF=${{ vars.FRONTEND_REF }}"
+
+      - name: Validate required secrets
+        env:
+          FRONTEND_REPO_PAT: ${{ secrets.FRONTEND_REPO_PAT }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          test -n "$FRONTEND_REPO_PAT" || (echo "FRONTEND_REPO_PAT is not set" && exit 1)
+          test -n "$RAILWAY_TOKEN" || (echo "RAILWAY_TOKEN is not set" && exit 1)
+          echo "Required secrets are set"
+
       - name: Checkout frontend repository
         uses: actions/checkout@v4
         with:
-          repository: ${{ secrets.FRONTEND_REPO }}
-          ref: develop
+          repository: ${{ vars.FRONTEND_REPO }}
+          ref: ${{ vars.FRONTEND_REF }}
           path: frontend
           token: ${{ secrets.FRONTEND_REPO_PAT }}
 
