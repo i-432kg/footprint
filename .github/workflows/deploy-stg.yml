@@ -22,8 +22,10 @@ jobs:
         run: |
           test -n "${{ vars.FRONTEND_REPO }}" || (echo "FRONTEND_REPO is not set" && exit 1)
           test -n "${{ vars.FRONTEND_REF }}" || (echo "FRONTEND_REF is not set" && exit 1)
+          test -n "${{ vars.RAILWAY_SERVICE }}" || (echo "RAILWAY_SERVICE is not set" && exit 1)
           echo "FRONTEND_REPO=${{ vars.FRONTEND_REPO }}"
           echo "FRONTEND_REF=${{ vars.FRONTEND_REF }}"
+          echo "RAILWAY_SERVICE=${{ vars.RAILWAY_SERVICE }}"
 
       - name: Validate required secrets
         env:
@@ -71,4 +73,4 @@ jobs:
       - name: Deploy to Railway
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: railway up
+        run: railway up --service "${{ vars.RAILWAY_SERVICE }}"
