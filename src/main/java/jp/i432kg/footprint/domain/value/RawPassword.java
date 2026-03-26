@@ -70,7 +70,7 @@ public class RawPassword {
      * ログ出力などでパスワードが露出するのを防ぐため、値をマスクします。
      */
     @ToString.Include
-    public String value() {
+    public String maskedValue() {
         return "********";
     }
 
@@ -79,7 +79,7 @@ public class RawPassword {
      *
      * @return 生のパスワード文字列
      */
-    public String rawValue() {
+    public String value() {
         return value;
     }
 }

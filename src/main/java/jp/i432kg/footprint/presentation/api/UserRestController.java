@@ -137,17 +137,20 @@ public class UserRestController {
             final HttpServletRequest request) throws Exception {
 
         // リクエスト情報をコマンド形式に変換する
+        final EmailAddress email = EmailAddress.of(signUpRequest.getEmail());
+        final RawPassword password = RawPassword.of(signUpRequest.getPassword());
+
         final CreateUserCommand command = CreateUserCommand.of(
                 UserName.of(signUpRequest.getUserName()),
-                EmailAddress.of(signUpRequest.getEmail()),
-                RawPassword.of(signUpRequest.getPassword()),
+                email,
+                password,
                 BirthDate.of(signUpRequest.getBirthDate())
         );
 
         userCommandService.createUser(command);
 
         // 登録後、そのままログイン状態にする
-        request.login(signUpRequest.getEmail(), signUpRequest.getPassword());
+        request.login(email.value(), password.value());
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
