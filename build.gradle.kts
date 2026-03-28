@@ -53,6 +53,8 @@ dependencies {
     implementation("software.amazon.awssdk:s3")
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-mysql")
+    implementation("org.springframework.boot:spring-boot-starter-flyway")
+    implementation("org.springframework.boot:spring-boot-starter-flyway-test")
 }
 
 tasks.withType<Test> {
