@@ -23,8 +23,8 @@ COPY --from=frontend-build /frontend/dist/ ./src/main/resources/static/
 RUN echo "=== frontend files copied into backend static ===" \
  && find ./src/main/resources/static -maxdepth 4 | sort \
  && echo "=== manifest file ===" \
- && ls -la ./src/main/resources/static/.vite \
- && cat ./src/main/resources/static/.vite/manifest.json
+ && ls -la ./src/main/resources/static \
+ && cat ./src/main/resources/static/manifest.json
 
 RUN chmod +x ./gradlew
 RUN ./gradlew clean bootJar -x test \
@@ -35,7 +35,9 @@ RUN ./gradlew clean bootJar -x test \
  && cd /tmp/jar-check \
  && cp /app/build/libs/*.jar ./app.jar \
  && java -Djarmode=tools -jar app.jar extract --destination extracted \
- && find extracted/BOOT-INF/classes/static -maxdepth 4 | sort
+ && find extracted/BOOT-INF/classes/static -maxdepth 4 | sort \
+ && echo "=== extracted manifest ===" \
+ && cat extracted/BOOT-INF/classes/static/manifest.json
 
 # ---------- runtime ----------
 FROM eclipse-temurin:21-jre
