@@ -23,16 +23,14 @@ public class ViteManifestAssetResolver {
 
     private final ResourceLoader resourceLoader;
     private final ViteManifestProperties viteManifestProperties;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public ViteManifestAssetResolver(
             final ResourceLoader resourceLoader,
-            final ViteManifestProperties viteManifestProperties,
-            final ObjectMapper objectMapper
+            final ViteManifestProperties viteManifestProperties
     ) {
         this.resourceLoader = resourceLoader;
         this.viteManifestProperties = viteManifestProperties;
-        this.objectMapper = objectMapper;
     }
 
     public FrontendAssetProperties resolve() {
