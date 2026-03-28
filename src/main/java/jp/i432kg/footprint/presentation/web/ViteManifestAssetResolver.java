@@ -48,11 +48,18 @@ public class ViteManifestAssetResolver {
     private Map<String, ManifestChunk> loadManifest() {
         try {
             final Resource resource = resourceLoader.getResource(viteManifestProperties.getManifestLocation());
+            if (!resource.exists()) {
+                throw new IllegalStateException(
+                        "Vite manifest not found. location=" + viteManifestProperties.getManifestLocation()
+                );
+            }
             try (InputStream inputStream = resource.getInputStream()) {
                 return objectMapper.readValue(inputStream, new TypeReference<Map<String, ManifestChunk>>() {});
             }
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to load Vite manifest.", e);
+            throw new IllegalStateException(
+                    "Failed to load Vite manifest. location=" + viteManifestProperties.getManifestLocation(), e
+            );
         }
     }
 
