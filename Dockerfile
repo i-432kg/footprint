@@ -30,14 +30,12 @@ RUN chmod +x ./gradlew
 RUN ./gradlew clean bootJar -x test \
  && echo "=== built jars ===" \
  && ls -lh ./build/libs \
- && echo "=== inspect boot jar contents ===" \
  && mkdir -p /tmp/jar-check \
  && cd /tmp/jar-check \
  && cp /app/build/libs/*.jar ./app.jar \
  && java -Djarmode=tools -jar app.jar extract --destination extracted \
- && find extracted/BOOT-INF/classes/static -maxdepth 4 | sort \
- && echo "=== extracted manifest ===" \
- && cat extracted/BOOT-INF/classes/static/manifest.json
+ && echo "=== extracted files ===" \
+ && find extracted | sort | head -200
 
 # ---------- runtime ----------
 FROM eclipse-temurin:21-jre
