@@ -2,14 +2,18 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>Footprint - Home</title>
+    <title>Footprint - timeline</title>
+
+    <th:block th:each="cssFile : ${frontendAssets.entries.timeline.css}">
+        <link rel="stylesheet" th:href="${cssFile}">
+    </th:block>
+
     <th:block th:replace="~{layout/assets :: header-assets}"></th:block>
 </head>
 <body>
 
-<div id="app-timeline" th:data-username="${username}"></div>
+<div id="app-timeline"></div>
 
 <script type="module" th:src="${frontendAssets.entries.timeline.js}"></script>
-
 </body>
 </html>

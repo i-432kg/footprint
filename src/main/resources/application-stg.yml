@@ -21,14 +21,5 @@ app:
     image-base-url: ${APP_STORAGE_IMAGE_BASE_URL:https://stg-cdn.example.com/}
 
   frontend:
-    entries:
-      login:
-        js: "/assets/login.js"
-      map:
-        js: "/assets/map.js"
-      mypage:
-        js: "/assets/mypage.js"
-      search:
-        js: "/assets/search.js"
-      timeline:
-        js: "/assets/timeline.js"
+    vite:
+      manifest-location: classpath:/static/.vite/manifest.json

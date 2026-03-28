@@ -25,11 +25,16 @@ app:
     entries:
       login:
         js: "http://localhost:5173/src/entries/login/main.js"
+        css: [ ]
       map:
         js: "http://localhost:5173/src/entries/map/main.js"
+        css: [ ]
       mypage:
         js: "http://localhost:5173/src/entries/mypage/main.js"
+        css: [ ]
       search:
         js: "http://localhost:5173/src/entries/search/main.js"
+        css: [ ]
       timeline:
         js: "http://localhost:5173/src/entries/timeline/main.js"
+        css: [ ]

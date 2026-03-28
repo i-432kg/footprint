@@ -1,12 +1,17 @@
 package jp.i432kg.footprint.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
+@Component
+@ConfigurationProperties(prefix = "app.frontend")
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "app.frontend")
 public class FrontendAssetProperties {
 
     private Entries entries = new Entries();
@@ -24,6 +29,7 @@ public class FrontendAssetProperties {
     @Getter
     @Setter
     public static class Asset {
-        private String js;
+        private String js = "";
+        private List<String> css = new ArrayList<>();
     }
 }

@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>Footprint - mypage</title>
+
+  <th:block th:each="cssFile : ${frontendAssets.entries.mypage.css}">
+    <link rel="stylesheet" th:href="${cssFile}">
+  </th:block>
+
   <th:block th:replace="~{layout/assets :: header-assets}"></th:block>
 </head>
 <body>
@@ -10,6 +15,5 @@
 <div id="app-mypage"></div>
 
 <script type="module" th:src="${frontendAssets.entries.mypage.js}"></script>
-
 </body>
 </html>
