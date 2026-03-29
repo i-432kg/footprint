@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.presentation.web;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.i432kg.footprint.config.FrontendAssetProperties;
@@ -46,13 +47,25 @@ public class ViteManifestAssetResolver {
     }
 
     private Map<String, ManifestChunk> loadManifest() {
+        final String location = viteManifestProperties.getManifestLocation();
         try {
-            final Resource resource = resourceLoader.getResource(viteManifestProperties.getManifestLocation());
+            final Resource resource = resourceLoader.getResource(location);
+
+            if (!resource.exists()) {
+                throw new IllegalStateException("Vite manifest not found. location=" + location);
+            }
+
             try (InputStream inputStream = resource.getInputStream()) {
-                return objectMapper.readValue(inputStream, new TypeReference<Map<String, ManifestChunk>>() {});
+                return objectMapper.readValue(
+                        inputStream,
+                        new TypeReference<Map<String, ManifestChunk>>() {}
+                );
             }
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to load Vite manifest.", e);
+            throw new IllegalStateException(
+                    "Failed to load Vite manifest. location=" + location,
+                    e
+            );
         }
     }
 
@@ -104,6 +117,7 @@ public class ViteManifestAssetResolver {
         }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ManifestChunk {
         private String file;
         private List<String> css;

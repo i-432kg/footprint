@@ -22,4 +22,4 @@ app:
 
   frontend:
     vite:
-      manifest-location: classpath:/static/.vite/manifest.json
+      manifest-location: classpath:/static/manifest.json

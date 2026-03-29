@@ -3,7 +3,7 @@ name: Deploy STG to Railway
 on:
   push:
     branches:
-      - develop
+      - feature/debug-vite-manifest
   workflow_dispatch:
 
 jobs:
