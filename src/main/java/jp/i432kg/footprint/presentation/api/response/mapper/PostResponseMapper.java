@@ -7,7 +7,7 @@ import jp.i432kg.footprint.domain.value.StorageObject;
 import jp.i432kg.footprint.presentation.api.response.ImageResponse;
 import jp.i432kg.footprint.presentation.api.response.LocationResponse;
 import jp.i432kg.footprint.presentation.api.response.PostItemResponse;
-import jp.i432kg.footprint.presentation.helper.ImageUrlConverter;
+import jp.i432kg.footprint.presentation.helper.ImageUrlResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +23,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PostResponseMapper {
 
-    private final ImageUrlConverter imageUrlConverter;
+    private final ImageUrlResolver imageUrlResolver;
 
     /**
      * {@link PostSummary} を {@link PostItemResponse} に変換します。
@@ -72,7 +72,7 @@ public class PostResponseMapper {
                     return ImageResponse.of(
                             s.getId(),
                             s.getSortOrder(),
-                            imageUrlConverter.convert(storageObject),
+                            imageUrlResolver.resolve(storageObject),
                             s.getFileExtension(),
                             s.getSizeBytes(),
                             s.getWidth(),

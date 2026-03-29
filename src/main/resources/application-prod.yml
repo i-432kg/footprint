@@ -10,11 +10,16 @@ spring:
 # 本番環境設定
 app:
   storage:
-    type: S3
+    type: ${APP_STORAGE_TYPE:S3}
+    image-base-url: ${APP_STORAGE_IMAGE_BASE_URL:/images/}
     s3:
-      bucket-name: footprint-prod-bucket
-      region: ap-northeast-1
-    image-base-url: https://cdn.example.com/
+      endpoint: ${APP_STORAGE_S3_ENDPOINT:https://storage.railway.app}
+      bucket-name: ${APP_STORAGE_S3_BUCKET_NAME:footprint-prod-bucket}
+      region: ${APP_STORAGE_S3_REGION:ap-northeast-1}
+      access-key: ${APP_STORAGE_S3_ACCESS_KEY:}
+      secret-key: ${APP_STORAGE_S3_SECRET_KEY:}
+      path-style: ${APP_STORAGE_S3_PATH_STYLE:false}
+      presigned-get-expire-minutes: ${APP_STORAGE_S3_PRESIGNED_GET_EXPIRE_MINUTES:30}
 
   frontend:
     vite:

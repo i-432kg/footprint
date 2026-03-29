@@ -1,28 +1,26 @@
 package jp.i432kg.footprint.infrastructure.storage;
 
 import jp.i432kg.footprint.domain.value.StorageObject;
-import org.springframework.beans.factory.annotation.Value;
+import jp.i432kg.footprint.infrastructure.config.S3StorageProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.storage.type", havingValue = "S3")
 public class S3ObjectResolver {
 
-    private final String bucketName;
+    private final S3StorageProperties properties;
 
-    public S3ObjectResolver(@Value("${app.storage.s3.bucket-name}") String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    public String resolveBucket(StorageObject storageObject) {
+    public String resolveBucket(final StorageObject storageObject) {
         if (!storageObject.isS3()) {
             throw new IllegalArgumentException("storageObject is not S3.");
         }
-        return bucketName;
+        return properties.getBucketName();
     }
 
-    public String resolveKey(StorageObject storageObject) {
+    public String resolveKey(final StorageObject storageObject) {
         if (!storageObject.isS3()) {
             throw new IllegalArgumentException("storageObject is not S3.");
         }

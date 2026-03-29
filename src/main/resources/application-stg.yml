@@ -15,10 +15,18 @@ spring:
 app:
   storage:
     type: ${APP_STORAGE_TYPE:S3}
+
+    # LOCAL用。S3利用時は実質未使用
+    image-base-url: ${APP_STORAGE_IMAGE_BASE_URL:/images/}
+
     s3:
+      endpoint: ${APP_STORAGE_S3_ENDPOINT:https://storage.railway.app}
       bucket-name: ${APP_STORAGE_S3_BUCKET_NAME:footprint-stg-bucket}
       region: ${APP_STORAGE_S3_REGION:ap-northeast-1}
-    image-base-url: ${APP_STORAGE_IMAGE_BASE_URL:https://stg-cdn.example.com/}
+      access-key: ${APP_STORAGE_S3_ACCESS_KEY:}
+      secret-key: ${APP_STORAGE_S3_SECRET_KEY:}
+      path-style: ${APP_STORAGE_S3_PATH_STYLE:false}
+      presigned-get-expire-minutes: ${APP_STORAGE_S3_PRESIGNED_GET_EXPIRE_MINUTES:30}
 
   frontend:
     vite:
