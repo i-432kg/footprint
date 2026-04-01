@@ -7,6 +7,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * STG seed 実行に関する設定値。
+ * <p>
+ * {@code app.seed.*} の設定をまとめて保持する。
+ * </p>
+ */
 @Getter
 @Setter
 @ConfigurationProperties(prefix = "app.seed")

@@ -11,7 +11,11 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import java.util.Objects;
 
 /**
- * S3 上に事前配置した seed 用元画像を取得するコンポーネント。
+ * S3 上に配置された seed 用元画像を取得するコンポーネント。
+ * <p>
+ * 指定されたオブジェクトキーから画像を取得し、投稿作成で利用できる
+ * {@link SeedSourceImage} として返却する。
+ * </p>
  */
 @Component
 @Profile("stg")
@@ -21,6 +25,12 @@ public class S3SeedSourceImageProvider {
     private final S3Client s3Client;
     private final StgSeedProperties properties;
 
+    /**
+     * 指定したオブジェクトキーの画像を S3 から取得する。
+     *
+     * @param objectKey S3 オブジェクトキー
+     * @return seed 用元画像
+     */
     public SeedSourceImage load(final String objectKey) {
         final String bucketName = properties.getSourceBucketName();
         if (Objects.isNull(bucketName) || bucketName.isBlank()) {
@@ -37,6 +47,12 @@ public class S3SeedSourceImageProvider {
         return new SeedSourceImage(responseInputStream, extractFilename(objectKey));
     }
 
+    /**
+     * オブジェクトキーからファイル名部分を抽出する。
+     *
+     * @param objectKey S3 オブジェクトキー
+     * @return ファイル名
+     */
     private String extractFilename(final String objectKey) {
         final int lastSlashIndex = objectKey.lastIndexOf('/');
         return (lastSlashIndex >= 0) ? objectKey.substring(lastSlashIndex + 1) : objectKey;
