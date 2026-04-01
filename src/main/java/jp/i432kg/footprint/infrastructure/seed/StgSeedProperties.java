@@ -24,6 +24,11 @@ public class StgSeedProperties {
     private boolean enabled = false;
 
     /**
+     * seed データの削除のみを行うかどうか
+     */
+    private boolean cleanupOnly = false;
+
+    /**
      * 実行前に既存 seed データを削除するかどうか
      */
     private boolean cleanupBeforeSeed = false;

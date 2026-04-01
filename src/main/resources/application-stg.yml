@@ -31,6 +31,7 @@ app:
 
   seed:
     enabled: ${APP_SEED_ENABLED:false}
+    cleanup-only: ${APP_SEED_CLEANUP_ONLY:false}
     cleanup-before-seed: ${APP_SEED_CLEANUP_BEFORE_SEED:false}
     test-password: ${APP_SEED_TEST_PASSWORD:Test1234!}
     user-count: ${APP_SEED_USER_COUNT:3}

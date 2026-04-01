@@ -39,10 +39,15 @@ public class StgSeedRunner implements ApplicationRunner {
         log.info("STG seed start.");
 
         // 既存の seed データを削除してから投入したい場合のみ cleanup を実行する
-        if (properties.isCleanupBeforeSeed()) {
+        if (properties.isCleanupBeforeSeed() || properties.isCleanupOnly()) {
             log.info("STG seed cleanup start.");
             stgSeedCleaner.cleanup();
             log.info("STG seed cleanup finished.");
+        }
+
+        if (properties.isCleanupOnly()) {
+            log.info("STG seed cleanup only completed.");
+            return;
         }
 
         stgSeedService.seed();
