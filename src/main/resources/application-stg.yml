@@ -34,11 +34,11 @@ app:
     cleanup-only: ${APP_SEED_CLEANUP_ONLY:false}
     cleanup-before-seed: ${APP_SEED_CLEANUP_BEFORE_SEED:false}
     test-password: ${APP_SEED_TEST_PASSWORD:Test1234!}
-    user-count: ${APP_SEED_USER_COUNT:3}
-    posts-per-user: ${APP_SEED_POSTS_PER_USER:4}
+    active-user-count: ${APP_SEED_ACTIVE_USER_COUNT:1}
+    inactive-user-count: ${APP_SEED_INACTIVE_USER_COUNT:1}
     email-prefix: ${APP_SEED_EMAIL_PREFIX:stg_seed_user_}
     source-bucket-name: ${APP_SEED_SOURCE_BUCKET_NAME:${APP_STORAGE_S3_BUCKET_NAME:footprint-stg-bucket}}
-    source-image-object-keys: ${APP_SEED_SOURCE_IMAGE_OBJECT_KEYS:seed-source/post-01.jpg,seed-source/post-02.jpg}
+    active-user-image-object-keys: ${APP_SEED_ACTIVE_USER_IMAGE_OBJECT_KEYS:seed-source/posts/gps/gps_001.jpeg,seed-source/posts/gps/gps_002.jpeg}
 
   frontend:
     vite:

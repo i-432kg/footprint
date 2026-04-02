@@ -39,14 +39,14 @@ public class StgSeedProperties {
     private String testPassword = "Test1234!";
 
     /**
-     * seed で作成するユーザー数
+     * 投稿・返信ありユーザー数
      */
-    private int userCount = 3;
+    private int activeUserCount = 2;
 
     /**
-     * 1ユーザーあたりの投稿数
+     * 投稿・返信なしユーザー数
      */
-    private int postsPerUser = 4;
+    private int inactiveUserCount = 1;
 
     /**
      * seed 判定用メール接頭辞
@@ -59,7 +59,11 @@ public class StgSeedProperties {
     private String sourceBucketName;
 
     /**
-     * seed の元画像オブジェクトキー一覧
+     * 投稿・返信ありユーザー専用の元画像オブジェクトキー一覧
+     * <p>
+     * ここに定義した画像をすべて使用して投稿を作成する。
+     * 他のユーザー種別の投稿画像とは分離して扱う。
+     * </p>
      */
-    private List<String> sourceImageObjectKeys = new ArrayList<>();
+    private List<String> activeUserImageObjectKeys = new ArrayList<>();
 }
