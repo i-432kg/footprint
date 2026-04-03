@@ -56,4 +56,9 @@ public class StgSeedProperties {
      */
     private String sourceBucketName;
 
+    /**
+     * seed 画像マニフェストの S3 オブジェクトキー
+     */
+    private String manifestObjectKey = "seed-source/manifest/seed-images.json";
+
 }

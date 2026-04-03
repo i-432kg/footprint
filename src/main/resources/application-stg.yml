@@ -38,6 +38,7 @@ app:
     inactive-user-count: ${APP_SEED_INACTIVE_USER_COUNT:1}
     email-prefix: ${APP_SEED_EMAIL_PREFIX:stg_seed_user_}
     source-bucket-name: ${APP_SEED_SOURCE_BUCKET_NAME:${APP_STORAGE_S3_BUCKET_NAME:footprint-stg-bucket}}
+    manifest-object-key: ${APP_SEED_MANIFEST_OBJECT_KEY:seed-source/manifest/seed-images.json}
 
   frontend:
     vite:

@@ -22,9 +22,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class SeedImageManifestLoader {
 
-    private static final String MANIFEST_OBJECT_KEY = "seed-images.json";
-
     private final S3SeedSourceImageProvider seedSourceImageProvider;
+    private final StgSeedProperties properties;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
@@ -41,17 +40,19 @@ public class SeedImageManifestLoader {
      * @return 重複を除去したオブジェクトキー一覧
      */
     public List<String> loadObjectKeys() {
-        try (SeedSourceImage manifest = seedSourceImageProvider.load(MANIFEST_OBJECT_KEY);
+        final String manifestObjectKey = properties.getManifestObjectKey();
+
+        try (SeedSourceImage manifest = seedSourceImageProvider.load(manifestObjectKey);
              InputStream inputStream = manifest.inputStream()) {
-            return extractObjectKeys(inputStream);
+            return extractObjectKeys(inputStream, manifestObjectKey);
         } catch (IOException e) {
-            throw new IllegalStateException("Failed to read seed image manifest. objectKey=" + MANIFEST_OBJECT_KEY, e);
+            throw new IllegalStateException("Failed to read seed image manifest. objectKey=" + manifestObjectKey, e);
         } catch (RuntimeException e) {
-            throw new IllegalStateException("Failed to load seed image manifest. objectKey=" + MANIFEST_OBJECT_KEY, e);
+            throw new IllegalStateException("Failed to load seed image manifest. objectKey=" + manifestObjectKey, e);
         }
     }
 
-    private List<String> extractObjectKeys(final InputStream inputStream) throws IOException {
+    private List<String> extractObjectKeys(final InputStream inputStream, final String manifestObjectKey) throws IOException {
         final JsonNode rootNode = objectMapper.readTree(inputStream);
         final Set<String> objectKeys = new LinkedHashSet<>();
 
@@ -65,7 +66,7 @@ public class SeedImageManifestLoader {
             return new ArrayList<>(objectKeys);
         }
 
-        throw new IllegalStateException("Unsupported seed image manifest format. objectKey=" + MANIFEST_OBJECT_KEY);
+        throw new IllegalStateException("Unsupported seed image manifest format. objectKey=" + manifestObjectKey);
     }
 
     private void extractFromArrayNode(final JsonNode arrayNode, final Set<String> objectKeys) {
