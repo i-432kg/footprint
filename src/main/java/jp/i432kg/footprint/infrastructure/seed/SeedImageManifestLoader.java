@@ -25,7 +25,7 @@ public class SeedImageManifestLoader {
     private static final String MANIFEST_OBJECT_KEY = "seed-images.json";
 
     private final S3SeedSourceImageProvider seedSourceImageProvider;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * seed-images.json から画像オブジェクトキー一覧を読み込む。
