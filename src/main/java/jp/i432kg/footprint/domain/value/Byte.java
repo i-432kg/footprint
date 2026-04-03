@@ -18,9 +18,9 @@ public class Byte {
     static long MIN_VALUE = 0;
 
     /**
-     * 最大サイズ：5MB (5 * 1024 * 1024)
+     * 最大サイズ：10MB (10 * 1024 * 1024)
      */
-    static long MAX_VALUE = 5_242_880;
+    static long MAX_VALUE = 10_485_760;
 
     static String FIELD_NAME = "byte";
 
