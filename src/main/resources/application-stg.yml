@@ -38,7 +38,6 @@ app:
     inactive-user-count: ${APP_SEED_INACTIVE_USER_COUNT:1}
     email-prefix: ${APP_SEED_EMAIL_PREFIX:stg_seed_user_}
     source-bucket-name: ${APP_SEED_SOURCE_BUCKET_NAME:${APP_STORAGE_S3_BUCKET_NAME:footprint-stg-bucket}}
-    active-user-image-object-keys: ${APP_SEED_ACTIVE_USER_IMAGE_OBJECT_KEYS:seed-source/posts/gps/gps_001.jpeg,seed-source/posts/gps/gps_002.jpeg}
 
   frontend:
     vite:

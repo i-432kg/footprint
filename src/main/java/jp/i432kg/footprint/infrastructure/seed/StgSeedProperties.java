@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * STG seed 実行に関する設定値。
@@ -58,12 +56,4 @@ public class StgSeedProperties {
      */
     private String sourceBucketName;
 
-    /**
-     * 投稿・返信ありユーザー専用の元画像オブジェクトキー一覧
-     * <p>
-     * ここに定義した画像をすべて使用して投稿を作成する。
-     * 他のユーザー種別の投稿画像とは分離して扱う。
-     * </p>
-     */
-    private List<String> activeUserImageObjectKeys = new ArrayList<>();
 }

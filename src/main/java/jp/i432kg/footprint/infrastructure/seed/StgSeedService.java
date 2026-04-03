@@ -46,6 +46,7 @@ public class StgSeedService {
     private final ReplyCommandService replyCommandService;
     private final SeedAdminMapper seedAdminMapper;
     private final S3SeedSourceImageProvider seedSourceImageProvider;
+    private final SeedImageManifestLoader seedImageManifestLoader;
 
     /**
      * seed ユーザーと seed 投稿を作成する。
@@ -85,7 +86,7 @@ public class StgSeedService {
     /**
      * 投稿・返信ありユーザー向けの投稿と返信を作成する。
      * <p>
-     * activeUserImageObjectKeys に定義された画像をすべて消費し、
+     * seed-images.json に定義された画像をすべて消費し、
      * 投稿先ユーザーへ順番に割り当てる。
      * </p>
      *
@@ -97,9 +98,9 @@ public class StgSeedService {
             return;
         }
 
-        final List<String> imageObjectKeys = properties.getActiveUserImageObjectKeys();
-        if (imageObjectKeys == null || imageObjectKeys.isEmpty()) {
-            throw new IllegalStateException("app.seed.active-user-image-object-keys must contain at least one object key when active users exist.");
+        final List<String> imageObjectKeys = seedImageManifestLoader.loadObjectKeys();
+        if (imageObjectKeys.isEmpty()) {
+            throw new IllegalStateException("seed-images.json must contain at least one object key when active users exist.");
         }
 
         final int[] postSequenceByUser = new int[activeUsers.size()];
