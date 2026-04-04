@@ -12,7 +12,7 @@ public class LocalSeedProperties {
     private boolean enabled = true;
     private boolean cleanupOnly = false;
     private boolean cleanupBeforeSeed = true;
-    private String testPassword = "localpass123";
+    private String testPassword;
     private int activeUserCount = 1;
     private int inactiveUserCount = 1;
     private String emailPrefix = "local_seed_user_";
