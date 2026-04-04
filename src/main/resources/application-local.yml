@@ -7,13 +7,23 @@ spring:
     hibernate:
       ddl-auto: none
 
-# 開発環境はローカルストレージを使用
 app:
   storage:
     type: LOCAL
     local:
       root-dir: storage/local
     image-base-url: /images/
+
+  local-seed:
+    enabled: true
+    cleanup-only: false
+    cleanup-before-seed: true
+    test-password: localpass123
+    active-user-count: 1
+    inactive-user-count: 1
+    email-prefix: local_seed_user_
+    source-root-dir: seed-source
+    manifest-path: seed-source/manifest/seed-images.json
 
   frontend:
     entries:

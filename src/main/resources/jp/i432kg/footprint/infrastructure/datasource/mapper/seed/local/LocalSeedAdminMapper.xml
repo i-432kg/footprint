@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="jp.i432kg.footprint.infrastructure.seed.SeedAdminMapper">
+<mapper namespace="jp.i432kg.footprint.infrastructure.seed.LocalSeedAdminMapper">
 
     <select id="findUserIdByEmail" resultType="string">
         SELECT public_id
@@ -29,33 +29,33 @@
         SELECT pi.object_key
         FROM post_images pi
         INNER JOIN posts p ON p.public_id = pi.post_id
-        WHERE p.caption LIKE '[STG] %'
+        WHERE p.caption LIKE '[LOCAL] %'
     </select>
 
     <delete id="deleteSeedReplies">
         DELETE r
         FROM replies r
         INNER JOIN posts p ON p.public_id = r.post_id
-        WHERE p.caption LIKE '[STG] %'
+        WHERE p.caption LIKE '[LOCAL] %'
     </delete>
 
     <delete id="deleteSeedPostImages">
         DELETE pi
         FROM post_images pi
         INNER JOIN posts p ON p.public_id = pi.post_id
-        WHERE p.caption LIKE '[STG] %'
+        WHERE p.caption LIKE '[LOCAL] %'
     </delete>
 
     <delete id="deleteSeedPosts">
         DELETE
         FROM posts
-        WHERE caption LIKE '[STG] %'
+        WHERE caption LIKE '[LOCAL] %'
     </delete>
 
     <delete id="deleteSeedUsers">
         DELETE
         FROM users
-        WHERE email LIKE 'stg\_seed\_user\_%@example.com'
+        WHERE email LIKE 'local\\_seed\\_user\\_%@example.com'
     </delete>
 
 </mapper>

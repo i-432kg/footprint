@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev # デフォルトは開発用
+    active: local # デフォルトはローカル起動用
   application:
     name: footprint
   jackson:
@@ -38,4 +38,4 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
   type-handlers-package: jp.i432kg.footprint.infrastructure.datasource.typehandler
-  mapper-locations: classpath:jp/i432kg/footprint/infrastructure/datasource/mapper/**/*.xml
+  mapper-locations: classpath*:jp/i432kg/footprint/infrastructure/datasource/mapper/**/*.xml

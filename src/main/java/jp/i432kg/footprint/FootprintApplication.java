@@ -1,11 +1,10 @@
 package jp.i432kg.footprint;
 
-import jp.i432kg.footprint.infrastructure.seed.StgSeedProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
-@EnableConfigurationProperties(StgSeedProperties.class)
+@ConfigurationPropertiesScan
 @SpringBootApplication
 public class FootprintApplication {
 

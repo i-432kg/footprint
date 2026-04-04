@@ -34,7 +34,7 @@ public class S3SeedSourceImageProvider {
     public SeedSourceImage load(final String objectKey) {
         final String bucketName = properties.getSourceBucketName();
         if (Objects.isNull(bucketName) || bucketName.isBlank()) {
-            throw new IllegalStateException("app.seed.source-bucket-name must be configured.");
+            throw new IllegalStateException("app.stg-seed.source-bucket-name must be configured.");
         }
 
         final ResponseInputStream<GetObjectResponse> responseInputStream = s3Client.getObject(

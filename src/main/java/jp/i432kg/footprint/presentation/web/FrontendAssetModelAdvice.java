@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class FrontendAssetModelAdvice {
 
     @ControllerAdvice
-    @Profile("dev")
-    public static class DevFrontendAssetModelAdvice {
+    @Profile("local")
+    public static class LocalFrontendAssetModelAdvice {
 
         private final FrontendAssetProperties frontendAssetProperties;
 
-        public DevFrontendAssetModelAdvice(final FrontendAssetProperties frontendAssetProperties) {
+        public LocalFrontendAssetModelAdvice(final FrontendAssetProperties frontendAssetProperties) {
             this.frontendAssetProperties = frontendAssetProperties;
         }
 

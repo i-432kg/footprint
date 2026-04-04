@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 /**
  * アプリケーション起動時に STG seed の実行可否を判定する Runner。
  * <p>
- * {@code app.seed.enabled=true} の場合のみ seed を実行する。
+ * {@code app.stg-seed.enabled=true} の場合のみ seed を実行する。
  * </p>
  */
 @Slf4j
@@ -32,7 +32,7 @@ public class StgSeedRunner implements ApplicationRunner {
     public void run(final ApplicationArguments args) {
         // seed 無効なら何もせず終了する
         if (!properties.isEnabled()) {
-            log.info("STG seed skipped. app.seed.enabled=false");
+            log.info("STG seed skipped. app.stg-seed.enabled=false");
             return;
         }
 
@@ -58,8 +58,8 @@ public class StgSeedRunner implements ApplicationRunner {
     }
 
     private void validateSeedProperties() {
-        require(properties.getTestPassword(), "APP_SEED_TEST_PASSWORD");
-        require(properties.getSourceBucketName(), "APP_SEED_SOURCE_BUCKET_NAME");
+        require(properties.getTestPassword(), "APP_STG_SEED_TEST_PASSWORD");
+        require(properties.getSourceBucketName(), "APP_STG_SEED_SOURCE_BUCKET_NAME");
     }
 
     private void require(final String value, final String envName) {

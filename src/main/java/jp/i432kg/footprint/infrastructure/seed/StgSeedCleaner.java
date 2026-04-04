@@ -31,7 +31,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StgSeedCleaner {
 
-    private final SeedAdminMapper seedAdminMapper;
+    private final StgSeedAdminMapper seedAdminMapper;
     private final ObjectProvider<S3Client> s3ClientProvider;
     private final ObjectProvider<S3ObjectResolver> s3ObjectResolverProvider;
     private final ObjectProvider<LocalStoragePathResolver> localStoragePathResolverProvider;
