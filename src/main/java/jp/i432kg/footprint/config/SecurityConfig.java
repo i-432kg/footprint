@@ -33,10 +33,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // H2コンソール用にCSRF無効化
-                .headers(headers -> headers.frameOptions(frame -> frame.disable())) // iframe許可
+                .csrf(csrf -> csrf.disable()) // APIログインを使用するためCSRFは無効化
+                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/signup", "/login").permitAll()
                         .requestMatchers("/assets/**").permitAll()
                         .requestMatchers("/api/login").permitAll()

@@ -5,7 +5,10 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD:}
   sql:
     init:
-      mode: never # STG以降は自動初期化しない（手動またはマイグレーションツール）
+      mode: never
+  jpa:
+    hibernate:
+      ddl-auto: none
   flyway:
     enabled: true
     locations: classpath:db/migration

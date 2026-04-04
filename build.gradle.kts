@@ -44,7 +44,6 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.mybatis.spring.boot:mybatis-spring-boot-starter-test:4.0.0")
-    implementation("org.springframework.boot:spring-boot-h2console")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("com.drewnoakes:metadata-extractor:2.19.0")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0")

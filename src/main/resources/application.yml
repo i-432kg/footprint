@@ -9,6 +9,12 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+  sql:
+    init:
+      mode: never
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
 
 # 共通のビジネスロジック用設定
 app:
