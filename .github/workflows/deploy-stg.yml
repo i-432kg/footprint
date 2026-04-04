@@ -6,26 +6,24 @@ on:
       - develop
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
-  deploy-stg:
+  deploy:
     runs-on: ubuntu-latest
     environment: stg
-
-    permissions:
-      contents: read
 
     steps:
       - name: Checkout backend repository
         uses: actions/checkout@v4
 
-      - name: Validate environment variables
+      - name: Validate repository variables
         run: |
           test -n "${{ vars.FRONTEND_REPO }}" || (echo "FRONTEND_REPO is not set" && exit 1)
           test -n "${{ vars.FRONTEND_REF }}" || (echo "FRONTEND_REF is not set" && exit 1)
           test -n "${{ vars.RAILWAY_SERVICE }}" || (echo "RAILWAY_SERVICE is not set" && exit 1)
-          echo "FRONTEND_REPO=${{ vars.FRONTEND_REPO }}"
-          echo "FRONTEND_REF=${{ vars.FRONTEND_REF }}"
-          echo "RAILWAY_SERVICE=${{ vars.RAILWAY_SERVICE }}"
+          echo "Required repository variables are set"
 
       - name: Validate required secrets
         env:
@@ -41,31 +39,8 @@ jobs:
         with:
           repository: ${{ vars.FRONTEND_REPO }}
           ref: ${{ vars.FRONTEND_REF }}
-          path: frontend
           token: ${{ secrets.FRONTEND_REPO_PAT }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Build frontend
-        working-directory: frontend
-        run: |
-          npm ci
-          npm run build
-
-      - name: Copy frontend build artifacts into backend static resources
-        run: |
-          rm -rf src/main/resources/static/assets
-          mkdir -p src/main/resources/static
-          cp -R frontend/dist/* src/main/resources/static/
-
-      - name: Verify copied frontend assets
-        run: |
-          find src/main/resources/static -maxdepth 3 -type f | sort
+          path: frontend
 
       - name: Install Railway CLI
         run: npm install -g @railway/cli

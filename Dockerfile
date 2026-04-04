@@ -20,22 +20,8 @@ COPY src ./src
 # フロント build 成果物を Spring Boot の static 配下へ取り込む
 COPY --from=frontend-build /frontend/dist/ ./src/main/resources/static/
 
-RUN echo "=== frontend files copied into backend static ===" \
- && find ./src/main/resources/static -maxdepth 4 | sort \
- && echo "=== manifest file ===" \
- && ls -la ./src/main/resources/static \
- && cat ./src/main/resources/static/manifest.json
-
 RUN chmod +x ./gradlew
-RUN ./gradlew clean bootJar -x test \
- && echo "=== built jars ===" \
- && ls -lh ./build/libs \
- && mkdir -p /tmp/jar-check \
- && cd /tmp/jar-check \
- && cp /app/build/libs/*.jar ./app.jar \
- && java -Djarmode=tools -jar app.jar extract --destination extracted \
- && echo "=== extracted files ===" \
- && find extracted | sort | head -200
+RUN ./gradlew clean bootJar -x test
 
 # ---------- runtime ----------
 FROM eclipse-temurin:21-jre
