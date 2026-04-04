@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/footprint_stg}
-    username: ${SPRING_DATASOURCE_USERNAME:stg_user}
-    password: ${SPRING_DATASOURCE_PASSWORD:stg_pass}
+    username: ${SPRING_DATASOURCE_USERNAME:}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
   sql:
     init:
       mode: never # STG以降は自動初期化しない（手動またはマイグレーションツール）
@@ -20,24 +20,23 @@ app:
     image-base-url: ${APP_STORAGE_IMAGE_BASE_URL:/images/}
 
     s3:
-      endpoint: ${APP_STORAGE_S3_ENDPOINT:https://storage.railway.app}
-      bucket-name: ${APP_STORAGE_S3_BUCKET_NAME:footprint-stg-bucket}
+      endpoint: ${APP_STORAGE_S3_ENDPOINT:}
+      bucket-name: ${APP_STORAGE_S3_BUCKET_NAME:}
       region: ${APP_STORAGE_S3_REGION:ap-northeast-1}
       access-key: ${APP_STORAGE_S3_ACCESS_KEY:}
       secret-key: ${APP_STORAGE_S3_SECRET_KEY:}
       path-style: ${APP_STORAGE_S3_PATH_STYLE:false}
       presigned-get-expire-minutes: ${APP_STORAGE_S3_PRESIGNED_GET_EXPIRE_MINUTES:30}
 
-
   seed:
     enabled: ${APP_SEED_ENABLED:false}
     cleanup-only: ${APP_SEED_CLEANUP_ONLY:false}
     cleanup-before-seed: ${APP_SEED_CLEANUP_BEFORE_SEED:false}
-    test-password: ${APP_SEED_TEST_PASSWORD:Test1234!}
+    test-password: ${APP_SEED_TEST_PASSWORD:}
     active-user-count: ${APP_SEED_ACTIVE_USER_COUNT:1}
     inactive-user-count: ${APP_SEED_INACTIVE_USER_COUNT:1}
     email-prefix: ${APP_SEED_EMAIL_PREFIX:stg_seed_user_}
-    source-bucket-name: ${APP_SEED_SOURCE_BUCKET_NAME:${APP_STORAGE_S3_BUCKET_NAME:footprint-stg-bucket}}
+    source-bucket-name: ${APP_SEED_SOURCE_BUCKET_NAME:}
     manifest-object-key: ${APP_SEED_MANIFEST_OBJECT_KEY:seed-source/manifest/seed-images.json}
 
   frontend:

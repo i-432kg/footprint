@@ -4,6 +4,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -19,6 +20,8 @@ public class S3Config {
 
     @Bean
     public S3Client s3Client(final S3StorageProperties properties) {
+        validate(properties);
+
         return S3Client.builder()
                 .endpointOverride(URI.create(properties.getEndpoint()))
                 .region(Region.of(properties.getRegion()))
@@ -36,6 +39,8 @@ public class S3Config {
 
     @Bean
     public S3Presigner s3Presigner(final S3StorageProperties properties) {
+        validate(properties);
+
         return S3Presigner.builder()
                 .endpointOverride(URI.create(properties.getEndpoint()))
                 .region(Region.of(properties.getRegion()))
@@ -48,5 +53,21 @@ public class S3Config {
                         )
                 )
                 .build();
+    }
+
+    private void validate(final S3StorageProperties properties) {
+        require(properties.getEndpoint(), "APP_STORAGE_S3_ENDPOINT");
+        require(properties.getBucketName(), "APP_STORAGE_S3_BUCKET_NAME");
+        require(properties.getRegion(), "APP_STORAGE_S3_REGION");
+        require(properties.getAccessKey(), "APP_STORAGE_S3_ACCESS_KEY");
+        require(properties.getSecretKey(), "APP_STORAGE_S3_SECRET_KEY");
+    }
+
+    private void require(final String value, final String envName) {
+        if (!StringUtils.hasText(value)) {
+            throw new IllegalStateException(
+                    "S3 storage is enabled, but required environment variable is missing: " + envName
+            );
+        }
     }
 }

@@ -34,7 +34,7 @@ public class StgSeedProperties {
     /**
      * seed ユーザーの共通パスワード
      */
-    private String testPassword = "Test1234!";
+    private String testPassword;
 
     /**
      * 投稿・返信ありユーザー数

@@ -36,6 +36,8 @@ public class StgSeedRunner implements ApplicationRunner {
             return;
         }
 
+        validateSeedProperties();
+
         log.info("STG seed start.");
 
         // 既存の seed データを削除してから投入したい場合のみ cleanup を実行する
@@ -53,5 +55,18 @@ public class StgSeedRunner implements ApplicationRunner {
         stgSeedService.seed();
 
         log.info("STG seed finished.");
+    }
+
+    private void validateSeedProperties() {
+        require(properties.getTestPassword(), "APP_SEED_TEST_PASSWORD");
+        require(properties.getSourceBucketName(), "APP_SEED_SOURCE_BUCKET_NAME");
+    }
+
+    private void require(final String value, final String envName) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalStateException(
+                    "Seed is enabled, but required environment variable is missing: " + envName
+            );
+        }
     }
 }
