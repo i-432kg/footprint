@@ -1,8 +1,10 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
   datasource:
-    url: jdbc:mysql://localhost:3306/footprint_local?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Tokyo&characterEncoding=utf8
-    username: footprint
-    password: footprint
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: none
@@ -18,7 +20,7 @@ app:
     enabled: true
     cleanup-only: false
     cleanup-before-seed: true
-    test-password: localpass123
+    test-password: ${APP_LOCAL_SEED_TEST_PASSWORD}
     active-user-count: 1
     inactive-user-count: 1
     email-prefix: local_seed_user_
