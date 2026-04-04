@@ -22,11 +22,14 @@ public class UserDetailsImpl implements UserDetails {
     @Getter
     private final UserId userId;
     private final String email;
+    @Getter
+    private final String displayUsername;
     private final String password;
 
     private UserDetailsImpl(final AuthMapper.AuthUserEntity entity) {
         this.userId = entity.getUserId();
         this.email = entity.getEmail();
+        this.displayUsername = entity.getDisplayUsername();
         this.password = entity.getPassword();
     }
 
@@ -49,7 +52,7 @@ public class UserDetailsImpl implements UserDetails {
 
     /**
      *
-     * @return Spring Security の認証に使用する識別子（ドメインのUserNameとは異なる）
+     * @return Spring Security の認証に使用する識別子（ログインIDのメールアドレス）
      */
     @Override
     @NonNull

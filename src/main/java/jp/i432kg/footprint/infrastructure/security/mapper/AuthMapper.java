@@ -28,6 +28,7 @@ public interface AuthMapper {
     class AuthUserEntity {
         private final UserId userId;
         private final String email;
+        private final String displayUsername;
         private final String password;
     }
 }

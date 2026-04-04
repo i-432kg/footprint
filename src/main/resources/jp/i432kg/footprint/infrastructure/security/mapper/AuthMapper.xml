@@ -6,6 +6,7 @@
         SELECT
             public_id AS userId,
             email AS email,
+            username AS displayUsername,
             password_hash AS password
         FROM users
         WHERE email = #{email}

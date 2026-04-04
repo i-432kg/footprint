@@ -24,7 +24,7 @@ public class RootController {
     @ModelAttribute
     public void addLoginUserToModel(final Model model, @AuthenticationPrincipal final UserDetailsImpl userDetails) {
         if (Objects.nonNull(userDetails)) {
-            model.addAttribute("username", userDetails.getUsername());
+            model.addAttribute("displayUsername", userDetails.getDisplayUsername());
         }
     }
 
