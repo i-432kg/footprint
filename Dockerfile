@@ -6,7 +6,11 @@ COPY frontend/package*.json ./
 RUN npm ci
 
 COPY frontend/ ./
-RUN npm run build
+
+# Railway のサービス変数を build 時に使うため ARG として宣言
+# 未指定時は本番用 build を実行
+ARG FRONTEND_BUILD_SCRIPT=build
+RUN npm run ${FRONTEND_BUILD_SCRIPT}
 
 # ---------- backend build ----------
 FROM eclipse-temurin:21-jdk AS backend-build
