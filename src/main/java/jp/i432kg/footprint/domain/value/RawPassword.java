@@ -68,14 +68,6 @@ public class RawPassword {
     }
 
     /**
-     * ログ出力などでパスワードが露出するのを防ぐため、値をマスクします。
-     */
-    @ToString.Include
-    public String maskedValue() {
-        return "********";
-    }
-
-    /**
      * 実際のパスワード値を取得します。
      *
      * @return 生のパスワード文字列

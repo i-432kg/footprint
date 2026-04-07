@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 @Getter
 @AllArgsConstructor
@@ -20,6 +21,10 @@ public enum StorageType {
         return Arrays.stream(values())
                 .filter(v -> v.value.equalsIgnoreCase(value))
                 .findFirst()
-                .orElseThrow(() ->  InvalidValueException.invalid("storage_type", value, "unknown storage type"));
+                .orElseThrow(() -> InvalidValueException.invalid(
+                        "storage_type",
+                        Objects.requireNonNull(value),
+                        "unknown storage type"
+                ));
     }
 }
