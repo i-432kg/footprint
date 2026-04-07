@@ -34,15 +34,13 @@ public class UserId {
             throw InvalidValueException.required(FIELD_NAME);
         }
 
-        final String normalized = value.trim();
-
         // 空文字のみを不許可
-        if (normalized.isBlank()) {
+        if (value.isBlank()) {
             throw InvalidValueException.blank(FIELD_NAME);
         }
 
-        if (!ULID_PATTERN.matcher(normalized).matches()) {
-            throw InvalidValueException.invalidFormat(FIELD_NAME, normalized, ULID_PATTERN.pattern());
+        if (!ULID_PATTERN.matcher(value).matches()) {
+            throw InvalidValueException.invalidFormat(FIELD_NAME, value, ULID_PATTERN.pattern());
         }
 
         return new UserId(value);

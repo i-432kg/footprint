@@ -21,4 +21,10 @@ class ImageIdTest {
         assertThatThrownBy(() -> ImageId.of("invalid"))
                 .isInstanceOf(InvalidValueException.class);
     }
+
+    @Test
+    void of_shouldRejectValueWithLeadingOrTrailingWhitespace() {
+        assertThatThrownBy(() -> ImageId.of(" " + DomainTestFixtures.IMAGE_ID + " "))
+                .isInstanceOf(InvalidValueException.class);
+    }
 }

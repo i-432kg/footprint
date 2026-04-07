@@ -21,4 +21,10 @@ class PostIdTest {
         assertThatThrownBy(() -> PostId.of("invalid"))
                 .isInstanceOf(InvalidValueException.class);
     }
+
+    @Test
+    void of_shouldRejectValueWithLeadingOrTrailingWhitespace() {
+        assertThatThrownBy(() -> PostId.of(" " + DomainTestFixtures.POST_ID + " "))
+                .isInstanceOf(InvalidValueException.class);
+    }
 }

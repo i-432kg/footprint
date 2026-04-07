@@ -21,4 +21,10 @@ class ReplyIdTest {
         assertThatThrownBy(() -> ReplyId.of("invalid"))
                 .isInstanceOf(InvalidValueException.class);
     }
+
+    @Test
+    void of_shouldRejectValueWithLeadingOrTrailingWhitespace() {
+        assertThatThrownBy(() -> ReplyId.of(" " + DomainTestFixtures.REPLY_ID + " "))
+                .isInstanceOf(InvalidValueException.class);
+    }
 }

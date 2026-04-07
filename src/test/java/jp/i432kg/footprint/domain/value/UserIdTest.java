@@ -21,4 +21,10 @@ class UserIdTest {
         assertThatThrownBy(() -> UserId.of("invalid"))
                 .isInstanceOf(InvalidValueException.class);
     }
+
+    @Test
+    void of_shouldRejectValueWithLeadingOrTrailingWhitespace() {
+        assertThatThrownBy(() -> UserId.of(" " + DomainTestFixtures.USER_ID + " "))
+                .isInstanceOf(InvalidValueException.class);
+    }
 }
