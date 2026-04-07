@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.Value;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -43,7 +44,7 @@ public class RawPassword {
      * @return {@link RawPassword} インスタンス
      * @throws InvalidValueException バリデーションエラーの場合
      */
-    public static RawPassword of(final String value) {
+    public static RawPassword of(final @Nullable String value) {
 
         // null 禁止
         if (Objects.isNull(value)) {

@@ -5,6 +5,7 @@ import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -21,7 +22,7 @@ public class StorageObject {
     StorageType storageType;
     ObjectKey objectKey;
 
-    public static StorageObject of(final StorageType storageType, final ObjectKey objectKey) {
+    public static StorageObject of(final @Nullable StorageType storageType, final @Nullable ObjectKey objectKey) {
 
         // null 禁止
         if (Objects.isNull(storageType)) {

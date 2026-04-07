@@ -3,6 +3,7 @@ package jp.i432kg.footprint.domain.value;
 import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -15,7 +16,7 @@ public enum StorageType {
 
     private final String value;
 
-    public static StorageType of(final String value) {
+    public static StorageType of(final @Nullable String value) {
         return Arrays.stream(values())
                 .filter(v -> v.value.equalsIgnoreCase(value))
                 .findFirst()

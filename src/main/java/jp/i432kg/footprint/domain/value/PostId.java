@@ -4,6 +4,7 @@ import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -33,7 +34,7 @@ public class PostId {
      * @return {@link PostId} インスタンス
      * @throws InvalidValueException バリデーションエラーの場合
      */
-    public static PostId of(final String value) {
+    public static PostId of(final @Nullable String value) {
 
         // null 禁止
         if (Objects.isNull(value)) {

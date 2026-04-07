@@ -2,6 +2,7 @@ package jp.i432kg.footprint.domain.value;
 
 import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.*;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -33,7 +34,7 @@ public class ObjectKey {
 
     String value;
 
-    public static ObjectKey of(final String value) {
+    public static ObjectKey of(final @Nullable String value) {
 
         // null 禁止
         if (Objects.isNull(value)) {

@@ -4,6 +4,7 @@ import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -47,7 +48,7 @@ public class EmailAddress {
      * @return {@link EmailAddress} インスタンス
      * @throws InvalidValueException バリデーションエラーの場合
      */
-    public static EmailAddress of(final String value) {
+    public static EmailAddress of(final @Nullable String value) {
 
         // null 禁止
         if (Objects.isNull(value)) {

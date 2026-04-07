@@ -4,6 +4,7 @@ import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -36,7 +37,7 @@ public class Comment {
      * @return {@link Comment} インスタンス
      * @throws InvalidValueException バリデーションエラーの場合
      */
-    public static Comment of(final String value) {
+    public static Comment of(final @Nullable String value) {
 
         // null 禁止
         if (Objects.isNull(value)) {

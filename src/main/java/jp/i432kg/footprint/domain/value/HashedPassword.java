@@ -4,6 +4,7 @@ import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -34,7 +35,7 @@ public class HashedPassword {
      * @return {@link HashedPassword} インスタンス
      * @throws InvalidValueException バリデーションエラーの場合
      */
-    public static HashedPassword of(final String hashedValue) {
+    public static HashedPassword of(final @Nullable String hashedValue) {
 
         // null 禁止
         if (Objects.isNull(hashedValue)) {

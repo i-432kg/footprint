@@ -4,7 +4,7 @@ import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -43,7 +43,7 @@ public class Latitude {
      * @return {@link Latitude} インスタンス
      * @throws InvalidValueException バリデーションエラーの場合
      */
-    public static Latitude of(final BigDecimal value) {
+    public static Latitude of(final @Nullable BigDecimal value) {
 
         // null 禁止
         if (Objects.isNull(value)) {

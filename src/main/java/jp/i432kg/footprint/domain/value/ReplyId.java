@@ -4,6 +4,7 @@ import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -26,7 +27,7 @@ public class ReplyId {
 
     String value;
 
-    public static ReplyId of(final String value) {
+    public static ReplyId of(final @Nullable String value) {
 
         // null 禁止
         if (Objects.isNull(value)) {

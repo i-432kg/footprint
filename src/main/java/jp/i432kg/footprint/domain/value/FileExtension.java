@@ -2,6 +2,7 @@ package jp.i432kg.footprint.domain.value;
 
 import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.*;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -57,7 +58,7 @@ public class FileExtension {
      * @return {@link FileExtension} インスタンス
      * @throws InvalidValueException バリデーションエラーの場合
      */
-    public static FileExtension of(final String value) {
+    public static FileExtension of(final @Nullable String value) {
 
         // null 禁止
         if (Objects.isNull(value)) {
