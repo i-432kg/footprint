@@ -1,13 +1,10 @@
 package jp.i432kg.footprint.domain.value;
 
-import jp.i432kg.footprint.domain.exception.InvalidValueException;
+import jp.i432kg.footprint.domain.helper.UlidValidation;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.jspecify.annotations.Nullable;
-
-import java.util.Objects;
-import java.util.regex.Pattern;
 
 /**
  * 投稿を一意に識別するための ID を表す値オブジェクト
@@ -18,11 +15,6 @@ import java.util.regex.Pattern;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PostId {
 
-    /**
-     * ULID の生成パターン
-     */
-    static Pattern ULID_PATTERN = Pattern.compile("^[0-9A-HJKMNP-TV-Z]{26}$");
-
     static String FIELD_NAME = "post_id";
 
     String value;
@@ -32,25 +24,11 @@ public class PostId {
      *
      * @param value 投稿 ID
      * @return {@link PostId} インスタンス
-     * @throws InvalidValueException バリデーションエラーの場合
+     * @throws jp.i432kg.footprint.domain.exception.InvalidValueException バリデーションエラーの場合
      */
     public static PostId of(final @Nullable String value) {
-
-        // null 禁止
-        if (Objects.isNull(value)) {
-            throw InvalidValueException.required(FIELD_NAME);
-        }
-
-        // 空文字のみを不許可
-        if (value.isBlank()) {
-            throw InvalidValueException.blank(FIELD_NAME);
-        }
-
-        if (!ULID_PATTERN.matcher(value).matches()) {
-            throw InvalidValueException.invalidFormat(FIELD_NAME, value, ULID_PATTERN.pattern());
-        }
-
-        return new PostId(value);
+        final String validated = UlidValidation.requireValidUlid(FIELD_NAME, value);
+        return new PostId(validated);
     }
 
     public String value() {
