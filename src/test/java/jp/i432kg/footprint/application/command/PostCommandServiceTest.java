@@ -45,7 +45,6 @@ class PostCommandServiceTest {
         PostCommandService service = new PostCommandService(
                 postRepository,
                 imageRepository,
-                postDomainService,
                 userDomainService
         );
 
