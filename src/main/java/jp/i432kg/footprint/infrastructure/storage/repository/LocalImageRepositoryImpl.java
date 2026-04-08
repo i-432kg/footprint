@@ -10,10 +10,11 @@ import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDirectory;
 import com.drew.metadata.jpeg.JpegDirectory;
 import com.github.f4b6a3.ulid.UlidCreator;
+import jp.i432kg.footprint.application.command.model.ImageMetadata;
+import jp.i432kg.footprint.application.port.ImageMetadataExtractor;
+import jp.i432kg.footprint.application.port.ImageStorage;
 import jp.i432kg.footprint.domain.ObjectKeyFactory;
-import jp.i432kg.footprint.domain.model.Image;
 import jp.i432kg.footprint.domain.model.Location;
-import jp.i432kg.footprint.domain.repository.ImageRepository;
 import jp.i432kg.footprint.domain.value.*;
 import jp.i432kg.footprint.domain.value.Byte;
 import jp.i432kg.footprint.infrastructure.storage.LocalStoragePathResolver;
@@ -35,12 +36,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * 画像ファイルのリポジトリ実装クラス
+ * ローカルストレージ向けの画像保存・画像解析実装です。
  */
 @Slf4j
 @Repository
 @ConditionalOnProperty(name = "app.storage.type", havingValue = "LOCAL")
-public class LocalImageRepositoryImpl implements ImageRepository {
+public class LocalImageRepositoryImpl implements ImageStorage, ImageMetadataExtractor {
 
     private final Path storageRoot;
     private final LocalStoragePathResolver localStoragePathResolver;
@@ -54,7 +55,7 @@ public class LocalImageRepositoryImpl implements ImageRepository {
     }
 
     @Override
-    public Image extractImageMetadata(final StorageObject storageObject) throws ImageProcessingException, IOException {
+    public ImageMetadata extract(final StorageObject storageObject) throws ImageProcessingException, IOException {
 
         try {
             final Path path = localStoragePathResolver.resolve(storageObject);
@@ -104,7 +105,7 @@ public class LocalImageRepositoryImpl implements ImageRepository {
 
             final boolean hasEXIF = metadata.containsDirectoryOfType(ExifIFD0Directory.class) || gpsDir.isPresent();
 
-            return Image.of(storageObject, fileExtension, fileSize, width, height, location, hasEXIF, takenAt);
+            return ImageMetadata.of(fileExtension, fileSize, width, height, location, hasEXIF, takenAt);
 
         } catch (IllegalArgumentException e) {
             log.error(
@@ -120,7 +121,7 @@ public class LocalImageRepositoryImpl implements ImageRepository {
     }
 
     @Override
-    public StorageObject save(
+    public StorageObject store(
             final InputStream imageStream,
             final FileName originalFilename,
             final UserId userId,

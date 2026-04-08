@@ -9,10 +9,11 @@ import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDirectory;
 import com.github.f4b6a3.ulid.UlidCreator;
+import jp.i432kg.footprint.application.command.model.ImageMetadata;
+import jp.i432kg.footprint.application.port.ImageMetadataExtractor;
+import jp.i432kg.footprint.application.port.ImageStorage;
 import jp.i432kg.footprint.domain.ObjectKeyFactory;
-import jp.i432kg.footprint.domain.model.Image;
 import jp.i432kg.footprint.domain.model.Location;
-import jp.i432kg.footprint.domain.repository.ImageRepository;
 import jp.i432kg.footprint.domain.value.Byte;
 import jp.i432kg.footprint.domain.value.FileExtension;
 import jp.i432kg.footprint.domain.value.FileName;
@@ -52,7 +53,7 @@ import java.util.Optional;
 @Slf4j
 @Repository
 @ConditionalOnProperty(name = "app.storage.type", havingValue = "S3")
-public class S3ImageRepositoryImpl implements ImageRepository {
+public class S3ImageRepositoryImpl implements ImageStorage, ImageMetadataExtractor {
 
     private final S3Client s3Client;
     private final S3ObjectResolver s3ObjectResolver;
@@ -66,7 +67,7 @@ public class S3ImageRepositoryImpl implements ImageRepository {
     }
 
     @Override
-    public Image extractImageMetadata(final StorageObject storageObject) throws ImageProcessingException, IOException {
+    public ImageMetadata extract(final StorageObject storageObject) throws ImageProcessingException, IOException {
 
         try {
             final String bucket = s3ObjectResolver.resolveBucket(storageObject);
@@ -116,8 +117,7 @@ public class S3ImageRepositoryImpl implements ImageRepository {
                 final long fileSizeValue = contentLength != null ? contentLength : imageBytes.length;
                 final Byte fileSize = Byte.of(fileSizeValue);
 
-                return Image.of(
-                        storageObject,
+                return ImageMetadata.of(
                         fileExtension,
                         fileSize,
                         dimension.width(),
@@ -156,7 +156,7 @@ public class S3ImageRepositoryImpl implements ImageRepository {
     }
 
     @Override
-    public StorageObject save(
+    public StorageObject store(
             final InputStream imageStream,
             final FileName originalFilename,
             final UserId userId,

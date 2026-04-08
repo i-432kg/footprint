@@ -3,11 +3,13 @@ package jp.i432kg.footprint.application.command;
 import com.drew.imaging.ImageProcessingException;
 import com.github.f4b6a3.ulid.UlidCreator;
 import jp.i432kg.footprint.application.command.model.CreatePostCommand;
+import jp.i432kg.footprint.application.command.model.ImageMetadata;
 import jp.i432kg.footprint.application.exception.resource.UserNotFoundException;
 import jp.i432kg.footprint.application.exception.usecase.PostCommandFailedException;
+import jp.i432kg.footprint.application.port.ImageMetadataExtractor;
+import jp.i432kg.footprint.application.port.ImageStorage;
 import jp.i432kg.footprint.domain.model.Image;
 import jp.i432kg.footprint.domain.model.Post;
-import jp.i432kg.footprint.domain.repository.ImageRepository;
 import jp.i432kg.footprint.domain.repository.PostRepository;
 import jp.i432kg.footprint.domain.service.UserDomainService;
 import jp.i432kg.footprint.domain.value.*;
@@ -28,7 +30,9 @@ public class PostCommandService {
 
     private final PostRepository postRepository;
 
-    private final ImageRepository imageRepository;
+    private final ImageStorage imageStorage;
+
+    private final ImageMetadataExtractor imageMetadataExtractor;
 
     private final UserDomainService userDomainService;
 
@@ -53,7 +57,7 @@ public class PostCommandService {
         try {
             // 画像ファイルを物理ストレージに保存する
             storageObject =
-                    imageRepository.save(
+                    imageStorage.store(
                             command.getImageStream(),
                             command.getOriginalFilename(),
                             command.getUserId(),
@@ -66,16 +70,28 @@ public class PostCommandService {
             );
         }
 
-        final Image image;
+        final ImageMetadata imageMetadata;
         try {
-            // 保存された実ファイルからメタ情報を抽出して Image ドメインモデルを生成する
-            image = imageRepository.extractImageMetadata(storageObject);
+            // 保存された実ファイルからメタ情報を抽出する
+            imageMetadata = imageMetadataExtractor.extract(storageObject);
         } catch (ImageProcessingException | IOException e) {
             throw PostCommandFailedException.imageMetadataExtractFailed(
                     storageObject.getObjectKey().getValue(),
                     e
             );
         }
+
+        // 抽出したメタデータと保存先情報から Image ドメインモデルを生成する
+        final Image image = Image.of(
+                storageObject,
+                imageMetadata.getFileExtension(),
+                imageMetadata.getFileSize(),
+                imageMetadata.getWidth(),
+                imageMetadata.getHeight(),
+                imageMetadata.getLocation(),
+                imageMetadata.isHasEXIF(),
+                imageMetadata.getTakenAt()
+        );
 
         // Post ドメインモデルを構築し、DBに永続化する
         final Post post = Post.of(

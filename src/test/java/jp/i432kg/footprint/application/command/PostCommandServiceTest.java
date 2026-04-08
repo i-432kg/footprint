@@ -2,10 +2,10 @@ package jp.i432kg.footprint.application.command;
 
 import jp.i432kg.footprint.application.command.model.CreatePostCommand;
 import jp.i432kg.footprint.application.exception.resource.UserNotFoundException;
+import jp.i432kg.footprint.application.port.ImageMetadataExtractor;
+import jp.i432kg.footprint.application.port.ImageStorage;
 import jp.i432kg.footprint.domain.DomainTestFixtures;
-import jp.i432kg.footprint.domain.repository.ImageRepository;
 import jp.i432kg.footprint.domain.repository.PostRepository;
-import jp.i432kg.footprint.domain.service.PostDomainService;
 import jp.i432kg.footprint.domain.service.UserDomainService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,10 +25,10 @@ class PostCommandServiceTest {
     private PostRepository postRepository;
 
     @Mock
-    private ImageRepository imageRepository;
+    private ImageStorage imageStorage;
 
     @Mock
-    private PostDomainService postDomainService;
+    private ImageMetadataExtractor imageMetadataExtractor;
 
     @Mock
     private UserDomainService userDomainService;
@@ -42,15 +42,16 @@ class PostCommandServiceTest {
                 jp.i432kg.footprint.domain.value.FileName.of("image.jpg")
         );
         when(userDomainService.isExistUser(DomainTestFixtures.userId())).thenReturn(false);
-        PostCommandService service = new PostCommandService(
+        final PostCommandService service = new PostCommandService(
                 postRepository,
-                imageRepository,
+                imageStorage,
+                imageMetadataExtractor,
                 userDomainService
         );
 
         assertThatThrownBy(() -> service.createPost(command))
                 .isInstanceOf(UserNotFoundException.class);
 
-        verifyNoInteractions(imageRepository);
+        verifyNoInteractions(imageStorage, imageMetadataExtractor);
     }
 }
