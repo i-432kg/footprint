@@ -3,12 +3,10 @@ package jp.i432kg.footprint.domain.service;
 import jp.i432kg.footprint.domain.repository.PostRepository;
 import jp.i432kg.footprint.domain.value.PostId;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 /**
  * 返信に関するドメインサービス
  */
-@Service
 @RequiredArgsConstructor
 public class PostDomainService {
 

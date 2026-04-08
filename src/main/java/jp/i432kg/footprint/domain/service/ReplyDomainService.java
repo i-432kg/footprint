@@ -7,14 +7,12 @@ import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.ReplyId;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
-import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 /**
  * 返信に関するドメインサービス
  */
-@Service
 @RequiredArgsConstructor
 public class ReplyDomainService {
 

@@ -5,12 +5,10 @@ import jp.i432kg.footprint.domain.repository.UserRepository;
 import jp.i432kg.footprint.domain.value.EmailAddress;
 import jp.i432kg.footprint.domain.value.UserId;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 /**
  * ユーザーに関するドメインサービス
  */
-@Service
 @RequiredArgsConstructor
 public class UserDomainService {
 
