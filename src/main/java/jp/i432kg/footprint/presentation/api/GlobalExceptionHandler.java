@@ -12,6 +12,8 @@ import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import jp.i432kg.footprint.domain.exception.ReplyPostMismatchException;
 import jp.i432kg.footprint.exception.BaseException;
 import jp.i432kg.footprint.exception.ErrorCode;
+import jp.i432kg.footprint.logging.masking.SensitiveDataMasker;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -48,10 +50,13 @@ import java.util.Map;
  */
 @Slf4j
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
 
     private static final String ERROR_CODE_DOMAIN_INVALID_VALUE = "DOMAIN_INVALID_VALUE";
     private static final String ERROR_CODE_UNEXPECTED_ERROR = "UNEXPECTED_ERROR";
+
+    private final SensitiveDataMasker sensitiveDataMasker;
 
     /**
      * 投稿が見つからない場合の例外を処理します。
@@ -61,7 +66,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(PostNotFoundException.class)
     public ProblemDetail handlePostNotFound(final PostNotFoundException ex) {
-        log.warn("Post not found. errorCode={}, details={}", ex.getErrorCode(), ex.getDetails());
+        log.warn("Post not found. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
         return createApplicationProblemDetail(HttpStatus.NOT_FOUND, "Post Not Found", ex);
     }
 
@@ -73,7 +78,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ReplyNotFoundException.class)
     public ProblemDetail handleReplyNotFound(final ReplyNotFoundException ex) {
-        log.warn("Reply not found. errorCode={}, details={}", ex.getErrorCode(), ex.getDetails());
+        log.warn("Reply not found. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
         return createApplicationProblemDetail(HttpStatus.NOT_FOUND, "Reply Not Found", ex);
     }
 
@@ -85,7 +90,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(UserNotFoundException.class)
     public ProblemDetail handleUserNotFound(final UserNotFoundException ex) {
-        log.warn("User not found. errorCode={}, details={}", ex.getErrorCode(), ex.getDetails());
+        log.warn("User not found. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
         return createApplicationProblemDetail(HttpStatus.NOT_FOUND, "User Not Found", ex);
     }
 
@@ -97,7 +102,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(EmailAlreadyUsedException.class)
     public ProblemDetail handleEmailAlreadyUsed(final EmailAlreadyUsedException ex) {
-        log.warn("Email already used. errorCode={}, details={}", ex.getErrorCode(), ex.getDetails());
+        log.warn("Email already used. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
         return createApplicationProblemDetail(HttpStatus.CONFLICT, "Email Already Used", ex);
     }
 
@@ -109,7 +114,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(InvalidValueException.class)
     public ProblemDetail handleInvalidValue(final InvalidValueException ex) {
-        log.warn("Invalid value. errorCode={}, details={}", ex.getErrorCode(), ex.getDetails());
+        log.warn("Invalid value. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
         return createApplicationProblemDetail(HttpStatus.BAD_REQUEST, "Invalid Value", ex);
     }
 
@@ -121,7 +126,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ReplyPostMismatchException.class)
     public ProblemDetail handleReplyPostMismatch(final ReplyPostMismatchException ex) {
-        log.warn("Reply post mismatch. errorCode={}, details={}", ex.getErrorCode(), ex.getDetails());
+        log.warn("Reply post mismatch. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
         return createApplicationProblemDetail(HttpStatus.BAD_REQUEST, "Reply Post Mismatch", ex);
     }
 
@@ -285,7 +290,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(UseCaseExecutionException.class)
     public ProblemDetail handleUseCaseExecutionException(final UseCaseExecutionException ex) {
-        log.warn("Use case failed. errorCode={}, details={}", ex.getErrorCode(), ex.getDetails());
+        log.warn("Use case failed. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
         return createApplicationProblemDetail(resolveStatus(ex), "Use Case Error", ex);
     }
 
@@ -297,7 +302,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(DomainException.class)
     public ProblemDetail handleDomainException(final DomainException ex) {
-        log.warn("Domain error occurred. errorCode={}, details={}", ex.getErrorCode(), ex.getDetails());
+        log.warn("Domain error occurred. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
         return createApplicationProblemDetail(resolveStatus(ex), "Domain Error", ex);
     }
 
@@ -309,7 +314,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ApplicationException.class)
     public ProblemDetail handleApplicationException(final ApplicationException ex) {
-        log.warn("Application error occurred. errorCode={}, details={}", ex.getErrorCode(), ex.getDetails());
+        log.warn("Application error occurred. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
         return createApplicationProblemDetail(resolveStatus(ex), "Application Error", ex);
     }
 
@@ -355,7 +360,7 @@ public class GlobalExceptionHandler {
         final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, ex.getMessage());
         problemDetail.setTitle(title);
         problemDetail.setProperty("errorCode", ex.getErrorCode());
-        problemDetail.setProperty("details", ex.getDetails());
+        problemDetail.setProperty("details", maskedDetails(ex));
         return problemDetail;
     }
 
@@ -395,8 +400,16 @@ public class GlobalExceptionHandler {
         final Map<String, Object> error = new LinkedHashMap<>();
         error.put("field", field);
         error.put("message", message);
-        error.put("rejectedValue", rejectedValue);
+        error.put("rejectedValue", sanitizeRejectedValue(field, rejectedValue));
         return error;
+    }
+
+    private Map<String, Object> maskedDetails(final BaseException ex) {
+        return sensitiveDataMasker.maskMap(ex.getDetails());
+    }
+
+    private Object sanitizeRejectedValue(final String field, final Object rejectedValue) {
+        return sensitiveDataMasker.maskRejectedValue(field, rejectedValue);
     }
 
     /**
