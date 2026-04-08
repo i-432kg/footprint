@@ -3,12 +3,13 @@ package jp.i432kg.footprint.application.command;
 import com.drew.imaging.ImageProcessingException;
 import com.github.f4b6a3.ulid.UlidCreator;
 import jp.i432kg.footprint.application.command.model.CreatePostCommand;
+import jp.i432kg.footprint.application.exception.resource.UserNotFoundException;
 import jp.i432kg.footprint.application.exception.usecase.PostCommandFailedException;
 import jp.i432kg.footprint.domain.model.Image;
 import jp.i432kg.footprint.domain.model.Post;
 import jp.i432kg.footprint.domain.repository.ImageRepository;
 import jp.i432kg.footprint.domain.repository.PostRepository;
-import jp.i432kg.footprint.domain.service.PostDomainService;
+import jp.i432kg.footprint.domain.service.UserDomainService;
 import jp.i432kg.footprint.domain.value.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -29,7 +30,7 @@ public class PostCommandService {
 
     private final ImageRepository imageRepository;
 
-    private final PostDomainService postDomainService;
+    private final UserDomainService userDomainService;
 
     /**
      * 新しい投稿を作成します。
@@ -40,8 +41,10 @@ public class PostCommandService {
     @Transactional
     public void createPost(final CreatePostCommand command) {
 
-        // 投稿作成時のバリデーション
-        postDomainService.validateCreatePost(command.getUserId());
+        // 投稿したユーザーの存在確認を行う
+        if (!userDomainService.isExistUser(command.getUserId())) {
+            throw new UserNotFoundException(command.getUserId());
+        }
 
         // PostId を生成 (ULID)
         final PostId postId = PostId.of(UlidCreator.getUlid().toString());

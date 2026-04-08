@@ -1,8 +1,5 @@
 package jp.i432kg.footprint.domain.service;
 
-import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;
-import jp.i432kg.footprint.application.exception.resource.ReplyNotFoundException;
-import jp.i432kg.footprint.application.exception.resource.UserNotFoundException;
 import jp.i432kg.footprint.domain.DomainTestFixtures;
 import jp.i432kg.footprint.domain.exception.ReplyPostMismatchException;
 import jp.i432kg.footprint.domain.model.Reply;
@@ -15,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
@@ -24,67 +22,31 @@ class ReplyDomainServiceTest {
 
     @Mock
     private ReplyRepository replyRepository;
-
-    @Mock
-    private PostDomainService postDomainService;
-
-    @Mock
-    private UserDomainService userDomainService;
-
     @Test
-    void validateCreateReply_shouldDoNothing_whenPostAndUserExistAndNoParentReply() {
-        when(postDomainService.isExistPost(DomainTestFixtures.postId())).thenReturn(true);
-        when(userDomainService.isExistUser(DomainTestFixtures.userId())).thenReturn(true);
-        ReplyDomainService service = new ReplyDomainService(replyRepository, postDomainService, userDomainService);
+    void findReplyById_shouldReturnEmpty_whenReplyIdIsNull() {
+        ReplyDomainService service = new ReplyDomainService(replyRepository);
 
-        assertThatCode(() -> service.validateCreateReply(
-                DomainTestFixtures.postId(),
-                DomainTestFixtures.userId(),
-                null
-        )).doesNotThrowAnyException();
+        assertThat(service.findReplyById(null)).isEmpty();
     }
 
     @Test
-    void validateCreateReply_shouldThrowPostNotFoundException_whenPostDoesNotExist() {
-        when(postDomainService.isExistPost(DomainTestFixtures.postId())).thenReturn(false);
-        ReplyDomainService service = new ReplyDomainService(replyRepository, postDomainService, userDomainService);
+    void findReplyById_shouldReturnRepositoryResult_whenReplyIdExists() {
+        when(replyRepository.findReplyById(DomainTestFixtures.replyId())).thenReturn(Optional.of(DomainTestFixtures.reply()));
+        ReplyDomainService service = new ReplyDomainService(replyRepository);
 
-        assertThatThrownBy(() -> service.validateCreateReply(
-                DomainTestFixtures.postId(),
-                DomainTestFixtures.userId(),
-                null
-        )).isInstanceOf(PostNotFoundException.class);
+        assertThat(service.findReplyById(DomainTestFixtures.replyId())).contains(DomainTestFixtures.reply());
     }
 
     @Test
-    void validateCreateReply_shouldThrowUserNotFoundException_whenUserDoesNotExist() {
-        when(postDomainService.isExistPost(DomainTestFixtures.postId())).thenReturn(true);
-        when(userDomainService.isExistUser(DomainTestFixtures.userId())).thenReturn(false);
-        ReplyDomainService service = new ReplyDomainService(replyRepository, postDomainService, userDomainService);
-
-        assertThatThrownBy(() -> service.validateCreateReply(
-                DomainTestFixtures.postId(),
-                DomainTestFixtures.userId(),
-                null
-        )).isInstanceOf(UserNotFoundException.class);
-    }
-
-    @Test
-    void validateCreateReply_shouldThrowReplyNotFoundException_whenParentReplyDoesNotExist() {
-        when(postDomainService.isExistPost(DomainTestFixtures.postId())).thenReturn(true);
-        when(userDomainService.isExistUser(DomainTestFixtures.userId())).thenReturn(true);
+    void findReplyById_shouldReturnEmpty_whenReplyDoesNotExist() {
         when(replyRepository.findReplyById(DomainTestFixtures.replyId())).thenReturn(Optional.empty());
-        ReplyDomainService service = new ReplyDomainService(replyRepository, postDomainService, userDomainService);
+        ReplyDomainService service = new ReplyDomainService(replyRepository);
 
-        assertThatThrownBy(() -> service.validateCreateReply(
-                DomainTestFixtures.postId(),
-                DomainTestFixtures.userId(),
-                DomainTestFixtures.replyId()
-        )).isInstanceOf(ReplyNotFoundException.class);
+        assertThat(service.findReplyById(DomainTestFixtures.replyId())).isEmpty();
     }
 
     @Test
-    void validateCreateReply_shouldThrowReplyPostMismatchException_whenParentReplyBelongsToAnotherPost() {
+    void validateParentReplyBelongsToPost_shouldThrowReplyPostMismatchException_whenParentReplyBelongsToAnotherPost() {
         Reply parentReply = Reply.of(
                 DomainTestFixtures.replyId(),
                 DomainTestFixtures.otherPostId(),
@@ -93,30 +55,19 @@ class ReplyDomainServiceTest {
                 DomainTestFixtures.replyMessage(),
                 LocalDateTime.of(2026, 4, 1, 14, 0)
         );
+        ReplyDomainService service = new ReplyDomainService(replyRepository);
 
-        when(postDomainService.isExistPost(DomainTestFixtures.postId())).thenReturn(true);
-        when(userDomainService.isExistUser(DomainTestFixtures.userId())).thenReturn(true);
-        when(replyRepository.findReplyById(DomainTestFixtures.replyId())).thenReturn(Optional.of(parentReply));
-        ReplyDomainService service = new ReplyDomainService(replyRepository, postDomainService, userDomainService);
-
-        assertThatThrownBy(() -> service.validateCreateReply(
-                DomainTestFixtures.postId(),
-                DomainTestFixtures.userId(),
-                DomainTestFixtures.replyId()
-        )).isInstanceOf(ReplyPostMismatchException.class);
+        assertThatThrownBy(() -> service.validateParentReplyBelongsToPost(DomainTestFixtures.postId(), parentReply))
+                .isInstanceOf(ReplyPostMismatchException.class);
     }
 
     @Test
-    void validateCreateReply_shouldDoNothing_whenParentReplyBelongsToSamePost() {
-        when(postDomainService.isExistPost(DomainTestFixtures.postId())).thenReturn(true);
-        when(userDomainService.isExistUser(DomainTestFixtures.userId())).thenReturn(true);
-        when(replyRepository.findReplyById(DomainTestFixtures.replyId())).thenReturn(Optional.of(DomainTestFixtures.reply()));
-        ReplyDomainService service = new ReplyDomainService(replyRepository, postDomainService, userDomainService);
+    void validateParentReplyBelongsToPost_shouldDoNothing_whenParentReplyBelongsToSamePost() {
+        ReplyDomainService service = new ReplyDomainService(replyRepository);
 
-        assertThatCode(() -> service.validateCreateReply(
+        assertThatCode(() -> service.validateParentReplyBelongsToPost(
                 DomainTestFixtures.postId(),
-                DomainTestFixtures.userId(),
-                DomainTestFixtures.replyId()
+                DomainTestFixtures.reply()
         )).doesNotThrowAnyException();
     }
 }
