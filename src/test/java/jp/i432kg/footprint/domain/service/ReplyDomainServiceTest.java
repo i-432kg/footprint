@@ -2,6 +2,7 @@ package jp.i432kg.footprint.domain.service;
 
 import jp.i432kg.footprint.domain.DomainTestFixtures;
 import jp.i432kg.footprint.domain.exception.ReplyPostMismatchException;
+import jp.i432kg.footprint.domain.model.ParentReply;
 import jp.i432kg.footprint.domain.model.Reply;
 import jp.i432kg.footprint.domain.repository.ReplyRepository;
 import org.junit.jupiter.api.Test;
@@ -47,15 +48,15 @@ class ReplyDomainServiceTest {
 
     @Test
     void validateParentReplyBelongsToPost_shouldThrowReplyPostMismatchException_whenParentReplyBelongsToAnotherPost() {
-        Reply parentReply = Reply.of(
+        final Reply parentReply = Reply.of(
                 DomainTestFixtures.replyId(),
                 DomainTestFixtures.otherPostId(),
                 DomainTestFixtures.userId(),
-                null,
+                ParentReply.root(),
                 DomainTestFixtures.replyMessage(),
                 LocalDateTime.of(2026, 4, 1, 14, 0)
         );
-        ReplyDomainService service = new ReplyDomainService(replyRepository);
+        final ReplyDomainService service = new ReplyDomainService(replyRepository);
 
         assertThatThrownBy(() -> service.validateParentReplyBelongsToPost(DomainTestFixtures.postId(), parentReply))
                 .isInstanceOf(ReplyPostMismatchException.class);

@@ -20,9 +20,11 @@ class LocationTest {
 
     @Test
     void unknown_shouldCreateLocationWithNullCoordinates() {
-        Location actual = Location.unknown();
+        final Location actual = Location.unknown();
 
         assertThat(actual.getLatitude()).isNull();
         assertThat(actual.getLongitude()).isNull();
+        assertThat(actual.isUnknown()).isTrue();
     }
+
 }

@@ -11,13 +11,13 @@ class ReplyTest {
 
     @Test
     void of_shouldCreateInstanceWithGivenValues() {
-        LocalDateTime createdAt = LocalDateTime.of(2026, 4, 1, 15, 0);
+        final LocalDateTime createdAt = LocalDateTime.of(2026, 4, 1, 15, 0);
 
-        Reply actual = Reply.of(
+        final Reply actual = Reply.of(
                 DomainTestFixtures.replyId(),
                 DomainTestFixtures.postId(),
                 DomainTestFixtures.userId(),
-                DomainTestFixtures.otherReplyId(),
+                ParentReply.of(DomainTestFixtures.otherReplyId()),
                 DomainTestFixtures.replyMessage(),
                 createdAt
         );
@@ -28,15 +28,16 @@ class ReplyTest {
         assertThat(actual.getParentReplyId()).isEqualTo(DomainTestFixtures.otherReplyId());
         assertThat(actual.getMessage()).isEqualTo(DomainTestFixtures.replyMessage());
         assertThat(actual.getCreatedAt()).isEqualTo(createdAt);
+        assertThat(actual.getParentReply().hasParent()).isTrue();
     }
 
     @Test
     void hasParentReply_shouldReturnTrue_whenParentReplyIdExists() {
-        Reply actual = Reply.of(
+        final Reply actual = Reply.of(
                 DomainTestFixtures.replyId(),
                 DomainTestFixtures.postId(),
                 DomainTestFixtures.userId(),
-                DomainTestFixtures.otherReplyId(),
+                ParentReply.of(DomainTestFixtures.otherReplyId()),
                 DomainTestFixtures.replyMessage(),
                 LocalDateTime.of(2026, 4, 1, 15, 0)
         );

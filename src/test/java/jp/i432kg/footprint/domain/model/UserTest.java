@@ -15,7 +15,7 @@ class UserTest {
 
     @Test
     void of_shouldCreateInstanceWithGivenValues() {
-        User actual = User.of(
+        final User actual = User.of(
                 DomainTestFixtures.userId(),
                 UserName.of("user_01"),
                 EmailAddress.of("user@example.com"),

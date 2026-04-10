@@ -11,9 +11,9 @@ class PostTest {
 
     @Test
     void of_shouldCreateInstanceWithGivenValues() {
-        LocalDateTime createdAt = LocalDateTime.of(2026, 4, 1, 13, 0);
+        final LocalDateTime createdAt = LocalDateTime.of(2026, 4, 1, 13, 0);
 
-        Post actual = Post.of(
+        final Post actual = Post.of(
                 DomainTestFixtures.postId(),
                 DomainTestFixtures.userId(),
                 DomainTestFixtures.image(),

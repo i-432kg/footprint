@@ -2,6 +2,7 @@ package jp.i432kg.footprint.domain;
 
 import jp.i432kg.footprint.domain.model.Image;
 import jp.i432kg.footprint.domain.model.Location;
+import jp.i432kg.footprint.domain.model.ParentReply;
 import jp.i432kg.footprint.domain.model.Post;
 import jp.i432kg.footprint.domain.model.Reply;
 import jp.i432kg.footprint.domain.model.User;
@@ -124,7 +125,7 @@ public final class DomainTestFixtures {
                 replyId(),
                 postId(),
                 userId(),
-                null,
+                ParentReply.root(),
                 replyMessage(),
                 LocalDateTime.of(2026, 4, 1, 13, 30)
         );

@@ -75,4 +75,5 @@ class ImageTest {
         )).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Total pixels exceed the limit of 40MP");
     }
+
 }

@@ -5,7 +5,6 @@ import lombok.*;
 import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 /**
  * 返信ドメインモデル
@@ -33,8 +32,7 @@ public class Reply {
     /**
      * 返信元の返信
      */
-    @Nullable
-    ReplyId parentReplyId;
+    ParentReply parentReply;
 
     /**
      * 返信本文
@@ -53,11 +51,20 @@ public class Reply {
             final ReplyId replyId,
             final PostId postId,
             final UserId userId,
-            final ReplyId parentReplyId,
+            final ParentReply parentReply,
             final Comment message,
             final LocalDateTime createdAt
     ) {
-        return new Reply(replyId, postId, userId, parentReplyId, message, createdAt);
+        return new Reply(replyId, postId, userId, parentReply, message, createdAt);
+    }
+
+    /**
+     * 親返信 ID を返します。
+     *
+     * @return 親返信 ID。ルート返信の場合は {@code null}
+     */
+    public @Nullable ReplyId getParentReplyId() {
+        return parentReply.getReplyId();
     }
 
     /**
@@ -66,6 +73,6 @@ public class Reply {
      * @return 返信が親返信を持つ場合は true / それ以外は false
      */
     public boolean hasParentReply() {
-        return Objects.nonNull(parentReplyId);
+        return parentReply.hasParent();
     }
 }

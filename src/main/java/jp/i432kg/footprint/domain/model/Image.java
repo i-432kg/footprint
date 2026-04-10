@@ -7,7 +7,6 @@ import jp.i432kg.footprint.domain.value.StorageObject;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 /**
  * 画像ドメインモデル
@@ -106,7 +105,7 @@ public class Image {
      * 位置情報が有効かどうかを判定します
      */
     public boolean hasLocation() {
-        return !Objects.requireNonNull(location).equals(Location.unknown());
+        return !location.isUnknown();
     }
 
 }
