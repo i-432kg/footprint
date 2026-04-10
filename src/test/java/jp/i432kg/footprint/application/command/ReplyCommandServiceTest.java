@@ -5,6 +5,7 @@ import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;
 import jp.i432kg.footprint.application.exception.resource.ReplyNotFoundException;
 import jp.i432kg.footprint.application.exception.resource.UserNotFoundException;
 import jp.i432kg.footprint.domain.DomainTestFixtures;
+import jp.i432kg.footprint.domain.model.ParentReply;
 import jp.i432kg.footprint.domain.repository.ReplyRepository;
 import jp.i432kg.footprint.domain.service.PostDomainService;
 import jp.i432kg.footprint.domain.service.ReplyDomainService;
@@ -38,14 +39,14 @@ class ReplyCommandServiceTest {
 
     @Test
     void createReply_shouldThrowPostNotFoundException_whenPostDoesNotExist() {
-        CreateReplyCommand command = CreateReplyCommand.of(
+        final CreateReplyCommand command = CreateReplyCommand.of(
                 DomainTestFixtures.postId(),
                 DomainTestFixtures.userId(),
-                null,
+                ParentReply.root(),
                 DomainTestFixtures.replyMessage()
         );
         when(postDomainService.isExistPost(DomainTestFixtures.postId())).thenReturn(false);
-        ReplyCommandService service = new ReplyCommandService(
+        final ReplyCommandService service = new ReplyCommandService(
                 replyRepository,
                 postDomainService,
                 replyDomainService,
@@ -60,15 +61,15 @@ class ReplyCommandServiceTest {
 
     @Test
     void createReply_shouldThrowUserNotFoundException_whenUserDoesNotExist() {
-        CreateReplyCommand command = CreateReplyCommand.of(
+        final CreateReplyCommand command = CreateReplyCommand.of(
                 DomainTestFixtures.postId(),
                 DomainTestFixtures.userId(),
-                null,
+                ParentReply.root(),
                 DomainTestFixtures.replyMessage()
         );
         when(postDomainService.isExistPost(DomainTestFixtures.postId())).thenReturn(true);
         when(userDomainService.isExistUser(DomainTestFixtures.userId())).thenReturn(false);
-        ReplyCommandService service = new ReplyCommandService(
+        final ReplyCommandService service = new ReplyCommandService(
                 replyRepository,
                 postDomainService,
                 replyDomainService,
@@ -83,16 +84,16 @@ class ReplyCommandServiceTest {
 
     @Test
     void createReply_shouldThrowReplyNotFoundException_whenParentReplyDoesNotExist() {
-        CreateReplyCommand command = CreateReplyCommand.of(
+        final CreateReplyCommand command = CreateReplyCommand.of(
                 DomainTestFixtures.postId(),
                 DomainTestFixtures.userId(),
-                DomainTestFixtures.replyId(),
+                ParentReply.of(DomainTestFixtures.replyId()),
                 DomainTestFixtures.replyMessage()
         );
         when(postDomainService.isExistPost(DomainTestFixtures.postId())).thenReturn(true);
         when(userDomainService.isExistUser(DomainTestFixtures.userId())).thenReturn(true);
         when(replyDomainService.findReplyById(DomainTestFixtures.replyId())).thenReturn(Optional.empty());
-        ReplyCommandService service = new ReplyCommandService(
+        final ReplyCommandService service = new ReplyCommandService(
                 replyRepository,
                 postDomainService,
                 replyDomainService,

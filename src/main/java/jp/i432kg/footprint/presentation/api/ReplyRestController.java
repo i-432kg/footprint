@@ -6,6 +6,7 @@ import jp.i432kg.footprint.application.command.model.CreateReplyCommand;
 import jp.i432kg.footprint.application.query.ReplyQueryService;
 import jp.i432kg.footprint.application.query.model.ReplySummary;
 import jp.i432kg.footprint.domain.value.Comment;
+import jp.i432kg.footprint.domain.model.ParentReply;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.ReplyId;
 import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
@@ -70,7 +71,10 @@ public class ReplyRestController {
         final CreateReplyCommand command = CreateReplyCommand.of(
                 postId,
                 userDetails.getUserId(),
-                Optional.ofNullable(request.getParentReplyId()).map(ReplyId::of).orElse(null),
+                Optional.ofNullable(request.getParentReplyId())
+                        .map(ReplyId::of)
+                        .map(ParentReply::of)
+                        .orElseGet(ParentReply::root),
                 Comment.of(request.getMessage())
         );
 

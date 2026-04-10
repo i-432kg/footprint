@@ -6,7 +6,6 @@ import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;
 import jp.i432kg.footprint.application.exception.resource.ReplyNotFoundException;
 import jp.i432kg.footprint.application.exception.resource.UserNotFoundException;
 import jp.i432kg.footprint.application.exception.usecase.ReplyCommandFailedException;
-import jp.i432kg.footprint.domain.model.ParentReply;
 import jp.i432kg.footprint.domain.model.Reply;
 import jp.i432kg.footprint.domain.repository.ReplyRepository;
 import jp.i432kg.footprint.domain.service.PostDomainService;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 /**
  * 返信（コメント）に関するユースケースを実行するアプリケーションサービス。
@@ -56,9 +54,10 @@ public class ReplyCommandService {
         }
 
         // 親返信がある場合、それが同じ投稿に属しているか確認
-        if (command.hasParentReply()) {
-            final Reply parentReply = replyDomainService.findReplyById(command.getParentReplyId())
-                    .orElseThrow(() -> new ReplyNotFoundException(command.getParentReplyId()));
+        if (command.getParentReply().hasParent()) {
+            final ReplyId parentReplyId = command.getParentReply().getReplyId();
+            final Reply parentReply = replyDomainService.findReplyById(parentReplyId)
+                    .orElseThrow(() -> new ReplyNotFoundException(parentReplyId));
             replyDomainService.validateParentReplyBelongsToPost(command.getPostId(), parentReply);
         }
 
@@ -66,18 +65,11 @@ public class ReplyCommandService {
         final ReplyId replyId = ReplyId.of(UlidCreator.getUlid().toString());
 
         // Reply ドメインモデルを構築し、DBに永続化する
-        final ParentReply parentReply;
-        if (command.hasParentReply()) {
-            parentReply = ParentReply.of(Objects.requireNonNull(command.getParentReplyId()));
-        } else {
-            parentReply = ParentReply.root();
-        }
-
         final Reply reply = Reply.of(
                 replyId,
                 command.getPostId(),
                 command.getUserId(),
-                parentReply,
+                command.getParentReply(),
                 command.getMessage(),
                 LocalDateTime.now()
         );
@@ -89,12 +81,13 @@ public class ReplyCommandService {
         }
 
         // 親返信の子返信カウントを増やす
-        if (command.hasParentReply()) {
+        if (command.getParentReply().hasParent()) {
+            final ReplyId parentReplyId = command.getParentReply().getReplyId();
             try {
-                replyRepository.increaseReplyCount(command.getParentReplyId());
+                replyRepository.increaseReplyCount(parentReplyId);
             } catch (DataAccessException e) {
                 throw ReplyCommandFailedException.increaseReplyCountFailed(
-                        command.getParentReplyId().value(),
+                        parentReplyId.value(),
                         e
                 );
             }
