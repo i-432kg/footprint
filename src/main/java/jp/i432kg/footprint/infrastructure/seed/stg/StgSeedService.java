@@ -48,7 +48,7 @@ public class StgSeedService {
     private final ReplyCommandService replyCommandService;
     private final StgSeedAdminMapper seedAdminMapper;
     private final S3SeedSourceImageProvider seedSourceImageProvider;
-    private final SeedImageManifestLoader seedImageManifestLoader;
+    private final StgSeedImageManifestLoader seedImageManifestLoader;
 
     /**
      * seed ユーザーと seed 投稿を作成する。
