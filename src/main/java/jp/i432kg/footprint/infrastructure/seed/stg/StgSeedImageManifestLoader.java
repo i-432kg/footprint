@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.infrastructure.seed.stg;
 
+import jp.i432kg.footprint.infrastructure.seed.shared.SeedImageEntryLoader;
 import jp.i432kg.footprint.infrastructure.seed.shared.SeedImageManifestParser;
 import jp.i432kg.footprint.infrastructure.seed.shared.SeedSourceImage;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ import java.util.List;
 @Component
 @Profile("stg")
 @RequiredArgsConstructor
-public class StgSeedImageManifestLoader {
+public class StgSeedImageManifestLoader implements SeedImageEntryLoader {
 
     private final S3SeedSourceImageProvider seedSourceImageProvider;
     private final StgSeedProperties properties;
@@ -38,5 +39,10 @@ public class StgSeedImageManifestLoader {
         } catch (RuntimeException e) {
             throw new IllegalStateException("Failed to load seed image manifest. objectKey=" + manifestObjectKey, e);
         }
+    }
+
+    @Override
+    public List<String> loadEntries() {
+        return loadObjectKeys();
     }
 }

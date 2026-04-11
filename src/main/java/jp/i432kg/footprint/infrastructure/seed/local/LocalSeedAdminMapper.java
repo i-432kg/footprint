@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.infrastructure.seed.local;
 
+import jp.i432kg.footprint.infrastructure.seed.shared.SeedAdminOperations;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -10,7 +11,7 @@ import java.util.Optional;
  * local seed データの存在確認とクリーンアップに使用する MyBatis mapper です。
  */
 @Mapper
-public interface LocalSeedAdminMapper {
+public interface LocalSeedAdminMapper extends SeedAdminOperations {
 
     /**
      * 指定メールアドレスに対応する seed ユーザー ID を取得します。

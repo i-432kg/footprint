@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.infrastructure.seed.stg;
 
+import jp.i432kg.footprint.infrastructure.seed.shared.SeedSourceImageLoader;
 import jp.i432kg.footprint.infrastructure.seed.shared.SeedSourceImage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
@@ -17,7 +18,7 @@ import java.util.Objects;
 @Component
 @Profile("stg")
 @RequiredArgsConstructor
-public class S3SeedSourceImageProvider {
+public class S3SeedSourceImageProvider implements SeedSourceImageLoader {
 
     private final S3Client s3Client;
     private final StgSeedProperties properties;

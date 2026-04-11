@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.infrastructure.seed.local;
 
+import jp.i432kg.footprint.infrastructure.seed.shared.SeedSourceImageLoader;
 import jp.i432kg.footprint.infrastructure.seed.shared.SeedSourceImage;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,7 @@ import java.nio.file.Paths;
  */
 @Component
 @Profile("local")
-public class LocalSeedSourceImageProvider {
+public class LocalSeedSourceImageProvider implements SeedSourceImageLoader {
 
     /**
      * 指定パスの画像を開き、seed 投稿で利用できる {@link SeedSourceImage} を返します。

@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.infrastructure.seed.local;
 
+import jp.i432kg.footprint.infrastructure.seed.shared.SeedImageEntryLoader;
 import jp.i432kg.footprint.infrastructure.seed.shared.SeedImageManifestParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,7 @@ import java.util.List;
 @Component
 @Profile("local")
 @RequiredArgsConstructor
-public class LocalSeedImageManifestLoader {
+public class LocalSeedImageManifestLoader implements SeedImageEntryLoader {
 
     private final LocalSeedProperties properties;
     private final SeedImageManifestParser manifestParser;
@@ -46,6 +47,11 @@ public class LocalSeedImageManifestLoader {
         } catch (IOException e) {
             throw new IllegalStateException("Failed to read local seed image manifest. path=" + manifestPath, e);
         }
+    }
+
+    @Override
+    public List<String> loadEntries() {
+        return loadImagePaths();
     }
 
     private String resolvePath(final Path sourceRoot, final String entry) {
