@@ -16,6 +16,13 @@ class RawPasswordTest {
     }
 
     @Test
+    void toString_shouldMaskSensitiveValue() {
+        assertThat(RawPassword.of("Passw0rd!").toString())
+                .contains("********")
+                .doesNotContain("Passw0rd!");
+    }
+
+    @Test
     void of_shouldRejectWhitespaceInsideValue() {
         assertThatThrownBy(() -> RawPassword.of("Pass word"))
                 .isInstanceOf(InvalidValueException.class);
