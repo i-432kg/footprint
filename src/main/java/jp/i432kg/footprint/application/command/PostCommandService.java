@@ -13,6 +13,7 @@ import jp.i432kg.footprint.domain.model.Post;
 import jp.i432kg.footprint.domain.repository.PostRepository;
 import jp.i432kg.footprint.domain.service.UserDomainService;
 import jp.i432kg.footprint.domain.value.*;
+import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import java.time.LocalDateTime;
  * 投稿に関するユースケースを実行するアプリケーションサービス。
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class PostCommandService {
 
@@ -75,6 +77,7 @@ public class PostCommandService {
             // 保存された実ファイルからメタ情報を抽出する
             imageMetadata = imageMetadataExtractor.extract(storageObject);
         } catch (ImageProcessingException | IOException e) {
+            cleanupStoredImage(storageObject);
             throw PostCommandFailedException.imageMetadataExtractFailed(
                     storageObject.getObjectKey().getValue(),
                     e
@@ -105,8 +108,23 @@ public class PostCommandService {
         try {
             postRepository.savePost(post);
         } catch (DataAccessException e) {
+            cleanupStoredImage(storageObject);
             throw PostCommandFailedException.persistenceFailed(
                     postId.getValue(),
+                    e
+            );
+        }
+    }
+
+    private void cleanupStoredImage(final StorageObject storageObject) {
+        try {
+            imageStorage.delete(storageObject);
+        } catch (IOException e) {
+            // ここで cleanup 失敗を再送出すると一次障害の原因が隠れるため、
+            // 元例外を優先しつつ補償処理失敗はログに残す。
+            log.warn(
+                    "Failed to cleanup stored image after post processing failure. storageObjectKey={}",
+                    storageObject.getObjectKey().getValue(),
                     e
             );
         }

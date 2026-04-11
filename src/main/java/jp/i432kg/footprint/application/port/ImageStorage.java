@@ -32,4 +32,12 @@ public interface ImageStorage {
             UserId userId,
             PostId postId
     ) throws IOException;
+
+    /**
+     * 保存済み画像を物理ストレージから削除します。
+     *
+     * @param storageObject 削除対象の保存先情報
+     * @throws IOException 削除に失敗した場合
+     */
+    void delete(StorageObject storageObject) throws IOException;
 }

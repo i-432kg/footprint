@@ -36,6 +36,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
@@ -210,6 +211,27 @@ public class S3ImageRepositoryImpl implements ImageStorage, ImageMetadataExtract
                     e
             );
             throw new IOException("S3への画像アップロードに失敗しました。", e);
+        }
+    }
+
+    @Override
+    public void delete(final StorageObject storageObject) throws IOException {
+        final String bucket = s3ObjectResolver.resolveBucket(storageObject);
+        final String key = s3ObjectResolver.resolveKey(storageObject);
+        try {
+            s3Client.deleteObject(
+                    DeleteObjectRequest.builder()
+                            .bucket(bucket)
+                            .key(key)
+                            .build()
+            );
+        } catch (S3Exception e) {
+            log.error(
+                    "Failed to delete image from S3. storageObjectKey={}",
+                    storageObject.getObjectKey().getValue(),
+                    e
+            );
+            throw new IOException("S3上の画像削除に失敗しました。", e);
         }
     }
 

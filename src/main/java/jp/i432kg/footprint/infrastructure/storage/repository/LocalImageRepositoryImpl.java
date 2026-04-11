@@ -185,6 +185,12 @@ public class LocalImageRepositoryImpl implements ImageStorage, ImageMetadataExtr
         }
     }
 
+    @Override
+    public void delete(final StorageObject storageObject) throws IOException {
+        final Path path = localStoragePathResolver.resolve(storageObject);
+        Files.deleteIfExists(path);
+    }
+
     private String determineExtension(final FileType fileType, final FileName originalFilename)
             throws IllegalArgumentException{
         // FileType からドメインの Allowed Enum へのマッピングを試みる
