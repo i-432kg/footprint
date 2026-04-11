@@ -12,6 +12,7 @@ build/
 
 # local seed image
 seed-source/posts/**
+storage/**
 
 ### STS ###
 .apt_generated
