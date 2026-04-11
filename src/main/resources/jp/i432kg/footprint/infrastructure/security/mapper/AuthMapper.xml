@@ -13,4 +13,10 @@
           AND disabled = false
     </select>
 
+    <update id="updateLastLoginAt">
+        UPDATE users
+        SET last_login_at = #{lastLoginAt}
+        WHERE public_id = #{userId}
+    </update>
+
 </mapper>

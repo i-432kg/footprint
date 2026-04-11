@@ -50,7 +50,6 @@ public interface UserMapper {
         private final boolean isActive;
         private final boolean isDisabled;
         private final LocalDateTime disabledAt;
-        private final LocalDateTime lastLoginAt;
         private final LocalDateTime createdAt;
         private final LocalDateTime updatedAt;
 
@@ -65,7 +64,6 @@ public interface UserMapper {
                     false,  // デフォルトで無効
                     false,          // デフォルトで無効
                     null,
-                    LocalDateTime.now(),
                     LocalDateTime.now(),
                     LocalDateTime.now()
             );

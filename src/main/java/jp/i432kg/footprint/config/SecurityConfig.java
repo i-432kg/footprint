@@ -1,6 +1,7 @@
 package jp.i432kg.footprint.config;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jp.i432kg.footprint.infrastructure.security.LastLoginUpdatingAuthenticationSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -24,9 +25,14 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final Environment environment;
+    private final LastLoginUpdatingAuthenticationSuccessHandler authenticationSuccessHandler;
 
-    public SecurityConfig(Environment environment) {
+    public SecurityConfig(
+            final Environment environment,
+            final LastLoginUpdatingAuthenticationSuccessHandler authenticationSuccessHandler
+    ) {
         this.environment = environment;
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
     }
 
     @Bean
@@ -104,9 +110,7 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .loginProcessingUrl("/api/login")
                         .usernameParameter("loginId")
-                        .successHandler((request, response, authentication) -> {
-                            response.setStatus(HttpServletResponse.SC_OK);
-                        })
+                        .successHandler(authenticationSuccessHandler)
                         .failureHandler((request, response, exception) -> {
                             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication Failed");
                         })
