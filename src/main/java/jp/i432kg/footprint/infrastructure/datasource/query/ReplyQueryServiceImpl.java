@@ -7,6 +7,7 @@ import jp.i432kg.footprint.domain.value.ReplyId;
 import jp.i432kg.footprint.domain.value.UserId;
 import jp.i432kg.footprint.infrastructure.datasource.mapper.query.ReplyQueryMapper;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +34,7 @@ public class ReplyQueryServiceImpl implements ReplyQueryService {
     }
 
     @Override
-    public List<ReplySummary> listMyReplies(final UserId userId, final ReplyId lastId, final int size) {
+    public List<ReplySummary> listMyReplies(final UserId userId, final @Nullable ReplyId lastId, final int size) {
         return replyQueryMapper.findMyReplies(userId, lastId, size);
     }
 }

@@ -4,6 +4,7 @@ import jp.i432kg.footprint.application.query.model.ReplySummary;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.ReplyId;
 import jp.i432kg.footprint.domain.value.UserId;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -36,6 +37,6 @@ public interface ReplyQueryService {
      * @param size   取得する最大件数
      * @return 条件に合致する返信の概要情報のリスト
      */
-    List<ReplySummary> listMyReplies(UserId userId, ReplyId lastId, int size);
+    List<ReplySummary> listMyReplies(UserId userId, @Nullable ReplyId lastId, int size);
 
 }

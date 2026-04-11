@@ -6,6 +6,7 @@ import jp.i432kg.footprint.application.query.model.PostSummary;
 import jp.i432kg.footprint.domain.value.*;
 import jp.i432kg.footprint.infrastructure.datasource.mapper.query.PostQueryMapper;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,17 +24,17 @@ public class PostQueryServiceImpl implements PostQueryService {
     private final PostQueryMapper postQueryMapper;
 
     @Override
-    public List<PostSummary> listRecentPosts(final PostId lastId, final int size) {
+    public List<PostSummary> listRecentPosts(final @Nullable PostId lastId, final int size) {
         return postQueryMapper.findRecentPosts(lastId, size);
     }
 
     @Override
-    public List<PostSummary> listMyPosts(final UserId userId, final PostId lastId, final int size) {
+    public List<PostSummary> listMyPosts(final UserId userId, final @Nullable PostId lastId, final int size) {
         return postQueryMapper.findMyPosts(userId, lastId, size);
     }
 
     @Override
-    public List<PostSummary> searchPosts(final SearchKeyword keyword, final PostId lastId, final int size) {
+    public List<PostSummary> searchPosts(final SearchKeyword keyword, final @Nullable PostId lastId, final int size) {
         return postQueryMapper.findPostsByKeyword(keyword, lastId, size);
     }
 

@@ -3,6 +3,7 @@ package jp.i432kg.footprint.application.query;
 import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;
 import jp.i432kg.footprint.application.query.model.PostSummary;
 import jp.i432kg.footprint.domain.value.*;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +20,7 @@ public interface PostQueryService {
      * @param size   取得する投稿数
      * @return 最新の投稿一覧（存在しない場合は空リスト）
      */
-    List<PostSummary> listRecentPosts(PostId lastId, int size);
+    List<PostSummary> listRecentPosts(@Nullable PostId lastId, int size);
 
     /**
      * 自分の投稿一覧を取得する。
@@ -29,7 +30,7 @@ public interface PostQueryService {
      * @param size   取得する投稿数
      * @return 最新の投稿一覧（存在しない場合は空リスト）
      */
-    List<PostSummary> listMyPosts(UserId userId, PostId lastId, int size);
+    List<PostSummary> listMyPosts(UserId userId, @Nullable PostId lastId, int size);
 
     /**
      * 検索キーワードで投稿を検索する。
@@ -39,7 +40,7 @@ public interface PostQueryService {
      * @param size    取得する投稿数
      * @return 投稿の検索結果一覧（該当なしの場合は空リスト）
      */
-    List<PostSummary> searchPosts(SearchKeyword keyword, PostId lastId, int size);
+    List<PostSummary> searchPosts(SearchKeyword keyword, @Nullable PostId lastId, int size);
 
     /**
      * 指定された座標範囲（緯度経度の境界ボックス）に含まれる位置情報を持つ投稿一覧を取得します。
