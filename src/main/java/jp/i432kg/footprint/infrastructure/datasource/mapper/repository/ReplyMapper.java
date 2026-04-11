@@ -58,8 +58,8 @@ public interface ReplyMapper {
                     reply.getParentReplyId(),
                     reply.getMessage(),
                     0,
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
+                    reply.getCreatedAt(),
+                    reply.getCreatedAt()
             );
         }
     }

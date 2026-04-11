@@ -65,8 +65,8 @@ public interface PostMapper {
                     post.getImage().getLocation().getLatitude(),
                     post.getImage().getLocation().getLongitude(),
                     post.getImage().getTakenAt(),
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
+                    post.getCreatedAt(),
+                    post.getCreatedAt()
             );
         }
     }
@@ -104,7 +104,7 @@ public interface PostMapper {
                     image.getWidth(),
                     image.getHeight(),
                     image.isHasEXIF(),
-                    LocalDateTime.now()
+                    post.getCreatedAt()
             );
         }
     }
