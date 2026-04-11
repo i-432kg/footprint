@@ -16,6 +16,14 @@
         LIMIT 1
     </select>
 
+    <select id="findReplyIdByPostIdAndMessage" resultType="string">
+        SELECT public_id
+        FROM replies
+        WHERE post_id = #{postId}
+          AND message = #{message}
+        LIMIT 1
+    </select>
+
     <select id="existsReplyByPostIdAndMessage" resultType="boolean">
         SELECT EXISTS(
             SELECT 1

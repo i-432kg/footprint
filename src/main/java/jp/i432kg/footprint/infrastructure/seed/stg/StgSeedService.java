@@ -13,6 +13,7 @@ import jp.i432kg.footprint.domain.value.EmailAddress;
 import jp.i432kg.footprint.domain.value.FileName;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.RawPassword;
+import jp.i432kg.footprint.domain.value.ReplyId;
 import jp.i432kg.footprint.domain.value.UserId;
 import jp.i432kg.footprint.domain.value.UserName;
 import jp.i432kg.footprint.infrastructure.seed.shared.SeedSourceImage;
@@ -24,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,6 +41,7 @@ import java.util.List;
 public class StgSeedService {
 
     private static final String USER_EMAIL_DOMAIN = "example.com";
+    private static final String STG_LABEL = "[STG]";
 
     private final StgSeedProperties properties;
     private final UserCommandService userCommandService;
@@ -55,118 +56,40 @@ public class StgSeedService {
      */
     @Transactional
     public void seed() {
-        final SeedUsers seedUsers = createSeedUsers();
-        createPostsAndRepliesForActiveUsers(seedUsers.activeUsers());
-    }
-
-    /**
-     * seed ユーザーを作成し、作成済みの場合は既存ユーザーを利用する。
-     *
-     * @return 作成した seed ユーザー群
-     */
-    private SeedUsers createSeedUsers() {
-        final List<UserSeed> activeUsers = new ArrayList<>();
-        final List<UserSeed> inactiveUsers = new ArrayList<>();
-
-        int sequence = 1;
-
-        for (int i = 1; i <= properties.getActiveUserCount(); i++) {
-            activeUsers.add(createOrLoadUser(sequence, i, UserType.ACTIVE));
-            sequence++;
-        }
-
-        for (int i = 1; i <= properties.getInactiveUserCount(); i++) {
-            inactiveUsers.add(createOrLoadUser(sequence, i, UserType.INACTIVE));
-            sequence++;
-        }
-
-        log.info("Seed users prepared. activeUserCount={}, inactiveUserCount={}", activeUsers.size(), inactiveUsers.size());
-
-        return new SeedUsers(activeUsers, inactiveUsers);
-    }
-
-    /**
-     * 投稿・返信ありユーザー向けの投稿と返信を作成する。
-     * <p>
-     * seed-images.json に定義された画像をすべて消費し、
-     * 投稿先ユーザーへ順番に割り当てる。
-     * </p>
-     *
-     * @param activeUsers 投稿・返信ありユーザー一覧
-     */
-    private void createPostsAndRepliesForActiveUsers(final List<UserSeed> activeUsers) {
-        if (activeUsers.isEmpty()) {
-            log.info("No active seed users configured. Skipping post/reply creation.");
-            return;
-        }
-
         final List<String> imageObjectKeys = seedImageManifestLoader.loadObjectKeys();
-        if (imageObjectKeys.isEmpty()) {
-            throw new IllegalStateException("seed-images.json must contain at least one object key when active users exist.");
-        }
+        final UserSeed posterWithReplies = createOrLoadUser("poster_with_replies", "stg_post_reply", 1);
+        final UserSeed posterWithoutReplies = createOrLoadUser("poster_without_replies", "stg_post_only", 2);
+        final UserSeed nonPosterReplier = createOrLoadUser("non_poster_replier", "stg_reply_only", 3);
 
-        final int[] postSequenceByUser = new int[activeUsers.size()];
+        final String postWithRepliesId = createOrLoadPost(
+                posterWithReplies,
+                seedCaption("post_with_replies"),
+                selectObjectKey(imageObjectKeys, 0)
+        );
+        createOrLoadPost(
+                posterWithoutReplies,
+                seedCaption("post_without_replies"),
+                selectObjectKey(imageObjectKeys, 1)
+        );
 
-        for (int imageIndex = 0; imageIndex < imageObjectKeys.size(); imageIndex++) {
-            final int authorIndex = imageIndex % activeUsers.size();
-            final UserSeed author = activeUsers.get(authorIndex);
-            final int postSequence = ++postSequenceByUser[authorIndex];
-            final String caption = seedCaption(author.username(), postSequence);
-            final String imageObjectKey = imageObjectKeys.get(imageIndex);
+        final String replyWithChildrenId = createOrLoadReply(
+                postWithRepliesId,
+                nonPosterReplier,
+                ParentReply.root(),
+                seedReplyMessage("reply_with_children")
+        );
+        createOrLoadReply(
+                postWithRepliesId,
+                posterWithReplies,
+                ParentReply.of(ReplyId.of(replyWithChildrenId)),
+                seedReplyMessage("reply_without_children")
+        );
 
-            if (seedAdminMapper.findPostIdByCaption(caption).isEmpty()) {
-                createPost(author.userId(), caption, imageObjectKey);
-                log.info("Seed post created. email={}, caption={}, sourceObjectKey={}", author.email(), caption, imageObjectKey);
-            }
-
-            final String postId = seedAdminMapper.findPostIdByCaption(caption)
-                    .orElseThrow(() -> new IllegalStateException("Seed post not found after create. caption=" + caption));
-
-            final UserSeed replier = resolveReplier(activeUsers, authorIndex);
-            final String replyMessage = seedReplyMessage(postSequence, replier.username());
-            if (!seedAdminMapper.existsReplyByPostIdAndMessage(postId, replyMessage)) {
-                replyCommandService.createReply(
-                        CreateReplyCommand.of(
-                                PostId.of(postId),
-                                replier.userId(),
-                                ParentReply.root(),
-                                Comment.of(replyMessage)
-                        )
-                );
-                log.info("Seed reply created. postId={}, replier={}", postId, replier.email());
-            }
-        }
+        log.info("STG fixed seed scenario prepared.");
     }
 
-    /**
-     * 投稿への返信者を解決する。
-     * <p>
-     * active ユーザーが複数いる場合は次のユーザーを返信者にし、
-     * 1人しかいない場合は同一ユーザーを返信者にする。
-     * </p>
-     *
-     * @param activeUsers 投稿・返信ありユーザー一覧
-     * @param authorIndex 投稿者の添字
-     * @return 返信者
-     */
-    private UserSeed resolveReplier(final List<UserSeed> activeUsers, final int authorIndex) {
-        if (activeUsers.size() == 1) {
-            return activeUsers.get(0);
-        }
-        return activeUsers.get((authorIndex + 1) % activeUsers.size());
-    }
-
-    /**
-     * seed ユーザーを作成し、作成済みの場合は既存ユーザーを返す。
-     *
-     * @param sequence 全体で一意な連番
-     * @param typeSequence 種別ごとの連番
-     * @param userType ユーザー種別
-     * @return seed ユーザー
-     */
-    private UserSeed createOrLoadUser(final int sequence, final int typeSequence, final UserType userType) {
-        final String email = seedEmail(sequence);
-        final String username = seedUsername(userType, typeSequence);
+    private UserSeed createOrLoadUser(final String seedKey, final String username, final int birthDay) {
+        final String email = seedEmail(seedKey);
 
         if (seedAdminMapper.findUserIdByEmail(email).isEmpty()) {
             userCommandService.createUser(
@@ -174,16 +97,55 @@ public class StgSeedService {
                             UserName.of(username),
                             EmailAddress.of(email),
                             RawPassword.of(properties.getTestPassword()),
-                            BirthDate.of(LocalDate.of(1990, 1, Math.min(sequence, 28)))
+                            BirthDate.of(LocalDate.of(1990, 1, birthDay))
                     )
             );
-            log.info("Seed user created. email={}, username={}, type={}", email, username, userType);
+            log.info("Seed user created. email={}, username={}", email, username);
         }
 
         final String userId = seedAdminMapper.findUserIdByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("Seed user not found after create. email=" + email));
 
-        return new UserSeed(UserId.of(userId), email, username, userType);
+        return new UserSeed(UserId.of(userId), email, username);
+    }
+
+    private String createOrLoadPost(final UserSeed author, final String caption, final String sourceObjectKey) {
+        if (seedAdminMapper.findPostIdByCaption(caption).isEmpty()) {
+            createPost(author.userId(), caption, sourceObjectKey);
+            log.info("Seed post created. email={}, caption={}, sourceObjectKey={}", author.email(), caption, sourceObjectKey);
+        }
+
+        return seedAdminMapper.findPostIdByCaption(caption)
+                .orElseThrow(() -> new IllegalStateException("Seed post not found after create. caption=" + caption));
+    }
+
+    private String createOrLoadReply(
+            final String postId,
+            final UserSeed replier,
+            final ParentReply parentReply,
+            final String message
+    ) {
+        if (!seedAdminMapper.existsReplyByPostIdAndMessage(postId, message)) {
+            replyCommandService.createReply(
+                    CreateReplyCommand.of(
+                            PostId.of(postId),
+                            replier.userId(),
+                            parentReply,
+                            Comment.of(message)
+                    )
+            );
+            log.info("Seed reply created. postId={}, replier={}, message={}", postId, replier.email(), message);
+        }
+
+        return seedAdminMapper.findReplyIdByPostIdAndMessage(postId, message)
+                .orElseThrow(() -> new IllegalStateException("Seed reply not found after create. postId=" + postId));
+    }
+
+    private String selectObjectKey(final List<String> imageObjectKeys, final int preferredIndex) {
+        if (imageObjectKeys.isEmpty()) {
+            throw new IllegalStateException("STG seed requires at least one source image entry.");
+        }
+        return imageObjectKeys.get(Math.min(preferredIndex, imageObjectKeys.size() - 1));
     }
 
     /**
@@ -213,44 +175,31 @@ public class StgSeedService {
     /**
      * seed 用メールアドレスを生成する。
      *
-     * @param number 連番
+     * @param seedKey seed シナリオ識別子
      * @return メールアドレス
      */
-    private String seedEmail(final int number) {
-        return properties.getEmailPrefix() + String.format("%02d@%s", number, USER_EMAIL_DOMAIN);
-    }
-
-    /**
-     * seed 用ユーザー名を生成する。
-     *
-     * @param userType ユーザー種別
-     * @param number 種別内連番
-     * @return ユーザー名
-     */
-    private String seedUsername(final UserType userType, final int number) {
-        return String.format("stg%s%02d", userType.usernamePrefix(), number);
+    private String seedEmail(final String seedKey) {
+        return properties.getEmailPrefix() + seedKey + "@" + USER_EMAIL_DOMAIN;
     }
 
     /**
      * seed 用投稿本文を生成する。
      *
-     * @param username 投稿者名
-     * @param postIndex 投稿連番
+     * @param scenarioKey シナリオ識別子
      * @return 投稿本文
      */
-    private String seedCaption(final String username, final int postIndex) {
-        return String.format("[STG] %s post%02d", username, postIndex);
+    private String seedCaption(final String scenarioKey) {
+        return STG_LABEL + " " + scenarioKey;
     }
 
     /**
      * seed 用返信メッセージを生成する。
      *
-     * @param postIndex 投稿連番
-     * @param username 返信者名
+     * @param scenarioKey シナリオ識別子
      * @return 返信メッセージ
      */
-    private String seedReplyMessage(final int postIndex, final String username) {
-        return String.format("[STG] %s reply%02d", username, postIndex);
+    private String seedReplyMessage(final String scenarioKey) {
+        return STG_LABEL + " " + scenarioKey;
     }
 
     /**
@@ -259,35 +208,7 @@ public class StgSeedService {
      * @param userId ユーザー ID
      * @param email メールアドレス
      * @param username ユーザー名
-     * @param userType ユーザー種別
      */
-    private record UserSeed(UserId userId, String email, String username, UserType userType) {
-    }
-
-    /**
-     * seed 作成対象ユーザー群の内部保持用レコード。
-     *
-     * @param activeUsers 投稿・返信ありユーザー
-     * @param inactiveUsers 投稿・返信なしユーザー
-     */
-    private record SeedUsers(List<UserSeed> activeUsers, List<UserSeed> inactiveUsers) {
-    }
-
-    /**
-     * seed ユーザー種別。
-     */
-    private enum UserType {
-        ACTIVE("active"),
-        INACTIVE("inactive");
-
-        private final String usernamePrefix;
-
-        UserType(final String usernamePrefix) {
-            this.usernamePrefix = usernamePrefix;
-        }
-
-        private String usernamePrefix() {
-            return usernamePrefix;
-        }
+    private record UserSeed(UserId userId, String email, String username) {
     }
 }

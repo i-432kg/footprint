@@ -36,8 +36,6 @@ app:
     cleanup-only: ${APP_STG_SEED_CLEANUP_ONLY:false}
     cleanup-before-seed: ${APP_STG_SEED_CLEANUP_BEFORE_SEED:false}
     test-password: ${APP_STG_SEED_TEST_PASSWORD:}
-    active-user-count: ${APP_STG_SEED_ACTIVE_USER_COUNT:1}
-    inactive-user-count: ${APP_STG_SEED_INACTIVE_USER_COUNT:1}
     email-prefix: ${APP_STG_SEED_EMAIL_PREFIX:stg_seed_user_}
     source-bucket-name: ${APP_STG_SEED_SOURCE_BUCKET_NAME:}
     manifest-object-key: ${APP_STG_SEED_MANIFEST_OBJECT_KEY:seed-source/manifest/seed-images.json}

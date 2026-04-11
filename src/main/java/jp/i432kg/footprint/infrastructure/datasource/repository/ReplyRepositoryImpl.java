@@ -23,7 +23,8 @@ public class ReplyRepositoryImpl implements ReplyRepository {
     @Override
     public Optional<Reply> findReplyById(ReplyId replyId) {
         try {
-            return replyMapper.findReplyById(replyId);
+            return replyMapper.findReplyById(replyId)
+                    .map(ReplyMapper.ReplyResultEntity::toDomain);
         } catch (RuntimeException e) {
             log.error("Failed to find reply by id. replyId={}", replyId.getValue(), e);
             throw e;

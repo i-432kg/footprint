@@ -13,6 +13,8 @@ public interface StgSeedAdminMapper {
 
     Optional<String> findPostIdByCaption(@Param("caption") String caption);
 
+    Optional<String> findReplyIdByPostIdAndMessage(@Param("postId") String postId, @Param("message") String message);
+
     boolean existsReplyByPostIdAndMessage(@Param("postId") String postId, @Param("message") String message);
 
     List<String> findSeedImageObjectKeys();

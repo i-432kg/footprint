@@ -21,8 +21,6 @@ app:
     cleanup-only: false
     cleanup-before-seed: false
     test-password: ${APP_LOCAL_SEED_TEST_PASSWORD}
-    active-user-count: 1
-    inactive-user-count: 1
     email-prefix: local_seed_user_
     source-root-dir: seed-source
     manifest-path: seed-source/manifest/seed-images.json

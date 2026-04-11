@@ -13,6 +13,7 @@ import jp.i432kg.footprint.domain.value.EmailAddress;
 import jp.i432kg.footprint.domain.value.FileName;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.RawPassword;
+import jp.i432kg.footprint.domain.value.ReplyId;
 import jp.i432kg.footprint.domain.value.UserId;
 import jp.i432kg.footprint.domain.value.UserName;
 import jp.i432kg.footprint.infrastructure.seed.shared.SeedSourceImage;
@@ -24,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -34,6 +34,7 @@ import java.util.List;
 public class LocalSeedService {
 
     private static final String USER_EMAIL_DOMAIN = "example.com";
+    private static final String LOCAL_LABEL = "[LOCAL]";
 
     private final LocalSeedProperties properties;
     private final UserCommandService userCommandService;
@@ -45,84 +46,40 @@ public class LocalSeedService {
 
     @Transactional
     public void seed() {
-        final SeedUsers seedUsers = createSeedUsers();
-        createPostsAndRepliesForActiveUsers(seedUsers.activeUsers());
-    }
-
-    private SeedUsers createSeedUsers() {
-        final List<UserSeed> activeUsers = new ArrayList<>();
-        final List<UserSeed> inactiveUsers = new ArrayList<>();
-        int sequence = 1;
-
-        for (int i = 1; i <= properties.getActiveUserCount(); i++) {
-            activeUsers.add(createOrLoadUser(sequence, i, UserType.ACTIVE));
-            sequence++;
-        }
-
-        for (int i = 1; i <= properties.getInactiveUserCount(); i++) {
-            inactiveUsers.add(createOrLoadUser(sequence, i, UserType.INACTIVE));
-            sequence++;
-        }
-
-        log.info("Local seed users prepared. activeUserCount={}, inactiveUserCount={}", activeUsers.size(), inactiveUsers.size());
-        return new SeedUsers(activeUsers, inactiveUsers);
-    }
-
-    private void createPostsAndRepliesForActiveUsers(final List<UserSeed> activeUsers) {
-        if (activeUsers.isEmpty()) {
-            log.info("No active local seed users configured. Skipping post/reply creation.");
-            return;
-        }
-
         final List<String> imagePaths = localSeedImageManifestLoader.loadImagePaths();
-        if (imagePaths.isEmpty()) {
-            log.warn("No local seed images found. Users are created, but posts/replies are skipped.");
-            return;
-        }
+        final UserSeed posterWithReplies = createOrLoadUser("poster_with_replies", "loc_post_reply", 1);
+        final UserSeed posterWithoutReplies = createOrLoadUser("poster_without_replies", "loc_post_only", 2);
+        final UserSeed nonPosterReplier = createOrLoadUser("non_poster_replier", "loc_reply_only", 3);
 
-        final int[] postSequenceByUser = new int[activeUsers.size()];
+        final String postWithRepliesId = createOrLoadPost(
+                posterWithReplies,
+                seedCaption("post_with_replies"),
+                selectImagePath(imagePaths, 0)
+        );
+        createOrLoadPost(
+                posterWithoutReplies,
+                seedCaption("post_without_replies"),
+                selectImagePath(imagePaths, 1)
+        );
 
-        for (int imageIndex = 0; imageIndex < imagePaths.size(); imageIndex++) {
-            final int authorIndex = imageIndex % activeUsers.size();
-            final UserSeed author = activeUsers.get(authorIndex);
-            final int postSequence = ++postSequenceByUser[authorIndex];
-            final String caption = seedCaption(author.username(), postSequence);
-            final String imagePath = imagePaths.get(imageIndex);
+        final String replyWithChildrenId = createOrLoadReply(
+                postWithRepliesId,
+                nonPosterReplier,
+                ParentReply.root(),
+                seedReplyMessage("reply_with_children")
+        );
+        createOrLoadReply(
+                postWithRepliesId,
+                posterWithReplies,
+                ParentReply.of(ReplyId.of(replyWithChildrenId)),
+                seedReplyMessage("reply_without_children")
+        );
 
-            if (localSeedAdminMapper.findPostIdByCaption(caption).isEmpty()) {
-                createPost(author.userId(), caption, imagePath);
-                log.info("Local seed post created. email={}, caption={}, sourcePath={}", author.email(), caption, imagePath);
-            }
-
-            final String postId = localSeedAdminMapper.findPostIdByCaption(caption)
-                    .orElseThrow(() -> new IllegalStateException("Local seed post not found after create. caption=" + caption));
-
-            final UserSeed replier = resolveReplier(activeUsers, authorIndex);
-            final String replyMessage = seedReplyMessage(postSequence, replier.username());
-            if (!localSeedAdminMapper.existsReplyByPostIdAndMessage(postId, replyMessage)) {
-                replyCommandService.createReply(
-                        CreateReplyCommand.of(
-                                PostId.of(postId),
-                                replier.userId(),
-                                ParentReply.root(),
-                                Comment.of(replyMessage)
-                        )
-                );
-                log.info("Local seed reply created. postId={}, replier={}", postId, replier.email());
-            }
-        }
+        log.info("Local fixed seed scenario prepared.");
     }
 
-    private UserSeed resolveReplier(final List<UserSeed> activeUsers, final int authorIndex) {
-        if (activeUsers.size() == 1) {
-            return activeUsers.get(0);
-        }
-        return activeUsers.get((authorIndex + 1) % activeUsers.size());
-    }
-
-    private UserSeed createOrLoadUser(final int sequence, final int typeSequence, final UserType userType) {
-        final String email = seedEmail(sequence);
-        final String username = seedUsername(userType, typeSequence);
+    private UserSeed createOrLoadUser(final String seedKey, final String username, final int birthDay) {
+        final String email = seedEmail(seedKey);
 
         if (localSeedAdminMapper.findUserIdByEmail(email).isEmpty()) {
             userCommandService.createUser(
@@ -130,16 +87,55 @@ public class LocalSeedService {
                             UserName.of(username),
                             EmailAddress.of(email),
                             RawPassword.of(properties.getTestPassword()),
-                            BirthDate.of(LocalDate.of(1990, 1, Math.min(sequence, 28)))
+                            BirthDate.of(LocalDate.of(1990, 1, birthDay))
                     )
             );
-            log.info("Local seed user created. email={}, username={}, type={}", email, username, userType);
+            log.info("Local seed user created. email={}, username={}", email, username);
         }
 
         final String userId = localSeedAdminMapper.findUserIdByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("Local seed user not found after create. email=" + email));
 
-        return new UserSeed(UserId.of(userId), email, username, userType);
+        return new UserSeed(UserId.of(userId), email, username);
+    }
+
+    private String createOrLoadPost(final UserSeed author, final String caption, final String imagePath) {
+        if (localSeedAdminMapper.findPostIdByCaption(caption).isEmpty()) {
+            createPost(author.userId(), caption, imagePath);
+            log.info("Local seed post created. email={}, caption={}, sourcePath={}", author.email(), caption, imagePath);
+        }
+
+        return localSeedAdminMapper.findPostIdByCaption(caption)
+                .orElseThrow(() -> new IllegalStateException("Local seed post not found after create. caption=" + caption));
+    }
+
+    private String createOrLoadReply(
+            final String postId,
+            final UserSeed replier,
+            final ParentReply parentReply,
+            final String message
+    ) {
+        if (!localSeedAdminMapper.existsReplyByPostIdAndMessage(postId, message)) {
+            replyCommandService.createReply(
+                    CreateReplyCommand.of(
+                            PostId.of(postId),
+                            replier.userId(),
+                            parentReply,
+                            Comment.of(message)
+                    )
+            );
+            log.info("Local seed reply created. postId={}, replier={}, message={}", postId, replier.email(), message);
+        }
+
+        return localSeedAdminMapper.findReplyIdByPostIdAndMessage(postId, message)
+                .orElseThrow(() -> new IllegalStateException("Local seed reply not found after create. postId=" + postId));
+    }
+
+    private String selectImagePath(final List<String> imagePaths, final int preferredIndex) {
+        if (imagePaths.isEmpty()) {
+            throw new IllegalStateException("Local seed requires at least one source image.");
+        }
+        return imagePaths.get(Math.min(preferredIndex, imagePaths.size() - 1));
     }
 
     private void createPost(final UserId userId, final String caption, final String imagePath) {
@@ -159,40 +155,18 @@ public class LocalSeedService {
         }
     }
 
-    private String seedEmail(final int number) {
-        return properties.getEmailPrefix() + String.format("%02d@%s", number, USER_EMAIL_DOMAIN);
+    private String seedEmail(final String seedKey) {
+        return properties.getEmailPrefix() + seedKey + "@" + USER_EMAIL_DOMAIN;
     }
 
-    private String seedUsername(final UserType userType, final int number) {
-        return String.format("local%s%02d", userType.usernamePrefix(), number);
+    private String seedCaption(final String scenarioKey) {
+        return LOCAL_LABEL + " " + scenarioKey;
     }
 
-    private String seedCaption(final String username, final int postIndex) {
-        return String.format("[LOCAL] %s post%02d", username, postIndex);
+    private String seedReplyMessage(final String scenarioKey) {
+        return LOCAL_LABEL + " " + scenarioKey;
     }
 
-    private String seedReplyMessage(final int postIndex, final String username) {
-        return String.format("[LOCAL] %s reply%02d", username, postIndex);
-    }
-
-    private record UserSeed(UserId userId, String email, String username, UserType userType) {
-    }
-
-    private record SeedUsers(List<UserSeed> activeUsers, List<UserSeed> inactiveUsers) {
-    }
-
-    private enum UserType {
-        ACTIVE("active"),
-        INACTIVE("inactive");
-
-        private final String usernamePrefix;
-
-        UserType(final String usernamePrefix) {
-            this.usernamePrefix = usernamePrefix;
-        }
-
-        private String usernamePrefix() {
-            return usernamePrefix;
-        }
+    private record UserSeed(UserId userId, String email, String username) {
     }
 }

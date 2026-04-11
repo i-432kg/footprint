@@ -1,12 +1,14 @@
 package jp.i432kg.footprint.infrastructure.datasource.mapper.repository;
 
 import jp.i432kg.footprint.domain.model.Reply;
+import jp.i432kg.footprint.domain.model.ParentReply;
 import jp.i432kg.footprint.domain.value.Comment;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.ReplyId;
 import jp.i432kg.footprint.domain.value.UserId;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDateTime;
@@ -21,7 +23,7 @@ public interface ReplyMapper {
     /**
      * 返信IDに基づいて返信を取得します。
      */
-    Optional<Reply> findReplyById(@Param("replyId") ReplyId replyId);
+    Optional<ReplyResultEntity> findReplyById(@Param("replyId") ReplyId replyId);
 
     /**
      * 返信を新規登録します。
@@ -60,6 +62,33 @@ public interface ReplyMapper {
                     0,
                     reply.getCreatedAt(),
                     reply.getCreatedAt()
+            );
+        }
+    }
+
+    /**
+     * Reply 取得用の result mapping クラス
+     */
+    @Getter
+    @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+    class ReplyResultEntity {
+        private final ReplyId replyId;
+        private final PostId postId;
+        private final UserId userId;
+        private final @Nullable ReplyId parentReplyId;
+        private final Comment message;
+        private final LocalDateTime createdAt;
+
+        public Reply toDomain() {
+            final ParentReply parentReply =
+                    parentReplyId == null ? ParentReply.root() : ParentReply.of(parentReplyId);
+            return Reply.of(
+                    replyId,
+                    postId,
+                    userId,
+                    parentReply,
+                    message,
+                    createdAt
             );
         }
     }

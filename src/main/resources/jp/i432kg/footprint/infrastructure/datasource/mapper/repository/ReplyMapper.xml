@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.i432kg.footprint.infrastructure.datasource.mapper.repository.ReplyMapper">
 
-    <resultMap id="ReplyResultMap" type="jp.i432kg.footprint.domain.model.Reply">
+    <resultMap id="ReplyResultMap" type="jp.i432kg.footprint.infrastructure.datasource.mapper.repository.ReplyMapper$ReplyResultEntity">
         <constructor>
             <arg column="public_id" javaType="jp.i432kg.footprint.domain.value.ReplyId"/>
             <arg column="post_id" javaType="jp.i432kg.footprint.domain.value.PostId"/>
