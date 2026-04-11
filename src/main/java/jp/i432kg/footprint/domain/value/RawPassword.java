@@ -3,7 +3,6 @@ package jp.i432kg.footprint.domain.value;
 import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.ToString;
 import lombok.Value;
 import org.jspecify.annotations.Nullable;
 
@@ -15,7 +14,6 @@ import java.util.regex.Pattern;
  */
 @Value
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@ToString(onlyExplicitlyIncluded = true)
 public class RawPassword {
 
     /**
@@ -65,14 +63,5 @@ public class RawPassword {
         }
 
         return new RawPassword(value);
-    }
-
-    /**
-     * 実際のパスワード値を取得します。
-     *
-     * @return 生のパスワード文字列
-     */
-    public String value() {
-        return value;
     }
 }

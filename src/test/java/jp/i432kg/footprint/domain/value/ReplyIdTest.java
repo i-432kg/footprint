@@ -13,7 +13,7 @@ class ReplyIdTest {
     void of_shouldCreateInstance_whenValueIsValidUlid() {
         ReplyId actual = ReplyId.of(DomainTestFixtures.REPLY_ID);
 
-        assertThat(actual.value()).isEqualTo(DomainTestFixtures.REPLY_ID);
+        assertThat(actual.getValue()).isEqualTo(DomainTestFixtures.REPLY_ID);
     }
 
     @Test

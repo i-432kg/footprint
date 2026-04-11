@@ -61,8 +61,4 @@ public class Comment {
 
         return new Comment(value);
     }
-
-    public String value() {
-        return value;
-    }
 }

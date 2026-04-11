@@ -13,7 +13,7 @@ class ImageIdTest {
     void of_shouldCreateInstance_whenValueIsValidUlid() {
         ImageId actual = ImageId.of(DomainTestFixtures.IMAGE_ID);
 
-        assertThat(actual.value()).isEqualTo(DomainTestFixtures.IMAGE_ID);
+        assertThat(actual.getValue()).isEqualTo(DomainTestFixtures.IMAGE_ID);
     }
 
     @Test

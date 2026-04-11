@@ -41,8 +41,4 @@ public class Pixel {
 
         return new Pixel(value);
     }
-
-    public int value() {
-        return value;
-    }
 }

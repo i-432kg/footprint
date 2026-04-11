@@ -12,7 +12,7 @@ class SearchKeywordTest {
     void of_shouldCreateInstance_whenValueIsValid() {
         SearchKeyword actual = SearchKeyword.of("tokyo station");
 
-        assertThat(actual.value()).isEqualTo("tokyo station");
+        assertThat(actual.getValue()).isEqualTo("tokyo station");
     }
 
     @Test

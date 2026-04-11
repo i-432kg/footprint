@@ -18,7 +18,7 @@ public class FileExtensionTypeHandler extends BaseTypeHandler<FileExtension> {
 
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, FileExtension parameter, JdbcType jdbcType) throws SQLException {
-        ps.setString(i, parameter.value());
+        ps.setString(i, parameter.getValue());
     }
 
     @Override

@@ -108,7 +108,7 @@ public class SensitiveDataMasker {
         }
 
         if (value instanceof EmailAddress emailAddress) {
-            return Optional.of(MaskingStrategy.EMAIL.mask(emailAddress.value()));
+            return Optional.of(MaskingStrategy.EMAIL.mask(emailAddress.getValue()));
         }
 
         return Optional.empty();

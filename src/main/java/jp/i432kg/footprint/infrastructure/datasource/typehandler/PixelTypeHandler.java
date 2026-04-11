@@ -18,7 +18,7 @@ public class PixelTypeHandler extends BaseTypeHandler<Pixel> {
 
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, Pixel parameter, JdbcType jdbcType) throws SQLException {
-        ps.setInt(i, parameter.value());
+        ps.setInt(i, parameter.getValue());
     }
 
     @Override

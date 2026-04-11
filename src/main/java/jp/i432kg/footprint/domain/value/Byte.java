@@ -42,13 +42,4 @@ public class Byte {
 
         return new Byte(value);
     }
-
-    /**
-     * 値を取得します。
-     *
-     * @return バイト値
-     */
-    public long value() {
-        return value;
-    }
 }

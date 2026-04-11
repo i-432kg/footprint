@@ -30,8 +30,4 @@ public class PostId {
         final String validated = UlidValidation.requireValidUlid(FIELD_NAME, value);
         return new PostId(validated);
     }
-
-    public String value() {
-        return value;
-    }
 }

@@ -60,8 +60,4 @@ public class Longitude {
 
         return new Longitude(roundedValue);
     }
-
-    public BigDecimal value() {
-        return value;
-    }
 }

@@ -77,7 +77,7 @@ public class ReplyCommandService {
         try {
             replyRepository.saveReply(reply);
         } catch (DataAccessException e) {
-            throw ReplyCommandFailedException.saveFailed(replyId.value(), e);
+            throw ReplyCommandFailedException.saveFailed(replyId.getValue(), e);
         }
 
         // 親返信の子返信カウントを増やす
@@ -87,7 +87,7 @@ public class ReplyCommandService {
                 replyRepository.increaseReplyCount(parentReplyId);
             } catch (DataAccessException e) {
                 throw ReplyCommandFailedException.increaseReplyCountFailed(
-                        parentReplyId.value(),
+                        parentReplyId.getValue(),
                         e
                 );
             }

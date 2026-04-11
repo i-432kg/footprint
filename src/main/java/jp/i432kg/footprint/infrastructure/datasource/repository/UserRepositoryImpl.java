@@ -24,7 +24,7 @@ public class UserRepositoryImpl implements UserRepository {
         try {
             return userMapper.countByUserId(userId) > 0;
         } catch (RuntimeException e) {
-            log.error("Failed to check user existence by id. userId={}", userId.value(), e);
+            log.error("Failed to check user existence by id. userId={}", userId.getValue(), e);
             throw e;
         }
     }
@@ -34,7 +34,7 @@ public class UserRepositoryImpl implements UserRepository {
         try {
             return userMapper.countByEmail(email) > 0;
         } catch (RuntimeException e) {
-            log.error("Failed to check user existence by email. email={}", email.value(), e);
+            log.error("Failed to check user existence by email. email={}", email.getValue(), e);
             throw e;
         }
     }
@@ -48,8 +48,8 @@ public class UserRepositoryImpl implements UserRepository {
         } catch (RuntimeException e) {
             log.error(
                     "Failed to save user. userId={}, email={}",
-                    user.getUserId().value(),
-                    user.getEmail().value(),
+                    user.getUserId().getValue(),
+                    user.getEmail().getValue(),
                     e
             );
             throw e;

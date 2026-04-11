@@ -93,7 +93,7 @@ public class Image {
     ) {
         // 解像度のバリデーション
         // 総ピクセル数チェック
-        final long totalPixels = (long) width.value() * height.value();
+        final long totalPixels = (long) width.getValue() * height.getValue();
         if (totalPixels > MAX_TOTAL_PIXELS) {
             throw new IllegalArgumentException("Total pixels exceed the limit of 40MP: " + totalPixels);
         }

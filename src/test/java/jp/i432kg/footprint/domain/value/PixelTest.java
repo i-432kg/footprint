@@ -12,7 +12,7 @@ class PixelTest {
     void of_shouldCreateInstance_whenValueIsWithinRange() {
         Pixel actual = Pixel.of(320);
 
-        assertThat(actual.value()).isEqualTo(320);
+        assertThat(actual.getValue()).isEqualTo(320);
     }
 
     @Test

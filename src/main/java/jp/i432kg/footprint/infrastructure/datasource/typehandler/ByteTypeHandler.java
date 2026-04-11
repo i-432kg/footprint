@@ -18,7 +18,7 @@ public class ByteTypeHandler extends BaseTypeHandler<Byte> {
 
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, Byte parameter, JdbcType jdbcType) throws SQLException {
-        ps.setLong(i, parameter.value());
+        ps.setLong(i, parameter.getValue());
     }
 
     @Override

@@ -12,7 +12,7 @@ class EmailAddressTest {
     void of_shouldNormalizeToLowerCaseAndTrim() {
         EmailAddress actual = EmailAddress.of("  USER.Name+tag@Example.COM  ");
 
-        assertThat(actual.value()).isEqualTo("user.name+tag@example.com");
+        assertThat(actual.getValue()).isEqualTo("user.name+tag@example.com");
     }
 
     @Test

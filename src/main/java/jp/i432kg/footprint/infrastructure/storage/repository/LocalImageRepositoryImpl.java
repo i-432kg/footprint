@@ -167,18 +167,18 @@ public class LocalImageRepositoryImpl implements ImageStorage, ImageMetadataExtr
         } catch (IllegalArgumentException e) {
             log.error(
                     "Failed to save image. userId={}, postId={}, originalFilename={}",
-                    userId.value(),
-                    postId.value(),
-                    originalFilename.value(),
+                    userId.getValue(),
+                    postId.getValue(),
+                    originalFilename.getValue(),
                     e
             );
             throw new IOException("サポートされていない画像形式です。", e);
         } catch (IOException e) {
             log.error(
                     "Failed to save image. userId={}, postId={}, originalFilename={}",
-                    userId.value(),
-                    postId.value(),
-                    originalFilename.value(),
+                    userId.getValue(),
+                    postId.getValue(),
+                    originalFilename.getValue(),
                     e
             );
             throw e;
@@ -200,10 +200,10 @@ public class LocalImageRepositoryImpl implements ImageStorage, ImageMetadataExtr
                 .map(FileExtension.Allowed::getValue)
                 .orElseGet(() -> {
                     // 特定できなかった場合、元のファイル名の拡張子が許可されているか確認
-                    final String name = originalFilename.value();
+                    final String name = originalFilename.getValue();
                     final int lastDotIndex = name.lastIndexOf(".");
                     final String ext = (lastDotIndex != -1) ? name.substring(lastDotIndex + 1).toLowerCase() : "";
-                    return FileExtension.of(ext).value();
+                    return FileExtension.of(ext).getValue();
                 });
     }
 

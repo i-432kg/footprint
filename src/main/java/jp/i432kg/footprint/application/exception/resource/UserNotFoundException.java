@@ -13,8 +13,8 @@ public class UserNotFoundException extends ResourceNotFoundException {
     public UserNotFoundException(UserId userId) {
         super(
                 ErrorCode.USER_NOT_FOUND,
-                "User not found. userId=" + userId.value(),
-                Map.of("userId", userId.value())
+                "User not found. userId=" + userId.getValue(),
+                Map.of("userId", userId.getValue())
         );
     }
 }

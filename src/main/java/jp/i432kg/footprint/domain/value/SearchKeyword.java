@@ -61,8 +61,4 @@ public class SearchKeyword {
 
         return new SearchKeyword(value);
     }
-
-    public String value() {
-        return value;
-    }
 }

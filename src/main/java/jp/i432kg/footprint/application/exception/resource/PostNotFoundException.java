@@ -10,8 +10,8 @@ public class PostNotFoundException extends ResourceNotFoundException {
     public PostNotFoundException(PostId postId) {
         super(
                 ErrorCode.POST_NOT_FOUND,
-                "Post not found. postId=" + postId.value(),
-                Map.of("postId", postId.value())
+                "Post not found. postId=" + postId.getValue(),
+                Map.of("postId", postId.getValue())
         );
     }
 }

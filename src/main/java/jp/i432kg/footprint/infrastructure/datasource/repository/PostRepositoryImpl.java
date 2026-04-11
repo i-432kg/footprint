@@ -23,7 +23,7 @@ public class PostRepositoryImpl implements PostRepository {
         try {
             return postMapper.countByPostId(postId) > 0;
         } catch (RuntimeException e) {
-            log.error("Failed to check post existence. postId={}", postId.value(), e);
+            log.error("Failed to check post existence. postId={}", postId.getValue(), e);
             throw e;
         }
     }
@@ -42,8 +42,8 @@ public class PostRepositoryImpl implements PostRepository {
         } catch (RuntimeException e) {
             log.error(
                     "Failed to save post. postId={}, userId={}",
-                    post.getPostId().value(),
-                    post.getUserId().value(),
+                    post.getPostId().getValue(),
+                    post.getUserId().getValue(),
                     e
             );
             throw e;

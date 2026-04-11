@@ -25,7 +25,7 @@ public class ReplyRepositoryImpl implements ReplyRepository {
         try {
             return replyMapper.findReplyById(replyId);
         } catch (RuntimeException e) {
-            log.error("Failed to find reply by id. replyId={}", replyId.value(), e);
+            log.error("Failed to find reply by id. replyId={}", replyId.getValue(), e);
             throw e;
         }
     }
@@ -39,9 +39,9 @@ public class ReplyRepositoryImpl implements ReplyRepository {
         } catch (RuntimeException e) {
             log.error(
                     "Failed to save reply. replyId={}, postId={}, userId={}",
-                    reply.getReplyId().value(),
-                    reply.getPostId().value(),
-                    reply.getUserId().value(),
+                    reply.getReplyId().getValue(),
+                    reply.getPostId().getValue(),
+                    reply.getUserId().getValue(),
                     e
             );
             throw e;
@@ -53,7 +53,7 @@ public class ReplyRepositoryImpl implements ReplyRepository {
         try {
             replyMapper.incrementChildCount(replyId);
         } catch (RuntimeException e) {
-            log.error("Failed to increase reply count. replyId={}", replyId.value(), e);
+            log.error("Failed to increase reply count. replyId={}", replyId.getValue(), e);
             throw e;
         }
     }

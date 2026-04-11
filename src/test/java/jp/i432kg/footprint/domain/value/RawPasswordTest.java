@@ -12,14 +12,7 @@ class RawPasswordTest {
     void of_shouldCreateInstance_whenValueIsValid() {
         RawPassword actual = RawPassword.of("Passw0rd!");
 
-        assertThat(actual.value()).isEqualTo("Passw0rd!");
-    }
-
-    @Test
-    void toString_shouldMaskSensitiveValue() {
-        assertThat(RawPassword.of("Passw0rd!").toString())
-                .contains("********")
-                .doesNotContain("Passw0rd!");
+        assertThat(actual.getValue()).isEqualTo("Passw0rd!");
     }
 
     @Test

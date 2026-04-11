@@ -23,8 +23,4 @@ public class ImageId {
         final String validated = UlidValidation.requireValidUlid(FIELD_NAME, value);
         return new ImageId(validated);
     }
-
-    public String value() {
-        return value;
-    }
 }

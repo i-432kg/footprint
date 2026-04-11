@@ -57,10 +57,6 @@ public class HashedPassword {
      * @return 生成されたハッシュ化済みパスワード
      */
     public static HashedPassword from(final RawPassword rawPassword, final Hasher hasher) {
-        return of(hasher.encode(rawPassword.value()));
-    }
-
-    public String value() {
-        return value;
+        return of(hasher.encode(rawPassword.getValue()));
     }
 }

@@ -67,8 +67,4 @@ public class FileName {
 
         return new FileName(value);
     }
-
-    public String value() {
-        return value;
-    }
 }

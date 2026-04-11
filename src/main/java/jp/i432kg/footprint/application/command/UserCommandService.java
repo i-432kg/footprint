@@ -51,7 +51,7 @@ public class UserCommandService {
         try {
             userRepository.saveUser(user);
         } catch (DataAccessException e) {
-            throw UserCommandFailedException.saveFailed(userId.value(), e);
+            throw UserCommandFailedException.saveFailed(userId.getValue(), e);
         }
     }
 
@@ -62,6 +62,6 @@ public class UserCommandService {
      * @return ハッシュ化されたパスワード
      */
     private HashedPassword toHashedPassword(final RawPassword rawPassword) {
-        return HashedPassword.of(passwordEncoder.encode(rawPassword.value()));
+        return HashedPassword.of(passwordEncoder.encode(rawPassword.getValue()));
     }
 }

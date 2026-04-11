@@ -18,7 +18,7 @@ public class PostIdTypeHandler extends BaseTypeHandler<PostId> {
 
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, PostId parameter, JdbcType jdbcType) throws SQLException {
-        ps.setString(i, parameter.value());
+        ps.setString(i, parameter.getValue());
     }
 
     @Override

@@ -19,7 +19,7 @@ public class BirthDateTypeHandler extends BaseTypeHandler<BirthDate> {
 
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, BirthDate parameter, JdbcType jdbcType) throws SQLException {
-        ps.setObject(i, parameter.value());
+        ps.setObject(i, parameter.getValue());
     }
 
     @Override

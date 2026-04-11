@@ -65,8 +65,4 @@ public class UserName {
 
         return new UserName(trimmed);
     }
-
-    public String value() {
-        return value;
-    }
 }

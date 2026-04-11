@@ -12,7 +12,7 @@ class FileExtensionTest {
     void of_shouldNormalizeDotAndCase() {
         FileExtension actual = FileExtension.of(".JPG");
 
-        assertThat(actual.value()).isEqualTo("jpg");
+        assertThat(actual.getValue()).isEqualTo("jpg");
         assertThat(actual.withDot()).isEqualTo(".jpg");
     }
 

@@ -14,7 +14,7 @@ class BirthDateTest {
     void of_shouldCreateInstance_whenValueIsTodayOrPast() {
         BirthDate actual = BirthDate.of(LocalDate.now());
 
-        assertThat(actual.value()).isEqualTo(LocalDate.now());
+        assertThat(actual.getValue()).isEqualTo(LocalDate.now());
     }
 
     @Test

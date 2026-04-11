@@ -150,7 +150,7 @@ public class UserRestController {
         userCommandService.createUser(command);
 
         // 登録後、そのままログイン状態にする
-        request.login(email.value(), password.value());
+        request.login(email.getValue(), password.getValue());
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

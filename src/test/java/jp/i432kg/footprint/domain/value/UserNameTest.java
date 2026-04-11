@@ -12,7 +12,7 @@ class UserNameTest {
     void of_shouldTrimAndStoreValue() {
         UserName actual = UserName.of("  user_01  ");
 
-        assertThat(actual.value()).isEqualTo("user_01");
+        assertThat(actual.getValue()).isEqualTo("user_01");
     }
 
     @Test

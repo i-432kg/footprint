@@ -12,7 +12,7 @@ class CommentTest {
     void of_shouldCreateInstance_whenValueIsValid() {
         Comment actual = Comment.of("line1\nline2");
 
-        assertThat(actual.value()).isEqualTo("line1\nline2");
+        assertThat(actual.getValue()).isEqualTo("line1\nline2");
     }
 
     @Test

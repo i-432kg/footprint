@@ -84,11 +84,6 @@ public class EmailAddress {
 
         return new EmailAddress(normalized);
     }
-
-    public String value() {
-        return value;
-    }
-
     /**
      * ローカル部の形式を検証します。
      *

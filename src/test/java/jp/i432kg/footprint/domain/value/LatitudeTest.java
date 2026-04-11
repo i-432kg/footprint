@@ -14,7 +14,7 @@ class LatitudeTest {
     void of_shouldRoundToSixDecimalPlaces() {
         Latitude actual = Latitude.of(new BigDecimal("35.1234567"));
 
-        assertThat(actual.value()).isEqualByComparingTo(new BigDecimal("35.123457"));
+        assertThat(actual.getValue()).isEqualByComparingTo(new BigDecimal("35.123457"));
     }
 
     @Test

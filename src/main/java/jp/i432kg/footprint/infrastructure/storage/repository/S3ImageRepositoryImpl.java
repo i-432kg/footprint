@@ -195,18 +195,18 @@ public class S3ImageRepositoryImpl implements ImageStorage, ImageMetadataExtract
         } catch (IllegalArgumentException e) {
             log.error(
                     "Failed to save image to S3. userId={}, postId={}, originalFilename={}",
-                    userId.value(),
-                    postId.value(),
-                    originalFilename.value(),
+                    userId.getValue(),
+                    postId.getValue(),
+                    originalFilename.getValue(),
                     e
             );
             throw new IOException("サポートされていない画像形式です。", e);
         } catch (S3Exception e) {
             log.error(
                     "Failed to upload image to S3. userId={}, postId={}, originalFilename={}",
-                    userId.value(),
-                    postId.value(),
-                    originalFilename.value(),
+                    userId.getValue(),
+                    postId.getValue(),
+                    originalFilename.getValue(),
                     e
             );
             throw new IOException("S3への画像アップロードに失敗しました。", e);
@@ -227,17 +227,17 @@ public class S3ImageRepositoryImpl implements ImageStorage, ImageMetadataExtract
         return allowed
                 .map(FileExtension.Allowed::getValue)
                 .orElseGet(() -> {
-                    final String name = originalFilename.value();
+                    final String name = originalFilename.getValue();
                     final int lastDotIndex = name.lastIndexOf(".");
                     final String ext = (lastDotIndex != -1)
                             ? name.substring(lastDotIndex + 1).toLowerCase()
                             : "";
-                    return FileExtension.of(ext).value();
+                    return FileExtension.of(ext).getValue();
                 });
     }
 
     private String resolveContentType(final FileExtension extension) {
-        return switch (extension.value()) {
+        return switch (extension.getValue()) {
             case "jpg", "jpeg" -> "image/jpeg";
             case "png" -> "image/png";
             case "gif" -> "image/gif";

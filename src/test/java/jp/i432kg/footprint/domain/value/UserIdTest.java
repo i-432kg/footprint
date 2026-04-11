@@ -13,7 +13,7 @@ class UserIdTest {
     void of_shouldCreateInstance_whenValueIsValidUlid() {
         UserId actual = UserId.of(DomainTestFixtures.USER_ID);
 
-        assertThat(actual.value()).isEqualTo(DomainTestFixtures.USER_ID);
+        assertThat(actual.getValue()).isEqualTo(DomainTestFixtures.USER_ID);
     }
 
     @Test

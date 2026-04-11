@@ -12,7 +12,7 @@ class ByteTest {
     void of_shouldCreateInstance_whenValueIsWithinRange() {
         jp.i432kg.footprint.domain.value.Byte actual = jp.i432kg.footprint.domain.value.Byte.of(10_485_760L);
 
-        assertThat(actual.value()).isEqualTo(10_485_760L);
+        assertThat(actual.getValue()).isEqualTo(10_485_760L);
     }
 
     @Test

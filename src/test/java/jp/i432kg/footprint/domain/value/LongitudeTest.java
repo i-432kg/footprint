@@ -14,7 +14,7 @@ class LongitudeTest {
     void of_shouldRoundToSixDecimalPlaces() {
         Longitude actual = Longitude.of(new BigDecimal("139.7671254"));
 
-        assertThat(actual.value()).isEqualByComparingTo(new BigDecimal("139.767125"));
+        assertThat(actual.getValue()).isEqualByComparingTo(new BigDecimal("139.767125"));
     }
 
     @Test

@@ -93,10 +93,6 @@ public class FileExtension {
         return "." + value;
     }
 
-    public String value() {
-        return value;
-    }
-
     private static String normalize(final String value) {
         final String trimmed = value.strip().toLowerCase(Locale.ROOT);
         return trimmed.startsWith(".") ? trimmed.substring(1) : trimmed;

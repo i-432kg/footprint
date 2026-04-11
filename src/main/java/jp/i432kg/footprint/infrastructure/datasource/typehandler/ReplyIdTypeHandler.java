@@ -18,7 +18,7 @@ public class ReplyIdTypeHandler extends BaseTypeHandler<ReplyId> {
 
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, ReplyId parameter, JdbcType jdbcType) throws SQLException {
-        ps.setString(i, parameter.value());
+        ps.setString(i, parameter.getValue());
     }
 
     @Override

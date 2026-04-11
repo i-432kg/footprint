@@ -18,7 +18,7 @@ public class CommentTypeHandler extends BaseTypeHandler<Comment> {
 
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, Comment parameter, JdbcType jdbcType) throws SQLException {
-        ps.setString(i, parameter.value());
+        ps.setString(i, parameter.getValue());
     }
 
     @Override

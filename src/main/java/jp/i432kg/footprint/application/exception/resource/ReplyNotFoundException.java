@@ -10,8 +10,8 @@ public class ReplyNotFoundException extends ResourceNotFoundException {
     public ReplyNotFoundException(ReplyId replyId) {
         super(
                 ErrorCode.REPLY_NOT_FOUND,
-                "Reply not found. replyId=" + replyId.value(),
-                Map.of("replyId", replyId.value())
+                "Reply not found. replyId=" + replyId.getValue(),
+                Map.of("replyId", replyId.getValue())
         );
     }
 }

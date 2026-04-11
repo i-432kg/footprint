@@ -19,7 +19,7 @@ public class LatitudeTypeHandler extends BaseTypeHandler<Latitude> {
 
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, Latitude parameter, JdbcType jdbcType) throws SQLException {
-        ps.setBigDecimal(i, parameter.value());
+        ps.setBigDecimal(i, parameter.getValue());
     }
 
     @Override

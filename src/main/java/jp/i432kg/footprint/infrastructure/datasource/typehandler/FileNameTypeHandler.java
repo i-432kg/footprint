@@ -18,7 +18,7 @@ public class FileNameTypeHandler extends BaseTypeHandler<FileName> {
 
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, FileName parameter, JdbcType jdbcType) throws SQLException {
-        ps.setString(i, parameter.value());
+        ps.setString(i, parameter.getValue());
     }
 
     @Override

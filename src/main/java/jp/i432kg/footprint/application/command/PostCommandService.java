@@ -65,7 +65,7 @@ public class PostCommandService {
                     );
         } catch (IOException e) {
             throw PostCommandFailedException.imageSaveFailed(
-                    command.getOriginalFilename().value(),
+                    command.getOriginalFilename().getValue(),
                     e
             );
         }
@@ -106,7 +106,7 @@ public class PostCommandService {
             postRepository.savePost(post);
         } catch (DataAccessException e) {
             throw PostCommandFailedException.persistenceFailed(
-                    postId.value(),
+                    postId.getValue(),
                     e
             );
         }

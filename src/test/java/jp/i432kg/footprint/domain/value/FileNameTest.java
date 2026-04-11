@@ -12,7 +12,7 @@ class FileNameTest {
     void of_shouldCreateInstance_whenValueIsValid() {
         FileName actual = FileName.of("image_01.jpg");
 
-        assertThat(actual.value()).isEqualTo("image_01.jpg");
+        assertThat(actual.getValue()).isEqualTo("image_01.jpg");
     }
 
     @Test

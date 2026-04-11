@@ -41,8 +41,4 @@ public class BirthDate {
 
         return new BirthDate(value);
     }
-
-    public LocalDate value() {
-        return value;
-    }
 }

@@ -19,7 +19,7 @@ public class LongitudeTypeHandler extends BaseTypeHandler<Longitude> {
 
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, Longitude parameter, JdbcType jdbcType) throws SQLException {
-        ps.setBigDecimal(i, parameter.value());
+        ps.setBigDecimal(i, parameter.getValue());
     }
 
     @Override

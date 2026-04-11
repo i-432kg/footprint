@@ -15,7 +15,7 @@ class HashedPasswordTest {
                 rawPassword -> "hashed-" + rawPassword
         );
 
-        assertThat(actual.value()).isEqualTo("hashed-Passw0rd!");
+        assertThat(actual.getValue()).isEqualTo("hashed-Passw0rd!");
     }
 
     @Test

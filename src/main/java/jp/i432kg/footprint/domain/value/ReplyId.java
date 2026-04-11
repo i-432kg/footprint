@@ -23,8 +23,4 @@ public class ReplyId {
         final String validated = UlidValidation.requireValidUlid(FIELD_NAME, value);
         return new ReplyId(validated);
     }
-
-    public String value() {
-        return value;
-    }
 }

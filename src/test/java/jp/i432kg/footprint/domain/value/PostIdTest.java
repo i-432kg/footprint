@@ -13,7 +13,7 @@ class PostIdTest {
     void of_shouldCreateInstance_whenValueIsValidUlid() {
         PostId actual = PostId.of(DomainTestFixtures.POST_ID);
 
-        assertThat(actual.value()).isEqualTo(DomainTestFixtures.POST_ID);
+        assertThat(actual.getValue()).isEqualTo(DomainTestFixtures.POST_ID);
     }
 
     @Test
