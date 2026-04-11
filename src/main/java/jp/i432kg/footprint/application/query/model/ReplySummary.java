@@ -2,6 +2,7 @@ package jp.i432kg.footprint.application.query.model;
 
 import lombok.NoArgsConstructor;
 import lombok.Value;
+import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDateTime;
 
@@ -31,6 +32,7 @@ public class ReplySummary {
     /**
      * この返信の親返信 ID
      */
+    @Nullable
     String parentReplyId;
 
     /**

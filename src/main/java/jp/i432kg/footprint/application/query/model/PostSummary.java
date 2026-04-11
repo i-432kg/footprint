@@ -2,6 +2,7 @@ package jp.i432kg.footprint.application.query.model;
 
 import lombok.NoArgsConstructor;
 import lombok.Value;
+import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,6 +37,7 @@ public class PostSummary {
     /**
      * 位置情報
      */
+    @Nullable
     LocationSummary location;
 
     /**
