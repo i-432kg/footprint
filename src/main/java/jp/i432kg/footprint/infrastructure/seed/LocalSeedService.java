@@ -6,6 +6,7 @@ import jp.i432kg.footprint.application.command.UserCommandService;
 import jp.i432kg.footprint.application.command.model.CreatePostCommand;
 import jp.i432kg.footprint.application.command.model.CreateReplyCommand;
 import jp.i432kg.footprint.application.command.model.CreateUserCommand;
+import jp.i432kg.footprint.domain.model.ParentReply;
 import jp.i432kg.footprint.domain.value.BirthDate;
 import jp.i432kg.footprint.domain.value.Comment;
 import jp.i432kg.footprint.domain.value.EmailAddress;
@@ -102,7 +103,7 @@ public class LocalSeedService {
                         CreateReplyCommand.of(
                                 PostId.of(postId),
                                 replier.userId(),
-                                null,
+                                ParentReply.root(),
                                 Comment.of(replyMessage)
                         )
                 );
