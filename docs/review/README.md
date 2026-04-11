@@ -1,0 +1,39 @@
+# Review Docs
+
+## Structure
+
+- `domain/findings.md`
+  domain 層レビューの指摘一覧の原本
+- `domain/summary.md`
+  domain 層レビューの最終結果
+- `domain/checks/`
+  個別の再確認メモ
+- `application/`
+  application 層レビュー用
+- `infrastructure/`
+  infrastructure 層レビュー用
+- `presentation/`
+  presentation 層レビュー用
+
+## Update Rules
+
+- 指摘一覧は各層の `findings.md` に集約する
+- 最終的な判断は各層の `summary.md` に集約する
+- 単発の再確認や部分レビューは `checks/` に分離する
+- `findings.md` の状況は `未対応` / `対応中` / `対応済` / `クローズ` / `見送り` で更新する
+- 再レビュー時も同一指摘は同じ No. を使い、新規指摘のみ新しい No. を採番する
+
+## Naming
+
+- 確定資料は `findings.md` / `summary.md`
+- 単発確認資料は `YYYY-MM-DD-topic-check.md` を基本とする
+- 過去資料で日付が不明なものは意味が分かる名前で `checks/` に残す
+
+## Review Focus
+
+- 一貫性: 同種クラスの実装方針、命名、公開 API が揃っているか
+- 不変条件・境界値: `null`、空文字、最小値、最大値などの扱いが適切か
+- 依存と責務分離: レイヤ依存方向と責務分離が崩れていないか
+- 例外とエラーハンドリング: 例外の責務と公開情報の粒度が一貫しているか
+- セキュアな実装: 機微情報が `toString`、例外、ログ、レスポンスに露出しないか
+- 保守性: 未使用コード、仕様残骸、コメント不整合、テストしづらい実装がないか

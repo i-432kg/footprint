@@ -1,7 +1,7 @@
 # Re-Review
 
 ## 対象
-- `docs/review/review.md` の High 指摘 `No.1` から `No.3`
+- `docs/review/domain/findings.md` の High 指摘 `No.1` から `No.3`
 
 ## 再レビュー結果
 | No. | 観点 | 対象 | 優先度 | 再レビュー結果 | 状況 | 備考 |
@@ -15,5 +15,5 @@
 - 今回の確認範囲では、修正内容をクローズして問題ないと判断します。
 
 ## 補足
-- `docs/review/review.md` の Medium / Low 指摘 (`No.4` 以降) は今回の再レビュー対象外です。
+- `docs/review/domain/findings.md` の Medium / Low 指摘 (`No.4` 以降) は今回の再レビュー対象外です。
 - 実装確認は対象ソースのレビューに加え、関連テストの通過結果を前提に判断しています。
