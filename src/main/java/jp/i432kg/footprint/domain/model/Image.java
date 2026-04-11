@@ -92,6 +92,14 @@ public class Image {
             final LocalDateTime takenAt
     ) {
         // 解像度のバリデーション
+        // 短辺ピクセル数チェック
+        final int shortSidePixels = Math.min(width.getValue(), height.getValue());
+        if (shortSidePixels < MIN_SHORT_SIDE_PIXELS) {
+            throw new IllegalArgumentException(
+                    "Short side pixels must be at least " + MIN_SHORT_SIDE_PIXELS + ": " + shortSidePixels
+            );
+        }
+
         // 総ピクセル数チェック
         final long totalPixels = (long) width.getValue() * height.getValue();
         if (totalPixels > MAX_TOTAL_PIXELS) {

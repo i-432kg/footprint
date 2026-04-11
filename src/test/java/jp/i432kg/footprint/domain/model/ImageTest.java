@@ -6,6 +6,7 @@ import jp.i432kg.footprint.domain.value.Pixel;
 import jp.i432kg.footprint.domain.value.StorageObject;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Constructor;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,6 +75,25 @@ class ImageTest {
                 LocalDateTime.of(2026, 4, 1, 12, 30)
         )).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Total pixels exceed the limit of 40MP");
+    }
+
+    @Test
+    void of_shouldRejectWhenShortSidePixelsAreLessThanMinimum() throws Exception {
+        final Constructor<Pixel> constructor = Pixel.class.getDeclaredConstructor(int.class);
+        constructor.setAccessible(true);
+        final Pixel invalidShortSide = constructor.newInstance(319);
+
+        assertThatThrownBy(() -> Image.of(
+                DomainTestFixtures.storageObject(),
+                DomainTestFixtures.fileExtension(),
+                DomainTestFixtures.fileSize(),
+                invalidShortSide,
+                DomainTestFixtures.height(),
+                DomainTestFixtures.location(),
+                true,
+                LocalDateTime.of(2026, 4, 1, 12, 30)
+        )).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Short side pixels must be at least 320");
     }
 
 }
