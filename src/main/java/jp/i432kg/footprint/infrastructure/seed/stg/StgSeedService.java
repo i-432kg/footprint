@@ -1,4 +1,4 @@
-package jp.i432kg.footprint.infrastructure.seed;
+package jp.i432kg.footprint.infrastructure.seed.stg;
 
 import jp.i432kg.footprint.application.command.PostCommandService;
 import jp.i432kg.footprint.application.command.ReplyCommandService;
@@ -15,6 +15,7 @@ import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.RawPassword;
 import jp.i432kg.footprint.domain.value.UserId;
 import jp.i432kg.footprint.domain.value.UserName;
+import jp.i432kg.footprint.infrastructure.seed.shared.SeedSourceImage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -26,31 +27,47 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * STG 環境向けの seed データ投入サービス。
+ * <p>
+ * seed ユーザー、投稿、返信を作成し、既に存在する場合は重複作成しない。
+ * 画像は S3 に配置済みの seed 元画像を利用する。
+ * </p>
+ */
 @Slf4j
 @Service
-@Profile("local")
+@Profile("stg")
 @RequiredArgsConstructor
-public class LocalSeedService {
+public class StgSeedService {
 
     private static final String USER_EMAIL_DOMAIN = "example.com";
 
-    private final LocalSeedProperties properties;
+    private final StgSeedProperties properties;
     private final UserCommandService userCommandService;
     private final PostCommandService postCommandService;
     private final ReplyCommandService replyCommandService;
-    private final LocalSeedAdminMapper localSeedAdminMapper;
-    private final LocalSeedSourceImageProvider seedSourceImageProvider;
-    private final LocalSeedImageManifestLoader localSeedImageManifestLoader;
+    private final StgSeedAdminMapper seedAdminMapper;
+    private final S3SeedSourceImageProvider seedSourceImageProvider;
+    private final SeedImageManifestLoader seedImageManifestLoader;
 
+    /**
+     * seed ユーザーと seed 投稿を作成する。
+     */
     @Transactional
     public void seed() {
         final SeedUsers seedUsers = createSeedUsers();
         createPostsAndRepliesForActiveUsers(seedUsers.activeUsers());
     }
 
+    /**
+     * seed ユーザーを作成し、作成済みの場合は既存ユーザーを利用する。
+     *
+     * @return 作成した seed ユーザー群
+     */
     private SeedUsers createSeedUsers() {
         final List<UserSeed> activeUsers = new ArrayList<>();
         final List<UserSeed> inactiveUsers = new ArrayList<>();
+
         int sequence = 1;
 
         for (int i = 1; i <= properties.getActiveUserCount(); i++) {
@@ -63,42 +80,51 @@ public class LocalSeedService {
             sequence++;
         }
 
-        log.info("Local seed users prepared. activeUserCount={}, inactiveUserCount={}", activeUsers.size(), inactiveUsers.size());
+        log.info("Seed users prepared. activeUserCount={}, inactiveUserCount={}", activeUsers.size(), inactiveUsers.size());
+
         return new SeedUsers(activeUsers, inactiveUsers);
     }
 
+    /**
+     * 投稿・返信ありユーザー向けの投稿と返信を作成する。
+     * <p>
+     * seed-images.json に定義された画像をすべて消費し、
+     * 投稿先ユーザーへ順番に割り当てる。
+     * </p>
+     *
+     * @param activeUsers 投稿・返信ありユーザー一覧
+     */
     private void createPostsAndRepliesForActiveUsers(final List<UserSeed> activeUsers) {
         if (activeUsers.isEmpty()) {
-            log.info("No active local seed users configured. Skipping post/reply creation.");
+            log.info("No active seed users configured. Skipping post/reply creation.");
             return;
         }
 
-        final List<String> imagePaths = localSeedImageManifestLoader.loadImagePaths();
-        if (imagePaths.isEmpty()) {
-            log.warn("No local seed images found. Users are created, but posts/replies are skipped.");
-            return;
+        final List<String> imageObjectKeys = seedImageManifestLoader.loadObjectKeys();
+        if (imageObjectKeys.isEmpty()) {
+            throw new IllegalStateException("seed-images.json must contain at least one object key when active users exist.");
         }
 
         final int[] postSequenceByUser = new int[activeUsers.size()];
 
-        for (int imageIndex = 0; imageIndex < imagePaths.size(); imageIndex++) {
+        for (int imageIndex = 0; imageIndex < imageObjectKeys.size(); imageIndex++) {
             final int authorIndex = imageIndex % activeUsers.size();
             final UserSeed author = activeUsers.get(authorIndex);
             final int postSequence = ++postSequenceByUser[authorIndex];
             final String caption = seedCaption(author.username(), postSequence);
-            final String imagePath = imagePaths.get(imageIndex);
+            final String imageObjectKey = imageObjectKeys.get(imageIndex);
 
-            if (localSeedAdminMapper.findPostIdByCaption(caption).isEmpty()) {
-                createPost(author.userId(), caption, imagePath);
-                log.info("Local seed post created. email={}, caption={}, sourcePath={}", author.email(), caption, imagePath);
+            if (seedAdminMapper.findPostIdByCaption(caption).isEmpty()) {
+                createPost(author.userId(), caption, imageObjectKey);
+                log.info("Seed post created. email={}, caption={}, sourceObjectKey={}", author.email(), caption, imageObjectKey);
             }
 
-            final String postId = localSeedAdminMapper.findPostIdByCaption(caption)
-                    .orElseThrow(() -> new IllegalStateException("Local seed post not found after create. caption=" + caption));
+            final String postId = seedAdminMapper.findPostIdByCaption(caption)
+                    .orElseThrow(() -> new IllegalStateException("Seed post not found after create. caption=" + caption));
 
             final UserSeed replier = resolveReplier(activeUsers, authorIndex);
             final String replyMessage = seedReplyMessage(postSequence, replier.username());
-            if (!localSeedAdminMapper.existsReplyByPostIdAndMessage(postId, replyMessage)) {
+            if (!seedAdminMapper.existsReplyByPostIdAndMessage(postId, replyMessage)) {
                 replyCommandService.createReply(
                         CreateReplyCommand.of(
                                 PostId.of(postId),
@@ -107,11 +133,22 @@ public class LocalSeedService {
                                 Comment.of(replyMessage)
                         )
                 );
-                log.info("Local seed reply created. postId={}, replier={}", postId, replier.email());
+                log.info("Seed reply created. postId={}, replier={}", postId, replier.email());
             }
         }
     }
 
+    /**
+     * 投稿への返信者を解決する。
+     * <p>
+     * active ユーザーが複数いる場合は次のユーザーを返信者にし、
+     * 1人しかいない場合は同一ユーザーを返信者にする。
+     * </p>
+     *
+     * @param activeUsers 投稿・返信ありユーザー一覧
+     * @param authorIndex 投稿者の添字
+     * @return 返信者
+     */
     private UserSeed resolveReplier(final List<UserSeed> activeUsers, final int authorIndex) {
         if (activeUsers.size() == 1) {
             return activeUsers.get(0);
@@ -119,11 +156,19 @@ public class LocalSeedService {
         return activeUsers.get((authorIndex + 1) % activeUsers.size());
     }
 
+    /**
+     * seed ユーザーを作成し、作成済みの場合は既存ユーザーを返す。
+     *
+     * @param sequence 全体で一意な連番
+     * @param typeSequence 種別ごとの連番
+     * @param userType ユーザー種別
+     * @return seed ユーザー
+     */
     private UserSeed createOrLoadUser(final int sequence, final int typeSequence, final UserType userType) {
         final String email = seedEmail(sequence);
         final String username = seedUsername(userType, typeSequence);
 
-        if (localSeedAdminMapper.findUserIdByEmail(email).isEmpty()) {
+        if (seedAdminMapper.findUserIdByEmail(email).isEmpty()) {
             userCommandService.createUser(
                     CreateUserCommand.of(
                             UserName.of(username),
@@ -132,17 +177,24 @@ public class LocalSeedService {
                             BirthDate.of(LocalDate.of(1990, 1, Math.min(sequence, 28)))
                     )
             );
-            log.info("Local seed user created. email={}, username={}, type={}", email, username, userType);
+            log.info("Seed user created. email={}, username={}, type={}", email, username, userType);
         }
 
-        final String userId = localSeedAdminMapper.findUserIdByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("Local seed user not found after create. email=" + email));
+        final String userId = seedAdminMapper.findUserIdByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("Seed user not found after create. email=" + email));
 
         return new UserSeed(UserId.of(userId), email, username, userType);
     }
 
-    private void createPost(final UserId userId, final String caption, final String imagePath) {
-        try (SeedSourceImage seedSourceImage = seedSourceImageProvider.load(imagePath)) {
+    /**
+     * seed 用画像を取得して投稿を作成する。
+     *
+     * @param userId 投稿者 ID
+     * @param caption 投稿本文
+     * @param sourceObjectKey 元画像のオブジェクトキー
+     */
+    private void createPost(final UserId userId, final String caption, final String sourceObjectKey) {
+        try (SeedSourceImage seedSourceImage = seedSourceImageProvider.load(sourceObjectKey)) {
             postCommandService.createPost(
                     CreatePostCommand.of(
                             userId,
@@ -152,34 +204,78 @@ public class LocalSeedService {
                     )
             );
         } catch (IOException e) {
-            throw new IllegalStateException("Failed to close local seed image stream. path=" + imagePath, e);
+            throw new IllegalStateException("Failed to close seed image stream. objectKey=" + sourceObjectKey, e);
         } catch (RuntimeException e) {
-            throw new IllegalStateException("Failed to create local seed post. sourcePath=" + imagePath, e);
+            throw new IllegalStateException("Failed to create seed post. sourceObjectKey=" + sourceObjectKey, e);
         }
     }
 
+    /**
+     * seed 用メールアドレスを生成する。
+     *
+     * @param number 連番
+     * @return メールアドレス
+     */
     private String seedEmail(final int number) {
         return properties.getEmailPrefix() + String.format("%02d@%s", number, USER_EMAIL_DOMAIN);
     }
 
+    /**
+     * seed 用ユーザー名を生成する。
+     *
+     * @param userType ユーザー種別
+     * @param number 種別内連番
+     * @return ユーザー名
+     */
     private String seedUsername(final UserType userType, final int number) {
-        return String.format("local%s%02d", userType.usernamePrefix(), number);
+        return String.format("stg%s%02d", userType.usernamePrefix(), number);
     }
 
+    /**
+     * seed 用投稿本文を生成する。
+     *
+     * @param username 投稿者名
+     * @param postIndex 投稿連番
+     * @return 投稿本文
+     */
     private String seedCaption(final String username, final int postIndex) {
-        return String.format("[LOCAL] %s post%02d", username, postIndex);
+        return String.format("[STG] %s post%02d", username, postIndex);
     }
 
+    /**
+     * seed 用返信メッセージを生成する。
+     *
+     * @param postIndex 投稿連番
+     * @param username 返信者名
+     * @return 返信メッセージ
+     */
     private String seedReplyMessage(final int postIndex, final String username) {
-        return String.format("[LOCAL] %s reply%02d", username, postIndex);
+        return String.format("[STG] %s reply%02d", username, postIndex);
     }
 
+    /**
+     * seed 作成対象ユーザーの内部保持用レコード。
+     *
+     * @param userId ユーザー ID
+     * @param email メールアドレス
+     * @param username ユーザー名
+     * @param userType ユーザー種別
+     */
     private record UserSeed(UserId userId, String email, String username, UserType userType) {
     }
 
+    /**
+     * seed 作成対象ユーザー群の内部保持用レコード。
+     *
+     * @param activeUsers 投稿・返信ありユーザー
+     * @param inactiveUsers 投稿・返信なしユーザー
+     */
     private record SeedUsers(List<UserSeed> activeUsers, List<UserSeed> inactiveUsers) {
     }
 
+    /**
+     * seed ユーザー種別。
+     */
     private enum UserType {
         ACTIVE("active"),
         INACTIVE("inactive");

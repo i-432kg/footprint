@@ -1,4 +1,4 @@
-package jp.i432kg.footprint.infrastructure.seed;
+package jp.i432kg.footprint.infrastructure.seed.stg;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Mapper
-public interface LocalSeedAdminMapper {
+public interface StgSeedAdminMapper {
 
     Optional<String> findUserIdByEmail(@Param("email") String email);
 

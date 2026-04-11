@@ -1,4 +1,4 @@
-package jp.i432kg.footprint.infrastructure.seed;
+package jp.i432kg.footprint.infrastructure.seed.local;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

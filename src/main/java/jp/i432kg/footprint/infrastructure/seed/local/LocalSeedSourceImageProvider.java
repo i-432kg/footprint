@@ -1,5 +1,6 @@
-package jp.i432kg.footprint.infrastructure.seed;
+package jp.i432kg.footprint.infrastructure.seed.local;
 
+import jp.i432kg.footprint.infrastructure.seed.shared.SeedSourceImage;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 

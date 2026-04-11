@@ -1,4 +1,4 @@
-package jp.i432kg.footprint.infrastructure.seed;
+package jp.i432kg.footprint.infrastructure.seed.local;
 
 import lombok.Getter;
 import lombok.Setter;

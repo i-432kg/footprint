@@ -1,4 +1,4 @@
-package jp.i432kg.footprint.infrastructure.seed;
+package jp.i432kg.footprint.infrastructure.seed.shared;
 
 import java.io.IOException;
 import java.io.InputStream;
