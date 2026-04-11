@@ -19,10 +19,9 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * STG seed で作成したデータを削除するクリーンアップ処理。
+ * STG seed が作成した DB レコードと保存画像を削除するクリーンアップ処理です。
  * <p>
- * DB 上の seed データを削除するだけでなく、保存先に残った画像ファイルも削除する。
- * 保存先が S3 の場合とローカルストレージの場合の両方に対応する。
+ * 保存先が S3 の場合とローカルストレージの場合の両方に対応します。
  * </p>
  */
 @Slf4j
@@ -37,11 +36,10 @@ public class StgSeedCleaner {
     private final ObjectProvider<LocalStoragePathResolver> localStoragePathResolverProvider;
 
     /**
-     * seed で作成した投稿・返信・ユーザー・画像を削除する。
+     * STG seed が作成した画像実体と関連レコードを削除します。
      */
     @Transactional
     public void cleanup() {
-        // まず画像実体を削除してから、関連レコードを削除する
         final List<String> objectKeys = seedAdminMapper.findSeedImageObjectKeys();
         objectKeys.forEach(this::deletePhysicalObjectQuietly);
 
@@ -51,17 +49,11 @@ public class StgSeedCleaner {
         seedAdminMapper.deleteSeedUsers();
     }
 
-    /**
-     * 画像オブジェクトを例外を握りつぶしながら削除する。
-     *
-     * @param objectKeyValue 削除対象オブジェクトキー
-     */
     private void deletePhysicalObjectQuietly(final String objectKeyValue) {
         try {
             final S3Client s3Client = s3ClientProvider.getIfAvailable();
             final S3ObjectResolver s3ObjectResolver = s3ObjectResolverProvider.getIfAvailable();
             if (s3Client != null && s3ObjectResolver != null) {
-                // S3 保存の場合はバケット名・キーを解決して削除する
                 final StorageObject storageObject = StorageObject.s3(ObjectKey.of(objectKeyValue));
                 s3Client.deleteObject(
                         DeleteObjectRequest.builder()
@@ -72,7 +64,6 @@ public class StgSeedCleaner {
                 return;
             }
 
-            // ローカル保存の場合はファイルパスを解決して削除する
             final LocalStoragePathResolver localResolver = localStoragePathResolverProvider.getIfAvailable();
             if (localResolver != null) {
                 final StorageObject storageObject = StorageObject.local(ObjectKey.of(objectKeyValue));

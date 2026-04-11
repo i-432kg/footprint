@@ -27,6 +27,12 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * local 環境向けの固定シナリオ seed データを投入するサービスです。
+ * <p>
+ * 投稿あり/なし、返信あり/なしの状態を確認できる最小データセットを維持します。
+ * </p>
+ */
 @Slf4j
 @Service
 @Profile("local")
@@ -44,6 +50,9 @@ public class LocalSeedService {
     private final LocalSeedSourceImageProvider seedSourceImageProvider;
     private final LocalSeedImageManifestLoader localSeedImageManifestLoader;
 
+    /**
+     * local 固定シナリオの seed ユーザー、投稿、返信を投入します。
+     */
     @Transactional
     public void seed() {
         final List<String> imagePaths = localSeedImageManifestLoader.loadImagePaths();

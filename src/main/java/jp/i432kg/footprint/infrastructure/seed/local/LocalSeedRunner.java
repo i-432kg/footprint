@@ -7,6 +7,9 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+/**
+ * アプリケーション起動時に local seed の実行可否を判定し、必要なら投入を開始する runner です。
+ */
 @Slf4j
 @Component
 @Profile("local")
@@ -17,6 +20,11 @@ public class LocalSeedRunner implements ApplicationRunner {
     private final LocalSeedService localSeedService;
     private final LocalSeedCleaner localSeedCleaner;
 
+    /**
+     * 起動引数を受け取り、設定に応じて local seed の cleanup と投入を実行します。
+     *
+     * @param args 起動引数
+     */
     @Override
     public void run(final ApplicationArguments args) {
         if (!properties.isEnabled()) {

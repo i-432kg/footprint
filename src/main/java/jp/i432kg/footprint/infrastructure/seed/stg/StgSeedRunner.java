@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
- * アプリケーション起動時に STG seed の実行可否を判定する Runner。
+ * アプリケーション起動時に STG seed の実行可否を判定し、必要なら投入を開始する runner です。
  * <p>
  * {@code app.stg-seed.enabled=true} の場合のみ seed を実行する。
  * </p>
@@ -24,13 +24,12 @@ public class StgSeedRunner implements ApplicationRunner {
     private final StgSeedCleaner stgSeedCleaner;
 
     /**
-     * 起動時に seed の実行処理を行う。
+     * 起動引数を受け取り、設定に応じて STG seed の cleanup と投入を実行します。
      *
      * @param args 起動引数
      */
     @Override
     public void run(final ApplicationArguments args) {
-        // seed 無効なら何もせず終了する
         if (!properties.isEnabled()) {
             log.info("STG seed skipped. app.stg-seed.enabled=false");
             return;
@@ -40,7 +39,6 @@ public class StgSeedRunner implements ApplicationRunner {
 
         log.info("STG seed start.");
 
-        // 既存の seed データを削除してから投入したい場合のみ cleanup を実行する
         if (properties.isCleanupBeforeSeed() || properties.isCleanupOnly()) {
             log.info("STG seed cleanup start.");
             stgSeedCleaner.cleanup();

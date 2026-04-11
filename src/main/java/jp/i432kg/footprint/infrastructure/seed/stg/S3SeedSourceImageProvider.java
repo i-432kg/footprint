@@ -12,11 +12,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import java.util.Objects;
 
 /**
- * S3 上に配置された seed 用元画像を取得するコンポーネント。
- * <p>
- * 指定されたオブジェクトキーから画像を取得し、投稿作成で利用できる
- * {@link SeedSourceImage} として返却する。
- * </p>
+ * STG seed 用の元画像や manifest を S3 から取得するコンポーネントです。
  */
 @Component
 @Profile("stg")
@@ -27,10 +23,10 @@ public class S3SeedSourceImageProvider {
     private final StgSeedProperties properties;
 
     /**
-     * 指定したオブジェクトキーの画像を S3 から取得する。
+     * 指定したオブジェクトキーのファイルを S3 から取得します。
      *
      * @param objectKey S3 オブジェクトキー
-     * @return seed 用元画像
+     * @return seed 用入力ストリームと元ファイル名
      */
     public SeedSourceImage load(final String objectKey) {
         final String bucketName = properties.getSourceBucketName();

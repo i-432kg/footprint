@@ -28,10 +28,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * STG 環境向けの seed データ投入サービス。
+ * STG 環境向けの固定シナリオ seed データを投入するサービスです。
  * <p>
- * seed ユーザー、投稿、返信を作成し、既に存在する場合は重複作成しない。
- * 画像は S3 に配置済みの seed 元画像を利用する。
+ * 投稿あり/なし、返信あり/なしの状態を確認できる最小データセットを維持します。
  * </p>
  */
 @Slf4j
@@ -52,7 +51,7 @@ public class StgSeedService {
     private final StgSeedImageManifestLoader seedImageManifestLoader;
 
     /**
-     * seed ユーザーと seed 投稿を作成する。
+     * STG 固定シナリオの seed ユーザー、投稿、返信を投入します。
      */
     @Transactional
     public void seed() {

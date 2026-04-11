@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * STG seed 実行に関する設定値。
+ * STG seed 実行に関する設定値です。
  */
 @Getter
 @Setter

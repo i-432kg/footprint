@@ -13,6 +13,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * local 環境の seed image manifest を読み込み、投稿元画像のパス一覧へ解決するローダです。
+ */
 @Slf4j
 @Component
 @Profile("local")
@@ -22,6 +25,11 @@ public class LocalSeedImageManifestLoader {
     private final LocalSeedProperties properties;
     private final SeedImageManifestParser manifestParser;
 
+    /**
+     * local seed 用 manifest を読み込み、投稿元画像の絶対パス一覧を返します。
+     *
+     * @return 投稿元画像パス一覧。manifest が存在しない場合は空
+     */
     public List<String> loadImagePaths() {
         final Path manifestPath = Paths.get(properties.getManifestPath()).normalize();
         if (!Files.exists(manifestPath)) {

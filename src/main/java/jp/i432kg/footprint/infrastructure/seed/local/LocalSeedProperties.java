@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * local seed 実行に関する設定値です。
+ */
 @Getter
 @Setter
 @ConfigurationProperties(prefix = "app.local-seed")

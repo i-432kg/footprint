@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
- * S3 上の seed-images.json から seed 投稿に利用する画像オブジェクトキー一覧を読み込む。
+ * STG 環境の seed image manifest を S3 から読み込み、投稿元画像の object key 一覧へ解決するローダです。
  */
 @Component
 @Profile("stg")
@@ -23,7 +23,7 @@ public class StgSeedImageManifestLoader {
     private final SeedImageManifestParser manifestParser;
 
     /**
-     * seed-images.json から画像オブジェクトキー一覧を読み込む。
+     * STG seed 用 manifest を読み込み、投稿元画像の object key 一覧を返します。
      *
      * @return 重複を除去したオブジェクトキー一覧
      */

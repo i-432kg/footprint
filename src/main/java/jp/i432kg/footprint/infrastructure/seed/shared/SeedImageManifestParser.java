@@ -20,6 +20,14 @@ public class SeedImageManifestParser {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     * seed image manifest を解析し、重複除去済みのエントリ一覧を返します。
+     *
+     * @param inputStream manifest 入力ストリーム
+     * @param sourceName エラー表示用の入力元識別子
+     * @return manifest エントリ一覧
+     * @throws IOException manifest 読み込みに失敗した場合
+     */
     public List<String> parseEntries(final InputStream inputStream, final String sourceName) throws IOException {
         final JsonNode rootNode = objectMapper.readTree(inputStream);
         final Set<String> entries = new LinkedHashSet<>();

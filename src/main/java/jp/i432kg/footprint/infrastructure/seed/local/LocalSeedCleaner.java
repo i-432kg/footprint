@@ -14,6 +14,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+/**
+ * local seed が作成した DB レコードとローカル保存画像を削除するクリーンアップ処理です。
+ */
 @Slf4j
 @Component
 @Profile("local")
@@ -23,6 +26,9 @@ public class LocalSeedCleaner {
     private final LocalSeedAdminMapper localSeedAdminMapper;
     private final LocalStoragePathResolver localStoragePathResolver;
 
+    /**
+     * local seed が作成した画像実体と関連レコードを削除します。
+     */
     @Transactional
     public void cleanup() {
         final List<String> objectKeys = localSeedAdminMapper.findSeedImageObjectKeys();
