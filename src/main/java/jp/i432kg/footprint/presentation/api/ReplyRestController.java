@@ -5,10 +5,10 @@ import jp.i432kg.footprint.application.command.ReplyCommandService;
 import jp.i432kg.footprint.application.command.model.CreateReplyCommand;
 import jp.i432kg.footprint.application.query.ReplyQueryService;
 import jp.i432kg.footprint.application.query.model.ReplySummary;
-import jp.i432kg.footprint.domain.value.Comment;
 import jp.i432kg.footprint.domain.model.ParentReply;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.ReplyId;
+import jp.i432kg.footprint.domain.value.ReplyComment;
 import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
 import jp.i432kg.footprint.presentation.api.request.ReplyRequest;
 import jp.i432kg.footprint.presentation.api.response.ReplyItemResponse;
@@ -75,7 +75,7 @@ public class ReplyRestController {
                         .map(ReplyId::of)
                         .map(ParentReply::of)
                         .orElseGet(ParentReply::root),
-                Comment.of(request.getMessage())
+                ReplyComment.of(request.getMessage())
         );
 
         replyCommandService.createReply(command);

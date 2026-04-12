@@ -6,18 +6,24 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class CommentTest {
+class ReplyCommentTest {
 
     @Test
     void of_shouldCreateInstance_whenValueIsValid() {
-        Comment actual = Comment.of("line1\nline2");
+        final ReplyComment actual = ReplyComment.of("line1\nline2");
 
         assertThat(actual.getValue()).isEqualTo("line1\nline2");
     }
 
     @Test
+    void of_shouldRejectBlankValue() {
+        assertThatThrownBy(() -> ReplyComment.of(" \n "))
+                .isInstanceOf(InvalidValueException.class);
+    }
+
+    @Test
     void of_shouldRejectControlCharacters() {
-        assertThatThrownBy(() -> Comment.of("hello\u0000world"))
+        assertThatThrownBy(() -> ReplyComment.of("hello\u0000world"))
                 .isInstanceOf(InvalidValueException.class);
     }
 }

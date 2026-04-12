@@ -31,7 +31,7 @@ public class Post {
     /**
      * 投稿コメント
      */
-    Comment caption;
+    PostComment caption;
 
     /**
      * 投稿日時
@@ -52,7 +52,7 @@ public class Post {
             final PostId postId,
             final UserId userId,
             final Image image,
-            final Comment caption,
+            final PostComment caption,
             final LocalDateTime createdAt
     ) {
         return new Post(postId, userId, image, caption, createdAt);

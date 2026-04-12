@@ -1,8 +1,8 @@
 package jp.i432kg.footprint.application.command.model;
 
-import jp.i432kg.footprint.domain.value.Comment;
 import jp.i432kg.footprint.domain.model.ParentReply;
 import jp.i432kg.footprint.domain.value.PostId;
+import jp.i432kg.footprint.domain.value.ReplyComment;
 import jp.i432kg.footprint.domain.value.UserId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -33,7 +33,7 @@ public class CreateReplyCommand {
     /**
      * 返信本文
      */
-    Comment message;
+    ReplyComment message;
 
     /**
      * {@link CreateReplyCommand} インスタンスを生成します。
@@ -48,7 +48,7 @@ public class CreateReplyCommand {
             final PostId postId,
             final UserId userId,
             final ParentReply parentReply,
-            final Comment message
+            final ReplyComment message
     ) {
         return new CreateReplyCommand(postId, userId, parentReply, message);
     }

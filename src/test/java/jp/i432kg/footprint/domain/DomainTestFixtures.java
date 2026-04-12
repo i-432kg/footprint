@@ -102,12 +102,12 @@ public final class DomainTestFixtures {
         );
     }
 
-    public static Comment caption() {
-        return Comment.of("hello footprint");
+    public static PostComment caption() {
+        return PostComment.of("hello footprint");
     }
 
-    public static Comment replyMessage() {
-        return Comment.of("nice photo");
+    public static ReplyComment replyMessage() {
+        return ReplyComment.of("nice photo");
     }
 
     public static Post post() {

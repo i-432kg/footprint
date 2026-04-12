@@ -8,7 +8,7 @@
             <arg column="post_id" javaType="jp.i432kg.footprint.domain.value.PostId"/>
             <arg column="user_id" javaType="jp.i432kg.footprint.domain.value.UserId"/>
             <arg column="parent_id" javaType="jp.i432kg.footprint.domain.value.ReplyId"/>
-            <arg column="message" javaType="jp.i432kg.footprint.domain.value.Comment"/>
+            <arg column="message" javaType="jp.i432kg.footprint.domain.value.ReplyComment"/>
             <arg column="created_at" javaType="java.time.LocalDateTime"/>
         </constructor>
     </resultMap>

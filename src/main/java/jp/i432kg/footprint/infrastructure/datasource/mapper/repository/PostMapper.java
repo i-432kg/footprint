@@ -47,7 +47,7 @@ public interface PostMapper {
         private Long id; // MyBatis が書き込むため final にしない
         private final PostId postId;
         private final UserId userId;
-        private final Comment caption;
+        private final PostComment caption;
         private final boolean hasLocation;
         private final Latitude latitude;
         private final Longitude longitude;

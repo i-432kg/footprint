@@ -1,7 +1,7 @@
 package jp.i432kg.footprint.application.command.model;
 
-import jp.i432kg.footprint.domain.value.Comment;
 import jp.i432kg.footprint.domain.value.FileName;
+import jp.i432kg.footprint.domain.value.PostComment;
 import jp.i432kg.footprint.domain.value.UserId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -27,7 +27,7 @@ public class CreatePostCommand {
      * 投稿本文
      */
     @NonNull
-    Comment comment;
+    PostComment comment;
 
     /**
      * 投稿された画像データの入力ストリーム
@@ -53,7 +53,7 @@ public class CreatePostCommand {
      */
     public static CreatePostCommand of(
             final @NonNull UserId userId,
-            final @NonNull Comment comment,
+            final @NonNull PostComment comment,
             final @NonNull InputStream imageStream,
             final @NonNull FileName originalFilename
     ) {

@@ -37,7 +37,7 @@ public class Reply {
     /**
      * 返信本文
      */
-    Comment message;
+    ReplyComment message;
 
     /**
      * 返信日時
@@ -52,7 +52,7 @@ public class Reply {
             final PostId postId,
             final UserId userId,
             final ParentReply parentReply,
-            final Comment message,
+            final ReplyComment message,
             final LocalDateTime createdAt
     ) {
         return new Reply(replyId, postId, userId, parentReply, message, createdAt);

@@ -8,12 +8,13 @@ import jp.i432kg.footprint.application.command.model.CreateReplyCommand;
 import jp.i432kg.footprint.application.command.model.CreateUserCommand;
 import jp.i432kg.footprint.domain.model.ParentReply;
 import jp.i432kg.footprint.domain.value.BirthDate;
-import jp.i432kg.footprint.domain.value.Comment;
 import jp.i432kg.footprint.domain.value.EmailAddress;
 import jp.i432kg.footprint.domain.value.FileName;
 import jp.i432kg.footprint.domain.value.PostId;
+import jp.i432kg.footprint.domain.value.PostComment;
 import jp.i432kg.footprint.domain.value.RawPassword;
 import jp.i432kg.footprint.domain.value.ReplyId;
+import jp.i432kg.footprint.domain.value.ReplyComment;
 import jp.i432kg.footprint.domain.value.UserId;
 import jp.i432kg.footprint.domain.value.UserName;
 import lombok.RequiredArgsConstructor;
@@ -136,7 +137,7 @@ public abstract class AbstractFixedSeedService {
                             PostId.of(postId),
                             replier.userId(),
                             parentReply,
-                            Comment.of(message)
+                            ReplyComment.of(message)
                     )
             );
             log.info("{} seed reply created. postId={}, replier={}, message={}",
@@ -159,7 +160,7 @@ public abstract class AbstractFixedSeedService {
             postCommandService.createPost(
                     CreatePostCommand.of(
                             userId,
-                            Comment.of(caption),
+                            PostComment.of(caption),
                             seedSourceImage.inputStream(),
                             FileName.of(seedSourceImage.originalFilename())
                     )

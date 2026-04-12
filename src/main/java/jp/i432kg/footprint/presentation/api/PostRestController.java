@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 投稿に関する操作を提供する API コントローラー
@@ -165,7 +166,7 @@ public class PostRestController {
         // リクエスト情報をコマンド形式に変換する
         final CreatePostCommand command = CreatePostCommand.of(
                 userDetails.getUserId(),
-                Comment.of(request.getComment()),
+                PostComment.of(Objects.requireNonNullElse(request.getComment(), "")),
                 request.getImageFile().getInputStream(),
                 FileName.of(request.getImageFile().getOriginalFilename())
         );

@@ -2,9 +2,9 @@ package jp.i432kg.footprint.infrastructure.datasource.mapper.repository;
 
 import jp.i432kg.footprint.domain.model.Reply;
 import jp.i432kg.footprint.domain.model.ParentReply;
-import jp.i432kg.footprint.domain.value.Comment;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.ReplyId;
+import jp.i432kg.footprint.domain.value.ReplyComment;
 import jp.i432kg.footprint.domain.value.UserId;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -46,7 +46,7 @@ public interface ReplyMapper {
         private final PostId postId;
         private final UserId userId;
         private final ReplyId parentReplyId;
-        private final Comment message;
+        private final ReplyComment message;
         private final int childCount;
         private final LocalDateTime createdAt;
         private final LocalDateTime updatedAt;
@@ -76,7 +76,7 @@ public interface ReplyMapper {
         private final PostId postId;
         private final UserId userId;
         private final @Nullable ReplyId parentReplyId;
-        private final Comment message;
+        private final ReplyComment message;
         private final LocalDateTime createdAt;
 
         public Reply toDomain() {
