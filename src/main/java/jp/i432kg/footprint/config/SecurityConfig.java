@@ -41,7 +41,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) {
         http
                 // セッション認証を継続しつつ、SPA/JS から扱いやすい CSRF にする
                 .csrf(csrf -> csrf
