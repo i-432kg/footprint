@@ -1,9 +1,7 @@
 package jp.i432kg.footprint.config;
 
-import jp.i432kg.footprint.presentation.helper.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -11,8 +9,7 @@ import java.nio.file.Paths;
 
 /**
  * Spring MVC の設定をカスタマイズするための構成クラス。
- * 静的リソース（画像ファイル等）のマッピングや、コントローラーで使用する
- * 独自の型変換（Converter）の登録を行います。
+ * 静的リソース（画像ファイル等）のマッピングを行います。
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
@@ -20,29 +17,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private final String storageType;
     private final String localRootDir;
     private final String imageBaseUrl;
-    private final LatitudeConverter latitudeConverter;
-    private final LongitudeConverter longitudeConverter;
-    private final PostIdConverter postIdConverter;
-    private final ReplyIdConverter replyIdConverter;
-    private final SearchKeywordConverter searchKeywordConverter;
 
     public WebMvcConfig(
             @Value("${app.storage.type}") String storageType,
             @Value("${app.storage.local.root-dir:}") String localRootDir,
-            @Value("${app.storage.image-base-url}") String imageBaseUrl,
-            LatitudeConverter latitudeConverter,
-            LongitudeConverter longitudeConverter,
-            PostIdConverter postIdConverter,
-            ReplyIdConverter replyIdConverter,
-            SearchKeywordConverter searchKeywordConverter) {
+            @Value("${app.storage.image-base-url}") String imageBaseUrl) {
         this.storageType = storageType;
         this.localRootDir = localRootDir;
         this.imageBaseUrl = imageBaseUrl;
-        this.latitudeConverter = latitudeConverter;
-        this.longitudeConverter = longitudeConverter;
-        this.postIdConverter = postIdConverter;
-        this.replyIdConverter = replyIdConverter;
-        this.searchKeywordConverter = searchKeywordConverter;
     }
 
     /**
@@ -67,20 +49,5 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:" + absolutePath)
                 .setCachePeriod(0)
                 .resourceChain(true);
-    }
-
-    /**
-     * リクエストパラメータやパス変数（@PathVariable）を独自の値オブジェクトに
-     * 自動変換するための Converter を登録します。
-     *
-     * @param registry フォーマッターのレジストリ
-     */
-    @Override
-    public void addFormatters(FormatterRegistry registry) {
-        registry.addConverter(latitudeConverter);
-        registry.addConverter(longitudeConverter);
-        registry.addConverter(postIdConverter);
-        registry.addConverter(replyIdConverter);
-        registry.addConverter(searchKeywordConverter);
     }
 }
