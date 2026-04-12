@@ -16,11 +16,8 @@ spring:
     enabled: true
     locations: classpath:db/migration
 
-# 共通のビジネスロジック用設定
+# 共通のアプリ設定
 app:
-  image:
-    max-size: 10MB
-
   frontend:
     entries:
       login:
