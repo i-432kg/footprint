@@ -6,7 +6,6 @@ import jp.i432kg.footprint.domain.value.UserId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
-import org.jspecify.annotations.NonNull;
 
 import java.io.InputStream;
 
@@ -20,25 +19,21 @@ public class CreatePostCommand {
     /**
      * 投稿者
      */
-    @NonNull
     UserId userId;
 
     /**
      * 投稿本文
      */
-    @NonNull
     PostComment comment;
 
     /**
      * 投稿された画像データの入力ストリーム
      */
-    @NonNull
     InputStream imageStream;
 
     /**
      * アップロードされた画像の元のファイル名
      */
-    @NonNull
     FileName originalFilename;
 
 
@@ -52,10 +47,10 @@ public class CreatePostCommand {
      * @return {@link CreatePostCommand} インスタンス
      */
     public static CreatePostCommand of(
-            final @NonNull UserId userId,
-            final @NonNull PostComment comment,
-            final @NonNull InputStream imageStream,
-            final @NonNull FileName originalFilename
+            final UserId userId,
+            final PostComment comment,
+            final InputStream imageStream,
+            final FileName originalFilename
     ) {
         return new CreatePostCommand(userId, comment, imageStream, originalFilename);
     }

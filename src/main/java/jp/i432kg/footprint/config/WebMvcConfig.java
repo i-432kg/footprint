@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.config;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -33,7 +34,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
      * @param registry リソースハンドラーのレジストリ
      */
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
         if (!"LOCAL".equals(storageType)) {
             // S3 等を使用する場合は、Spring MVC 経由で配信しないため登録しない
             return;

@@ -4,8 +4,6 @@ import jp.i432kg.footprint.domain.model.User;
 import jp.i432kg.footprint.domain.value.EmailAddress;
 import jp.i432kg.footprint.domain.value.UserId;
 
-import java.util.Optional;
-
 /**
  * ユーザーに関するリポジトリインターフェース
  */
