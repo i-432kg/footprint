@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 import jp.i432kg.footprint.application.command.UserCommandService;
 import jp.i432kg.footprint.application.command.model.CreateUserCommand;
 import jp.i432kg.footprint.application.query.PostQueryService;
@@ -26,10 +27,12 @@ import jp.i432kg.footprint.presentation.api.response.UserProfileItemResponse;
 import jp.i432kg.footprint.presentation.api.response.mapper.PostResponseMapper;
 import jp.i432kg.footprint.presentation.api.response.mapper.ReplyResponseMapper;
 import jp.i432kg.footprint.presentation.api.response.mapper.UserProfileResponseMapper;
+import jp.i432kg.footprint.presentation.validation.PresentationValidationPatterns;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,6 +42,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/users")
+@Validated
 @RequiredArgsConstructor
 public class UserRestController {
 
@@ -85,13 +89,13 @@ public class UserRestController {
      */
     @GetMapping("/me/posts")
     public ResponseEntity<List<PostItemResponse>> getMyPosts(
-            @RequestParam(required = false) final PostId lastId,
+            @RequestParam(required = false) @Pattern(regexp = PresentationValidationPatterns.ULID) final String lastId,
             @RequestParam(defaultValue = "10") @Min(1) @Max(20) final int size,
             @AuthenticationPrincipal final UserDetailsImpl userDetails) {
 
         // 自分の投稿一覧を取得する
         final List<PostSummary> postSummaries =
-                postQueryService.listMyPosts(userDetails.getUserId(), lastId, size);
+                postQueryService.listMyPosts(userDetails.getUserId(), toPostId(lastId), size);
 
         // レスポンス形式に変換する
         final List<PostItemResponse> responses = postResponseMapper.fromList(postSummaries);
@@ -109,13 +113,13 @@ public class UserRestController {
      */
     @GetMapping("/me/replies")
     public ResponseEntity<List<ReplyItemResponse>> getMyReplies(
-            @RequestParam(required = false) final ReplyId lastId,
+            @RequestParam(required = false) @Pattern(regexp = PresentationValidationPatterns.ULID) final String lastId,
             @RequestParam(defaultValue = "10") @Min(1) @Max(20) final int size,
             @AuthenticationPrincipal final UserDetailsImpl userDetails) {
 
         // 自分の返信一覧を取得する
         final List<ReplySummary> replySummaries =
-                replyQueryService.listMyReplies(userDetails.getUserId(), lastId, size);
+                replyQueryService.listMyReplies(userDetails.getUserId(), toReplyId(lastId), size);
 
         // レスポンス形式に変換する
         final List<ReplyItemResponse> responses = replyResponseMapper.fromList(replySummaries);
@@ -153,5 +157,13 @@ public class UserRestController {
         request.login(email.getValue(), password.getValue());
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    private PostId toPostId(final String rawPostId) {
+        return rawPostId == null ? null : PostId.of(rawPostId);
+    }
+
+    private ReplyId toReplyId(final String rawReplyId) {
+        return rawReplyId == null ? null : ReplyId.of(rawReplyId);
     }
 }

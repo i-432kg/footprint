@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import jp.i432kg.footprint.presentation.validation.PresentationValidationPatterns;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,7 +24,7 @@ public class SignUpRequest {
      */
     @NotBlank
     @Size(min = 4, max = 15)
-    @Pattern(regexp = "^[\\x21-\\x7E]+$")
+    @Pattern(regexp = PresentationValidationPatterns.ASCII_VISIBLE_NO_SPACE)
     private String userName;
 
     /**
@@ -39,7 +40,7 @@ public class SignUpRequest {
      */
     @NotBlank
     @Size(min = 8, max = 72)
-    @Pattern(regexp = "^[\\x21-\\x7E]+$")
+    @Pattern(regexp = PresentationValidationPatterns.ASCII_VISIBLE_NO_SPACE)
     private String password;
 
     /**

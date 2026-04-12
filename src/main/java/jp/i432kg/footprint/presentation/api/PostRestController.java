@@ -1,8 +1,13 @@
 package jp.i432kg.footprint.presentation.api;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import jp.i432kg.footprint.application.command.PostCommandService;
 import jp.i432kg.footprint.application.command.model.CreatePostCommand;
 import jp.i432kg.footprint.application.query.PostQueryService;
@@ -16,13 +21,16 @@ import jp.i432kg.footprint.presentation.api.response.PostItemResponse;
 import jp.i432kg.footprint.presentation.api.response.ReplyItemResponse;
 import jp.i432kg.footprint.presentation.api.response.mapper.PostResponseMapper;
 import jp.i432kg.footprint.presentation.api.response.mapper.ReplyResponseMapper;
+import jp.i432kg.footprint.presentation.validation.PresentationValidationPatterns;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,6 +39,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/api/posts")
+@Validated
 @RequiredArgsConstructor
 public class PostRestController {
 
@@ -53,11 +62,11 @@ public class PostRestController {
      */
     @GetMapping
     public ResponseEntity<List<PostItemResponse>> getRecentPosts(
-            @RequestParam(required = false) final PostId lastId,
+            @RequestParam(required = false) @Pattern(regexp = PresentationValidationPatterns.ULID) final String lastId,
             @RequestParam(defaultValue = "10") @Min(1) @Max(20) final int size) {
 
         // 投稿一覧を取得する
-        List<PostSummary> postSummaries = postQueryService.listRecentPosts(lastId, size);
+        final List<PostSummary> postSummaries = postQueryService.listRecentPosts(toPostId(lastId), size);
 
         // レスポンス形式に変換する
         List<PostItemResponse> responses = postResponseMapper.fromList(postSummaries);
@@ -75,12 +84,17 @@ public class PostRestController {
      */
     @GetMapping("/search")
     public ResponseEntity<List<PostItemResponse>> search(
-            @RequestParam final SearchKeyword keyword,
-            @RequestParam(required = false) final PostId lastId,
+            @RequestParam @NotBlank @Size(max = 100)
+            @Pattern(regexp = PresentationValidationPatterns.NO_CONTROL_CHARS) final String keyword,
+            @RequestParam(required = false) @Pattern(regexp = PresentationValidationPatterns.ULID) final String lastId,
             @RequestParam(defaultValue = "10") @Min(1) @Max(20) int size) {
 
         // 検索結果を取得する
-        List<PostSummary> postSummaries = postQueryService.searchPosts(keyword, lastId, size);
+        final List<PostSummary> postSummaries = postQueryService.searchPosts(
+                SearchKeyword.of(keyword),
+                toPostId(lastId),
+                size
+        );
 
         // レスポンス形式に変換する
         List<PostItemResponse> responses = postResponseMapper.fromList(postSummaries);
@@ -99,13 +113,18 @@ public class PostRestController {
      */
     @GetMapping("/search/map")
     public ResponseEntity<List<PostItemResponse>> searchMap(
-            @RequestParam final Latitude minLat,
-            @RequestParam final Latitude maxLat,
-            @RequestParam final Longitude minLng,
-            @RequestParam final Longitude maxLng) {
+            @RequestParam @DecimalMin("-90.0") @DecimalMax("90.0") final BigDecimal minLat,
+            @RequestParam @DecimalMin("-90.0") @DecimalMax("90.0") final BigDecimal maxLat,
+            @RequestParam @DecimalMin("-180.0") @DecimalMax("180.0") final BigDecimal minLng,
+            @RequestParam @DecimalMin("-180.0") @DecimalMax("180.0") final BigDecimal maxLng) {
 
         // 検索結果を取得する
-        List<PostSummary> postSummaries = postQueryService.searchPostsByBBox(minLat, maxLat, minLng, maxLng);
+        final List<PostSummary> postSummaries = postQueryService.searchPostsByBBox(
+                Latitude.of(minLat),
+                Latitude.of(maxLat),
+                Longitude.of(minLng),
+                Longitude.of(maxLng)
+        );
 
         // レスポンス形式に変換する
         List<PostItemResponse> responses = postResponseMapper.fromList(postSummaries);
@@ -120,10 +139,12 @@ public class PostRestController {
      * @return 投稿詳細のレスポンス
      */
     @GetMapping("/{postId}")
-    public ResponseEntity<PostItemResponse> getPost(@PathVariable final PostId postId) {
+    public ResponseEntity<PostItemResponse> getPost(
+            @PathVariable @Pattern(regexp = PresentationValidationPatterns.ULID) final String postId
+    ) {
 
         // 投稿詳細を取得する
-        PostSummary postSummary = postQueryService.getPost(postId);
+        final PostSummary postSummary = postQueryService.getPost(PostId.of(postId));
 
         // レスポンス形式に変換する
         PostItemResponse response = postResponseMapper.from(postSummary);
@@ -138,10 +159,12 @@ public class PostRestController {
      * @return 返信アイテムのリスト
      */
     @GetMapping("/{postId}/replies")
-    public ResponseEntity<List<ReplyItemResponse>> getReplies(@PathVariable final PostId postId) {
+    public ResponseEntity<List<ReplyItemResponse>> getReplies(
+            @PathVariable @Pattern(regexp = PresentationValidationPatterns.ULID) final String postId
+    ) {
 
         // 返信一覧を取得する
-        final List<ReplySummary> replySummaries = replyQueryService.listTopLevelReplies(postId);
+        final List<ReplySummary> replySummaries = replyQueryService.listTopLevelReplies(PostId.of(postId));
 
         // レスポンス形式に変換する
         final List<ReplyItemResponse> responses = replyResponseMapper.fromList(replySummaries);
@@ -175,5 +198,9 @@ public class PostRestController {
         postCommandService.createPost(command);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    private PostId toPostId(final String rawPostId) {
+        return rawPostId == null ? null : PostId.of(rawPostId);
     }
 }

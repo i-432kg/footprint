@@ -3,6 +3,7 @@ package jp.i432kg.footprint.presentation.api.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import jp.i432kg.footprint.presentation.validation.PresentationValidationPatterns;
 import lombok.Getter;
 import lombok.Setter;
 import org.jspecify.annotations.Nullable;
@@ -18,6 +19,7 @@ public class ReplyRequest {
      * 返信元の返信 ID
      */
     @Nullable
+    @Pattern(regexp = PresentationValidationPatterns.ULID)
     private String parentReplyId;
 
     /**
@@ -25,6 +27,6 @@ public class ReplyRequest {
      */
     @NotBlank
     @Size(max = 100)
-    @Pattern(regexp = "^(?!.*[\\x00-\\x09\\x0B\\x0C\\x0E-\\x1F\\x7F]).*$")
+    @Pattern(regexp = PresentationValidationPatterns.NO_CONTROL_CHARS)
     private String message;
 }
