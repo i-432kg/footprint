@@ -1,14 +1,12 @@
 package jp.i432kg.footprint.domain.value;
 
-import jp.i432kg.footprint.domain.exception.InvalidValueException;
+import jp.i432kg.footprint.domain.helper.CoordinateValidation;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.jspecify.annotations.Nullable;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Objects;
 
 /**
  * 経度を表す値オブジェクト
@@ -41,23 +39,8 @@ public class Longitude {
      *
      * @param value 経度
      * @return {@link Longitude} インスタンス
-     * @throws InvalidValueException バリデーションエラーの場合
      */
     public static Longitude of(final @Nullable BigDecimal value) {
-
-        // null 禁止
-        if (Objects.isNull(value)) {
-            throw InvalidValueException.required(FIELD_NAME);
-        }
-
-        // 小数第6位で四捨五入
-        final BigDecimal roundedValue = value.setScale(SCALE, RoundingMode.HALF_UP);
-
-        // 範囲内のチェック
-        if (value.compareTo(MIN) < 0 || 0 < value.compareTo(MAX)) {
-            throw InvalidValueException.outOfRange(FIELD_NAME, roundedValue, MIN, MAX);
-        }
-
-        return new Longitude(roundedValue);
+        return new Longitude(CoordinateValidation.validate(FIELD_NAME, value, MIN, MAX, SCALE));
     }
 }
