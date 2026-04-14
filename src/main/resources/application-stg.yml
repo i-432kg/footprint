@@ -11,6 +11,12 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: false
 
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
 # STG環境はS3を使用（バケット名などは環境変数で注入）
 app:
   storage:
