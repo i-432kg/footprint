@@ -6,9 +6,6 @@ spring:
   sql:
     init:
       mode: never
-  jpa:
-    hibernate:
-      ddl-auto: none
 
 # 本番環境設定
 app:
