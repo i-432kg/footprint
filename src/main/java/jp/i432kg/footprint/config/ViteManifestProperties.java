@@ -11,7 +11,7 @@ public class ViteManifestProperties {
 
     /**
      * Dockerfile で frontend/dist を src/main/resources/static にコピーする前提。
-     * そのため本番では classpath:/static/.vite/manifest.json を読む。
+     * そのため Vite の manifest は classpath:/static/manifest.json から解決する。
      */
     private String manifestLocation = "classpath:/static/manifest.json";
 }
