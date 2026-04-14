@@ -17,6 +17,8 @@ public class StorageSecurityProperties {
 
     /**
      * CSP の {@code img-src} に追加で許可する origin のカンマ区切り一覧です。
+     * 例:
+     * {@code https://example.com,https://sample.com,etc...}
      */
     private String imageCspAllowOrigins = "";
 
