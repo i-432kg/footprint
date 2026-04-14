@@ -18,6 +18,7 @@ spring:
 app:
   storage:
     type: ${APP_STORAGE_TYPE:S3}
+    image-csp-allow-origins: ${APP_STORAGE_IMAGE_CSP_ALLOW_ORIGINS:}
 
     # LOCAL用。S3利用時は実質未使用
     image-base-url: ${APP_STORAGE_IMAGE_BASE_URL:/images/}

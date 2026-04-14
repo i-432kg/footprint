@@ -25,13 +25,16 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final Environment environment;
+    private final StorageSecurityProperties storageSecurityProperties;
     private final LastLoginUpdatingAuthenticationSuccessHandler authenticationSuccessHandler;
 
     public SecurityConfig(
             final Environment environment,
+            final StorageSecurityProperties storageSecurityProperties,
             final LastLoginUpdatingAuthenticationSuccessHandler authenticationSuccessHandler
     ) {
         this.environment = environment;
+        this.storageSecurityProperties = storageSecurityProperties;
         this.authenticationSuccessHandler = authenticationSuccessHandler;
     }
 
@@ -58,16 +61,7 @@ public class SecurityConfig {
 
                     // ローカル起動時は CSP 無効
                     if (!isLocalProfile()) {
-                        headers.contentSecurityPolicy(csp -> csp.policyDirectives(
-                                "default-src 'self'; " +
-                                        "img-src 'self' data: blob:; " +
-                                        "style-src 'self' 'unsafe-inline'; " +
-                                        "script-src 'self'; " +
-                                        "object-src 'none'; " +
-                                        "base-uri 'self'; " +
-                                        "frame-ancestors 'self'; " +
-                                        "form-action 'self'"
-                        ));
+                        headers.contentSecurityPolicy(csp -> csp.policyDirectives(buildContentSecurityPolicy()));
                     }
                 })
 
@@ -147,5 +141,21 @@ public class SecurityConfig {
     private boolean isLocalProfile() {
         return Arrays.stream(environment.getActiveProfiles())
                 .anyMatch(profile -> "local".equals(profile) || "dev".equals(profile));
+    }
+
+    private String buildContentSecurityPolicy() {
+        final String additionalImageOrigins = String.join(" ", storageSecurityProperties.getImageCspAllowOriginList());
+        final String imageSrc = additionalImageOrigins.isBlank()
+                ? "'self' data: blob:"
+                : "'self' data: blob: " + additionalImageOrigins;
+
+        return "default-src 'self'; " +
+                "img-src " + imageSrc + "; " +
+                "style-src 'self' 'unsafe-inline'; " +
+                "script-src 'self'; " +
+                "object-src 'none'; " +
+                "base-uri 'self'; " +
+                "frame-ancestors 'self'; " +
+                "form-action 'self'";
     }
 }

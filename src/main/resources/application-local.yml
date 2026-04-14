@@ -12,6 +12,7 @@ spring:
 app:
   storage:
     type: LOCAL
+    image-csp-allow-origins: ""
     local:
       root-dir: storage/local
     image-base-url: /images/
