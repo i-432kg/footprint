@@ -4,7 +4,7 @@
 Proposed
 
 ## 背景
-現在の [`ImageRepository`](/Users/iaoi/IdeaProjects/footprint/src/main/java/jp/i432kg/footprint/domain/repository/ImageRepository.java) は、domain の repository port でありながら次の技術要素を直接扱っている。
+現在の [`ImageRepository`](../../src/main/java/jp/i432kg/footprint/domain/repository/ImageRepository.java) は、domain の repository port でありながら次の技術要素を直接扱っている。
 
 - `InputStream`
 - `IOException`
@@ -14,7 +14,7 @@ Proposed
 
 これは domain の永続化抽象というより、I/O と外部ライブラリを伴う画像処理アダプタに近い。
 
-また、[`PostCommandService`](/Users/iaoi/IdeaProjects/footprint/src/main/java/jp/i432kg/footprint/application/command/PostCommandService.java) では、画像保存とメタデータ抽出をユースケース手順として扱っており、責務の実態も application / infrastructure 寄りである。
+また、[`PostCommandService`](../../src/main/java/jp/i432kg/footprint/application/command/PostCommandService.java) では、画像保存とメタデータ抽出をユースケース手順として扱っており、責務の実態も application / infrastructure 寄りである。
 
 ## 問題
 - domain が `InputStream` や `IOException` などの技術詳細を知っている
@@ -48,7 +48,7 @@ Proposed
 ## 2. 画像解析結果は application モデルで受ける
 画像解析結果は domain model そのものではなく、application のデータキャリアで受ける。
 
-その受け皿として [`ImageMetadata`](/Users/iaoi/IdeaProjects/footprint/src/main/java/jp/i432kg/footprint/application/command/model/ImageMetadata.java) を用意する。
+その受け皿として [`ImageMetadata`](../../src/main/java/jp/i432kg/footprint/application/command/model/ImageMetadata.java) を用意する。
 
 `ImageMetadata` が持つもの:
 

@@ -6,7 +6,7 @@ Superseded
 ## 補足
 本 ADR は `@NullMarked` を全パッケージへ原則適用する前提で記載しているが、実運用上は `presentation` / `infrastructure` における nullable 境界との相性が悪いことが判明した。
 
-現時点の採用方針は [`adr_nullable_boundary_policy.md`](/Users/iaoi/IdeaProjects/footprint/docs/adr/adr_nullable_boundary_policy.md) を参照すること。
+現時点の採用方針は [`adr_nullable_boundary_policy.md`](./adr_nullable_boundary_policy.md) を参照すること。
 
 ## 背景
 本プロジェクトでは、`domain` を中心に不変条件を強くし、`null` による不正状態や予期しない `NullPointerException` を避けたい。
