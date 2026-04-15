@@ -14,6 +14,8 @@
   infrastructure 層レビュー用
 - `presentation/`
   presentation 層レビュー用
+- `ut/`
+  UT 実装指針レビュー用
 
 ## Update Rules
 
