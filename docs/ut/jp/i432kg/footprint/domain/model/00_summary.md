@@ -13,7 +13,7 @@
 | 1 | ファクトリ | `of(...)` や `root()`, `unknown()` が期待どおりの状態を持つインスタンスを返すこと |
 | 2 | 状態判定 | `hasLocation()`, `hasParent()`, `hasParentReply()` などの判定メソッドが状態と一致すること |
 | 3 | 派生 getter | `getParentReplyId()` のような派生 getter が内部状態を正しく公開すること |
-| 4 | 業務制約 | `Image` の短辺ピクセル数と総ピクセル数制約を満たし、違反時は `InvalidModelException` となること |
+| 4 | 業務制約 | `Image` の短辺 320px・最大辺 8192px・総ピクセル数 40MP の制約を満たし、違反時は `InvalidModelException` となること |
 | 5 | 不変表現 | `Location.unknown()` や `ParentReply.root()` が `null` ではなく明示的な状態表現になっていること |
 
 ## 3. グルーピング方針
@@ -23,12 +23,12 @@
 - 集約モデル系: `Post`, `Reply`, `User`
   - `of(...)` で入力値を保持できること、補助 getter が期待どおりであることを確認する
 - 制約付きモデル系: `Image`
-  - 正常生成に加え、解像度制約違反時の `InvalidModelException` を確認する
+  - 正常生成に加え、短辺 / 最大辺 / 総ピクセル数の制約違反時の `InvalidModelException` を確認する
 
 ## 4. テスト実装メモ
 
 - 固定化が必要な値: `LocalDateTime`, `Location.unknown()`, `ParentReply.root()`
-- `Image` は値オブジェクト側で最小短辺 320px が保証されるが、総ピクセル数 40MP 超過の制約はモデル側で確認する
+- `Pixel` は汎用化し、画像表示品質に関わる短辺 320px・最大辺 8192px・総ピクセル数 40MP の制約は `Image` 側で確認する
 - `Image` の不変条件違反は `InvalidValueException` ではなく `InvalidModelException` として扱う
 - `Location.unknown()` は singleton 的に同一インスタンスを返す実装なので、その点も確認対象にできる
 - `Post`, `Reply`, `User` は現在の実装では `null` チェックを持たないため、UT は主に保持値と状態判定に集中する

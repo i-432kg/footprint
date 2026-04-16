@@ -26,6 +26,8 @@
   - `CoordinateValidation` による `null`、丸め、範囲境界、範囲外を共通観点で確認する
 - 文字列系: `EmailAddress`, `FileExtension`, `FileName`, `PostComment`, `ReplyComment`, `RawPassword`, `SearchKeyword`, `UserName`
   - 長さ、許可文字、制御文字、正規化の有無を確認する
+- 数値系: `Byte`, `Pixel`, `Latitude`, `Longitude`
+  - `Pixel` は汎用化し、0 未満のみを拒否する。画像表示品質に関わる制約は `Image` モデル側で確認する
 - ストレージ系: `ObjectKey`, `StorageObject`, `StorageType`
   - パス安全性、保存先組み合わせ、列挙解釈を確認する
 

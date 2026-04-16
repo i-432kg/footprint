@@ -17,16 +17,15 @@ class PixelTest {
     }
 
     @Test
-    @DisplayName("Pixel.of は上下限値を受け入れる")
+    @DisplayName("Pixel.of は下限値 0 を受け入れる")
     void should_createPixel_when_valueIsBoundary() {
-        assertThat(Pixel.of(320).getValue()).isEqualTo(320);
-        assertThat(Pixel.of(8192).getValue()).isEqualTo(8192);
+        assertThat(Pixel.of(0).getValue()).isZero();
+        assertThat(Pixel.of(100_000).getValue()).isEqualTo(100_000);
     }
 
     @Test
-    @DisplayName("Pixel.of は範囲外の値を拒否する")
+    @DisplayName("Pixel.of は負の値を拒否する")
     void should_throwException_when_pixelIsOutOfRange() {
-        assertInvalidValue(() -> Pixel.of(319), "pixel", "out_of_range");
-        assertInvalidValue(() -> Pixel.of(8193), "pixel", "out_of_range");
+        assertInvalidValue(() -> Pixel.of(-1), "pixel", "out_of_range");
     }
 }

@@ -13,14 +13,9 @@ import lombok.Value;
 public class Pixel {
 
     /**
-     * 最大ピクセル数：8192px
+     * 最小ピクセル数：0px
      */
-    static int MAX_VALUE = 8192;
-
-    /**
-     * 最小ピクセル数：320px
-     */
-    static int MIN_VALUE = 320;
+    static int MIN_VALUE = 0;
 
     static String FIELD_NAME = "pixel";
 
@@ -35,8 +30,8 @@ public class Pixel {
      */
     public static Pixel of(final int value) {
 
-        if (value < MIN_VALUE || value > MAX_VALUE) {
-            throw InvalidValueException.outOfRange(FIELD_NAME, value, MIN_VALUE, MAX_VALUE);
+        if (value < MIN_VALUE) {
+            throw InvalidValueException.outOfRange(FIELD_NAME, value, MIN_VALUE, Integer.MAX_VALUE);
         }
 
         return new Pixel(value);

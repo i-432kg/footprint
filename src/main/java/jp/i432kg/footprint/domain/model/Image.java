@@ -29,6 +29,11 @@ public class Image {
     private static final int MIN_SHORT_SIDE_PIXELS = 320;
 
     /**
+     * 最大辺ピクセル数：8192px
+     */
+    private static final int MAX_SIDE_PIXELS = 8192;
+
+    /**
      * 画像のストレージ保存先
      */
     StorageObject storageObject;
@@ -92,7 +97,24 @@ public class Image {
             final boolean hasEXIF,
             final LocalDateTime takenAt
     ) {
-        // 解像度のバリデーション
+        // 横幅のピクセル数チェック
+        if (width.getValue() > MAX_SIDE_PIXELS) {
+            throw InvalidModelException.invalid(
+                    "image",
+                    width.getValue(),
+                    "width_pixels_exceed_limit"
+            );
+        }
+
+        // 縦幅のピクセル数チェック
+        if (height.getValue() > MAX_SIDE_PIXELS) {
+            throw InvalidModelException.invalid(
+                    "image",
+                    height.getValue(),
+                    "height_pixels_exceed_limit"
+            );
+        }
+
         // 短辺ピクセル数チェック
         final int shortSidePixels = Math.min(width.getValue(), height.getValue());
         if (shortSidePixels < MIN_SHORT_SIDE_PIXELS) {

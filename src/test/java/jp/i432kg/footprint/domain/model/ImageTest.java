@@ -102,6 +102,38 @@ class ImageTest {
     }
 
     @Test
+    @DisplayName("Image.of は横幅が 8192px を超える場合に例外を送出する")
+    void should_throwException_when_widthExceedsLimit() {
+        assertThatThrownBy(() -> Image.of(
+                DomainTestFixtures.storageObject(),
+                DomainTestFixtures.fileExtension(),
+                DomainTestFixtures.fileSize(),
+                Pixel.of(8193),
+                Pixel.of(6400),
+                DomainTestFixtures.location(),
+                true,
+                LocalDateTime.of(2026, 4, 1, 12, 30)
+        )).isInstanceOf(InvalidModelException.class)
+                .hasMessageContaining("reason=width_pixels_exceed_limit");
+    }
+
+    @Test
+    @DisplayName("Image.of は高さが 8192px を超える場合に例外を送出する")
+    void should_throwException_when_heightExceedsLimit() {
+        assertThatThrownBy(() -> Image.of(
+                DomainTestFixtures.storageObject(),
+                DomainTestFixtures.fileExtension(),
+                DomainTestFixtures.fileSize(),
+                Pixel.of(6400),
+                Pixel.of(8193),
+                DomainTestFixtures.location(),
+                true,
+                LocalDateTime.of(2026, 4, 1, 12, 30)
+        )).isInstanceOf(InvalidModelException.class)
+                .hasMessageContaining("reason=height_pixels_exceed_limit");
+    }
+
+    @Test
     @DisplayName("Image.of は短辺が 320px 未満の場合に例外を送出する")
     void should_throwException_when_shortSideIsLessThanMinimum() throws Exception {
         final Constructor<Pixel> constructor = Pixel.class.getDeclaredConstructor(int.class);
