@@ -44,6 +44,11 @@ public class SearchKeyword {
             throw InvalidValueException.required(FIELD_NAME);
         }
 
+        // 制御文字禁止
+        if (CONTROL_CHARS_PATTERN.matcher(value).matches()) {
+            throw InvalidValueException.invalidFormat(FIELD_NAME, value, CONTROL_CHARS_PATTERN.pattern());
+        }
+
         // 空文字のみを不許可
         if (value.isBlank()) {
             throw InvalidValueException.blank(FIELD_NAME);
@@ -52,11 +57,6 @@ public class SearchKeyword {
         // 最大文字数チェック
         if (value.length() > MAX_LENGTH) {
             throw InvalidValueException.tooLong(FIELD_NAME, value, MAX_LENGTH);
-        }
-
-        // 制御文字禁止
-        if (CONTROL_CHARS_PATTERN.matcher(value).matches()) {
-            throw InvalidValueException.invalidFormat(FIELD_NAME, value, CONTROL_CHARS_PATTERN.pattern());
         }
 
         return new SearchKeyword(value);
