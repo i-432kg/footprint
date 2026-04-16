@@ -59,6 +59,7 @@ class EmailAddressTest {
     @Test
     @DisplayName("EmailAddress.of は不正なローカル部を拒否する")
     void should_throwException_when_emailLocalPartIsInvalid() {
+        assertInvalidValue(() -> EmailAddress.of("@example.com"), "email_local_part", "blank");
         assertInvalidValue(() -> EmailAddress.of(".user@example.com"), "email_local_part", "cannot start or end with a dot");
         assertInvalidValue(() -> EmailAddress.of("user.@example.com"), "email_local_part", "cannot start or end with a dot");
         assertInvalidValue(() -> EmailAddress.of("us..er@example.com"), "email_local_part", "cannot start or end with a dot");

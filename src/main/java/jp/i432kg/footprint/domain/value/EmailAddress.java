@@ -117,9 +117,6 @@ public class EmailAddress {
 
         final String FIELD_NAME = "email_domain_part";
 
-        if (domainPart.isBlank()) {
-            throw InvalidValueException.blank(FIELD_NAME);
-        }
         if (!domainPart.matches(DOMAIN_PART_PATTERN)) {
             throw InvalidValueException.invalidFormat(FIELD_NAME, domainPart, DOMAIN_PART_PATTERN);
         }
