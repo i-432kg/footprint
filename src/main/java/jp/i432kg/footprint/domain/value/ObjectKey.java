@@ -93,7 +93,7 @@ public class ObjectKey {
         // パストラバーサル攻撃の防止チェック
         final String[] segments = normalized.split("/");
         for (final String segment : segments) {
-            if (segment.equals(".") || segment.equals("..") || segment.isEmpty()) {
+            if (segment.equals(".") || segment.equals("..")) {
                 throw InvalidValueException.invalid(FIELD_NAME, normalized, "cannot contain \".\" or \"..\" or empty segment");
             }
         }
