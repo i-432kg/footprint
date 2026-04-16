@@ -55,15 +55,15 @@ class InvalidValueExceptionTest {
 
     @Test
     void outOfRange_shouldCreateExceptionWithExpectedDetails() {
-        InvalidValueException actual = InvalidValueException.outOfRange("pixel", 9000, 320, 8192);
+        InvalidValueException actual = InvalidValueException.outOfRange("pixel", 100_001, 0, 100_000);
 
-        assertThat(actual.getMessage()).isEqualTo("pixel must be between 320 and 8192.");
+        assertThat(actual.getMessage()).isEqualTo("pixel must be between 0 and 100000.");
         assertThat(actual.getDetails())
                 .containsEntry("target", "pixel")
                 .containsEntry("reason", "out_of_range")
-                .containsEntry("rejectedValue", 9000)
-                .containsEntry("min", 320)
-                .containsEntry("max", 8192);
+                .containsEntry("rejectedValue", 100_001)
+                .containsEntry("min", 0)
+                .containsEntry("max", 100_000);
     }
 
     @Test

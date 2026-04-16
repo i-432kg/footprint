@@ -20,26 +20,29 @@
 
 | No. | 区分 | 観点 | 確認内容 |
 |---|---|---|---|
-| 1 | 正常系 | 0以上 | 0 以上の値を受け入れること |
-| 2 | 境界値 | 下限 | 0 を受け入れること |
-| 3 | 異常系 | 負数 | 負の値を拒否すること |
+| 1 | 正常系 | 範囲内 | 0 以上 100,000 以下の値を受け入れること |
+| 2 | 境界値 | 下限・上限 | 0 と 100,000 を受け入れること |
+| 3 | 異常系 | 下限未満 | 負の値を拒否すること |
+| 4 | 異常系 | 上限超過 | 100,000 を超える値を拒否すること |
 
 ## 4. テストケース一覧
 
 | No. | 区分 | テストケース | 入力値 / 事前条件 | 期待結果 | 備考 |
 |---|---|---|---|---|---|
-| 1 | 正常系 | 0以上の値を受け入れる | `1024`, `100000` | 生成成功 |  |
-| 2 | 境界値 | 下限値を受け入れる | `0` | 生成成功 |  |
+| 1 | 正常系 | 範囲内の値を受け入れる | `1024` | 生成成功 |  |
+| 2 | 境界値 | 下限値と上限値を受け入れる | `0`, `100000` | 生成成功 |  |
 | 3 | 異常系 | 負の値を拒否する | `-1` | `outOfRange(...)` |  |
+| 4 | 異常系 | 上限超過を拒否する | `100001` | `outOfRange(...)` |  |
 
 ## 5. 実装メモ
 
-- `@DisplayName` 方針: `Pixel.of の下限条件を記載する`
+- `@DisplayName` 方針: `Pixel.of の範囲条件を日本語で記載する`
 
 ## 6. 対応するテストメソッド
 
 | No. | テストメソッド名 | `@DisplayName` |
 |---|---|---|
-| 1 | `should_createPixel_when_valueIsWithinRange` | `Pixel.of は 0 以上の値を受け入れる` |
-| 2 | `should_createPixel_when_valueIsBoundary` | `Pixel.of は下限値 0 を受け入れる` |
-| 3 | `should_throwException_when_pixelIsOutOfRange` | `Pixel.of は負の値を拒否する` |
+| 1 | `should_createPixel_when_valueIsWithinRange` | `Pixel.of は範囲内の値を受け入れる` |
+| 2 | `should_createPixel_when_valueIsBoundary` | `Pixel.of は下限値 0 と上限値 100000 を受け入れる` |
+| 3 | `should_throwException_when_pixelIsOutOfRange` | `Pixel.of は 0 未満の値を拒否する` |
+| 4 | `should_throwException_when_pixelExceedsMaximum` | `Pixel.of は上限値 100000 を超える値を拒否する` |
