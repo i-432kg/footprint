@@ -21,8 +21,8 @@
 | No. | 区分 | 観点 | 確認内容 |
 |---|---|---|---|
 | 1 | 正常系 | 列挙解釈 | `LOCAL`, `local`, `S3`, `s3` を受け入れること |
-| 2 | 異常系 | 未知値 | 列挙外文字列を拒否すること |
-| 3 | エッジケース | `null` | 現実装どおり `NullPointerException` になること |
+| 2 | 異常系 | 必須 | `null` を拒否すること |
+| 3 | 異常系 | 未知値 | 列挙外文字列を拒否すること |
 
 ## 4. テストケース一覧
 
@@ -32,12 +32,12 @@
 | 2 | 正常系 | 小文字 `local` を解釈する | `"local"` | `StorageType.LOCAL` |  |
 | 3 | 正常系 | `S3` を解釈する | `"S3"` | `StorageType.S3` |  |
 | 4 | 正常系 | 小文字 `s3` を解釈する | `"s3"` | `StorageType.S3` |  |
-| 5 | 異常系 | 未知値を拒否する | `"gcs"` | `InvalidValueException.invalid(...)` |  |
-| 6 | エッジケース | `null` の現在挙動を固定する | `null` | `NullPointerException` | `Objects.requireNonNull(value)` による |
+| 5 | 異常系 | `null` を拒否する | `null` | `InvalidValueException.required("storage_type")` |  |
+| 6 | 異常系 | 未知値を拒否する | `"gcs"` | `InvalidValueException.invalid(...)` |  |
 
 ## 5. 実装メモ
 
-- `@DisplayName` 方針: `StorageType.of の解釈結果と現在挙動を記載する`
+- `@DisplayName` 方針: `StorageType.of の解釈結果と拒否条件を記載する`
 
 ## 6. 対応するテストメソッド
 
@@ -45,5 +45,5 @@
 |---|---|---|
 | 1 | `should_returnLocal_when_valueIsLocalIgnoringCase` | `StorageType.of は LOCAL を大文字小文字を区別せず解釈する` |
 | 2 | `should_returnS3_when_valueIsS3IgnoringCase` | `StorageType.of は S3 を大文字小文字を区別せず解釈する` |
-| 3 | `should_throwException_when_storageTypeIsUnknown` | `StorageType.of は未知の値を拒否する` |
-| 4 | `should_throwNullPointerException_when_storageTypeIsNull` | `StorageType.of は null 入力時に現在実装では NullPointerException となる` |
+| 3 | `should_throwException_when_storageTypeIsNull` | `StorageType.of は null を拒否する` |
+| 4 | `should_throwException_when_storageTypeIsUnknown` | `StorageType.of は未知の値を拒否する` |

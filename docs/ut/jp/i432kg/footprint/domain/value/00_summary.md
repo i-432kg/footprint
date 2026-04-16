@@ -16,7 +16,7 @@
 | 4 | 形式検証 | 正規表現、許可文字、列挙値、ULID 形式などの妥当性を確認する |
 | 5 | 補助メソッド | `withDot()`, `from(...)`, `local()`, `s3()`, `isLocal()`, `isS3()` の補助振る舞いを確認する |
 | 6 | セキュリティ | `ObjectKey`, `FileName`, `RawPassword` で危険入力や情報露出防止を確認する |
-| 7 | 実装差異 | `PostComment` と `ReplyComment` の blank 判定差、`StorageType.of(null)` の現在挙動差を明示する |
+| 7 | 実装差異 | `PostComment` と `ReplyComment` の blank 判定差を明示する |
 
 ## 3. グルーピング方針
 
@@ -34,5 +34,5 @@
 - `BirthDate` は `LocalDate.now()` 依存があるため、テストデータ作成時に当日基準を明示する
 - `HashedPassword.from(...)` は `Hasher` をスタブ化して検証する
 - `RawPassword.toString()` は平文露出防止を必ず確認する
-- `StorageType.of(null)` は現実装上 `NullPointerException` になるため、現行仕様として固定しつつ実装意図を再確認する
+- `StorageType.of(null)` は他の値オブジェクトと同様に `InvalidValueException.required("storage_type")` を返す前提で実装・テストする
 - 各テストメソッドには `@DisplayName` を付与し、日本語の見出しで観点を明示する
