@@ -1,30 +1,52 @@
 package jp.i432kg.footprint.domain.value;
 
-import jp.i432kg.footprint.domain.exception.InvalidValueException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static jp.i432kg.footprint.domain.value.ValueObjectTestSupport.assertInvalidValue;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class PostCommentTest {
 
     @Test
-    void of_shouldCreateInstance_whenValueIsEmpty() {
+    @DisplayName("PostComment.of は通常の本文を受け入れる")
+    void should_createPostComment_when_valueIsNormalText() {
+        final PostComment actual = PostComment.of("comment");
+
+        assertThat(actual.getValue()).isEqualTo("comment");
+    }
+
+    @Test
+    @DisplayName("PostComment.of は空文字を受け入れる")
+    void should_createPostComment_when_valueIsEmptyString() {
         final PostComment actual = PostComment.of("");
 
         assertThat(actual.getValue()).isEmpty();
     }
 
     @Test
-    void of_shouldAllowLineBreakOnlyComment() {
-        final PostComment actual = PostComment.of("\n");
+    @DisplayName("PostComment.of は改行を含む本文を受け入れる")
+    void should_createPostComment_when_valueContainsLineBreaks() {
+        final PostComment actual = PostComment.of("a\nb\r\nc");
 
-        assertThat(actual.getValue()).isEqualTo("\n");
+        assertThat(actual.getValue()).isEqualTo("a\nb\r\nc");
     }
 
     @Test
-    void of_shouldRejectControlCharacters() {
-        assertThatThrownBy(() -> PostComment.of("hello\u0000world"))
-                .isInstanceOf(InvalidValueException.class);
+    @DisplayName("PostComment.of は null を拒否する")
+    void should_throwException_when_postCommentIsNull() {
+        assertInvalidValue(() -> PostComment.of(null), "postComment", "required");
+    }
+
+    @Test
+    @DisplayName("PostComment.of は改行以外の制御文字を拒否する")
+    void should_throwException_when_postCommentContainsControlCharacters() {
+        assertInvalidValue(() -> PostComment.of("\u0000"), "postComment", "invalid_format");
+    }
+
+    @Test
+    @DisplayName("PostComment.of は最大長を超える本文を拒否する")
+    void should_throwException_when_postCommentExceedsMaxLength() {
+        assertInvalidValue(() -> PostComment.of("a".repeat(101)), "postComment", "too_long");
     }
 }

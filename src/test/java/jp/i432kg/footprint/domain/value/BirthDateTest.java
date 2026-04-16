@@ -1,25 +1,50 @@
 package jp.i432kg.footprint.domain.value;
 
-import jp.i432kg.footprint.domain.exception.InvalidValueException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
+import static jp.i432kg.footprint.domain.value.ValueObjectTestSupport.assertInvalidValue;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class BirthDateTest {
 
     @Test
-    void of_shouldCreateInstance_whenValueIsTodayOrPast() {
-        BirthDate actual = BirthDate.of(LocalDate.now());
+    @DisplayName("BirthDate.of は当日の生年月日を生成できる")
+    void should_createBirthDate_when_valueIsToday() {
+        final LocalDate today = LocalDate.now();
 
-        assertThat(actual.getValue()).isEqualTo(LocalDate.now());
+        final BirthDate actual = BirthDate.of(today);
+
+        assertThat(actual.getValue()).isEqualTo(today);
     }
 
     @Test
-    void of_shouldRejectFutureDate() {
-        assertThatThrownBy(() -> BirthDate.of(LocalDate.now().plusDays(1)))
-                .isInstanceOf(InvalidValueException.class);
+    @DisplayName("BirthDate.of は過去日の生年月日を生成できる")
+    void should_createBirthDate_when_valueIsPastDate() {
+        final LocalDate yesterday = LocalDate.now().minusDays(1);
+
+        final BirthDate actual = BirthDate.of(yesterday);
+
+        assertThat(actual.getValue()).isEqualTo(yesterday);
+    }
+
+    @Test
+    @DisplayName("BirthDate.of は null を拒否する")
+    void should_throwException_when_birthDateIsNull() {
+        assertInvalidValue(() -> BirthDate.of(null), "birthdate", "required");
+    }
+
+    @Test
+    @DisplayName("BirthDate.of は未来日を拒否する")
+    void should_throwException_when_birthDateIsFuture() {
+        final LocalDate tomorrow = LocalDate.now().plusDays(1);
+
+        assertInvalidValue(
+                () -> BirthDate.of(tomorrow),
+                "birthdate",
+                "must not be in the future"
+        );
     }
 }
