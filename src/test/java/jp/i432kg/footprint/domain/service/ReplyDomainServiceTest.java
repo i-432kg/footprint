@@ -45,6 +45,19 @@ class ReplyDomainServiceTest {
     }
 
     @Test
+    @DisplayName("ReplyDomainService.findReplyById は返信が存在しない場合に空を返す")
+    void should_returnEmpty_when_replyDoesNotExist() {
+        final ReplyId replyId = DomainTestFixtures.replyId();
+        final ReplyDomainService service = new ReplyDomainService(replyRepository);
+        when(replyRepository.findReplyById(replyId)).thenReturn(Optional.empty());
+
+        final Optional<Reply> actual = service.findReplyById(replyId);
+
+        assertThat(actual).isEmpty();
+        verify(replyRepository).findReplyById(replyId);
+    }
+
+    @Test
     @DisplayName("ReplyDomainService.findReplyById は replyId が null の場合に空を返し repository を呼ばない")
     void should_returnEmptyAndNotCallRepository_when_replyIdIsNull() {
         final ReplyDomainService service = new ReplyDomainService(replyRepository);
