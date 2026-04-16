@@ -1,6 +1,7 @@
 package jp.i432kg.footprint.domain.model;
 
 import jp.i432kg.footprint.domain.DomainTestFixtures;
+import jp.i432kg.footprint.domain.exception.InvalidModelException;
 import jp.i432kg.footprint.domain.value.ObjectKey;
 import jp.i432kg.footprint.domain.value.Pixel;
 import jp.i432kg.footprint.domain.value.StorageObject;
@@ -73,8 +74,8 @@ class ImageTest {
                 DomainTestFixtures.location(),
                 true,
                 LocalDateTime.of(2026, 4, 1, 12, 30)
-        )).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Total pixels exceed the limit of 40MP");
+        )).isInstanceOf(InvalidModelException.class)
+                .hasMessageContaining("reason=total_pixels_exceed_limit");
     }
 
     @Test
@@ -92,8 +93,8 @@ class ImageTest {
                 DomainTestFixtures.location(),
                 true,
                 LocalDateTime.of(2026, 4, 1, 12, 30)
-        )).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Short side pixels must be at least 320");
+        )).isInstanceOf(InvalidModelException.class)
+                .hasMessageContaining("reason=short_side_pixels_too_small");
     }
 
 }

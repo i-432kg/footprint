@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.domain.model;
 
+import jp.i432kg.footprint.domain.exception.InvalidModelException;
 import jp.i432kg.footprint.domain.value.Byte;
 import jp.i432kg.footprint.domain.value.FileExtension;
 import jp.i432kg.footprint.domain.value.Pixel;
@@ -79,7 +80,7 @@ public class Image {
      * @param hasEXIF       EXIF 情報の有無
      * @param takenAt       撮影日時
      * @return {@link Image} インスタンス
-     * @throws IllegalArgumentException バリデーションエラーの場合
+     * @throws InvalidModelException バリデーションエラーの場合
      */
     public static Image of(
             final StorageObject storageObject,
@@ -95,15 +96,21 @@ public class Image {
         // 短辺ピクセル数チェック
         final int shortSidePixels = Math.min(width.getValue(), height.getValue());
         if (shortSidePixels < MIN_SHORT_SIDE_PIXELS) {
-            throw new IllegalArgumentException(
-                    "Short side pixels must be at least " + MIN_SHORT_SIDE_PIXELS + ": " + shortSidePixels
+            throw InvalidModelException.invalid(
+                    "image",
+                    shortSidePixels,
+                    "short_side_pixels_too_small"
             );
         }
 
         // 総ピクセル数チェック
         final long totalPixels = (long) width.getValue() * height.getValue();
         if (totalPixels > MAX_TOTAL_PIXELS) {
-            throw new IllegalArgumentException("Total pixels exceed the limit of 40MP: " + totalPixels);
+            throw InvalidModelException.invalid(
+                    "image",
+                    totalPixels,
+                    "total_pixels_exceed_limit"
+            );
         }
 
         return new Image(storageObject, fileExtension, fileSize, width, height, location, takenAt, hasEXIF);

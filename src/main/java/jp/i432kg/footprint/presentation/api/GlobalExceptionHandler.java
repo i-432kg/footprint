@@ -422,7 +422,7 @@ public class GlobalExceptionHandler {
         return switch (ex.getErrorCode()) {
             case POST_NOT_FOUND, REPLY_NOT_FOUND, USER_NOT_FOUND -> HttpStatus.NOT_FOUND;
             case EMAIL_ALREADY_USED -> HttpStatus.CONFLICT;
-            case REPLY_POST_MISMATCH, DOMAIN_INVALID_VALUE -> HttpStatus.BAD_REQUEST;
+            case REPLY_POST_MISMATCH, DOMAIN_INVALID_VALUE, DOMAIN_INVALID_MODEL -> HttpStatus.BAD_REQUEST;
             case POST_COMMAND_FAILED, REPLY_COMMAND_FAILED, USER_COMMAND_FAILED -> HttpStatus.INTERNAL_SERVER_ERROR;
             case FILE_STORAGE_ERROR, PERSISTENCE_ERROR, UNEXPECTED_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
