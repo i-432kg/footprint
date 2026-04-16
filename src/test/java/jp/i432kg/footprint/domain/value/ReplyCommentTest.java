@@ -43,6 +43,16 @@ class ReplyCommentTest {
     }
 
     @Test
+    @DisplayName("ReplyComment.of は最大長ちょうどの本文を受け入れる")
+    void should_createReplyComment_when_valueLengthIsMaxBoundary() {
+        final String value = "a".repeat(100);
+
+        final ReplyComment actual = ReplyComment.of(value);
+
+        assertThat(actual.getValue()).isEqualTo(value);
+    }
+
+    @Test
     @DisplayName("ReplyComment.of は最大長を超える本文を拒否する")
     void should_throwException_when_replyCommentExceedsMaxLength() {
         assertInvalidValue(() -> ReplyComment.of("a".repeat(101)), "replyComment", "too_long");

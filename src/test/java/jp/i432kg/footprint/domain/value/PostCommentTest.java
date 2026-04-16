@@ -45,6 +45,16 @@ class PostCommentTest {
     }
 
     @Test
+    @DisplayName("PostComment.of は最大長ちょうどの本文を受け入れる")
+    void should_createPostComment_when_valueLengthIsMaxBoundary() {
+        final String value = "a".repeat(100);
+
+        final PostComment actual = PostComment.of(value);
+
+        assertThat(actual.getValue()).isEqualTo(value);
+    }
+
+    @Test
     @DisplayName("PostComment.of は最大長を超える本文を拒否する")
     void should_throwException_when_postCommentExceedsMaxLength() {
         assertInvalidValue(() -> PostComment.of("a".repeat(101)), "postComment", "too_long");
