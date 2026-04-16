@@ -5,6 +5,7 @@ import jp.i432kg.footprint.domain.exception.InvalidModelException;
 import jp.i432kg.footprint.domain.value.ObjectKey;
 import jp.i432kg.footprint.domain.value.Pixel;
 import jp.i432kg.footprint.domain.value.StorageObject;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
@@ -16,10 +17,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ImageTest {
 
     @Test
-    void of_shouldCreateInstanceWithGivenValues() {
-        LocalDateTime takenAt = LocalDateTime.of(2026, 4, 1, 12, 30);
+    @DisplayName("Image.of は妥当な画像情報から画像を生成できる")
+    void should_createImage_when_valuesAreValid() {
+        final LocalDateTime takenAt = LocalDateTime.of(2026, 4, 1, 12, 30);
 
-        Image actual = Image.of(
+        final Image actual = Image.of(
                 DomainTestFixtures.storageObject(),
                 DomainTestFixtures.fileExtension(),
                 DomainTestFixtures.fileSize(),
@@ -41,15 +43,17 @@ class ImageTest {
     }
 
     @Test
-    void hasLocation_shouldReturnTrue_whenLocationIsKnown() {
-        Image actual = DomainTestFixtures.image();
+    @DisplayName("Image.hasLocation は位置情報が既知の場合に true を返す")
+    void should_returnTrue_when_imageHasKnownLocation() {
+        final Image actual = DomainTestFixtures.image();
 
         assertThat(actual.hasLocation()).isTrue();
     }
 
     @Test
-    void hasLocation_shouldReturnFalse_whenLocationIsUnknown() {
-        Image actual = Image.of(
+    @DisplayName("Image.hasLocation は位置情報が不明の場合に false を返す")
+    void should_returnFalse_when_imageHasUnknownLocation() {
+        final Image actual = Image.of(
                 StorageObject.local(ObjectKey.of("users/a/posts/b/images/c.jpg")),
                 DomainTestFixtures.fileExtension(),
                 DomainTestFixtures.fileSize(),
@@ -64,13 +68,32 @@ class ImageTest {
     }
 
     @Test
-    void of_shouldRejectWhenTotalPixelsExceedFortyMegaPixels() {
+    @DisplayName("Image.of は総ピクセル数が 40MP ちょうどの場合に生成できる")
+    void should_createImage_when_totalPixelsIsAtLimit() {
+        final Image actual = Image.of(
+                DomainTestFixtures.storageObject(),
+                DomainTestFixtures.fileExtension(),
+                DomainTestFixtures.fileSize(),
+                Pixel.of(6250),
+                Pixel.of(6400),
+                DomainTestFixtures.location(),
+                true,
+                LocalDateTime.of(2026, 4, 1, 12, 30)
+        );
+
+        assertThat(actual.getWidth().getValue()).isEqualTo(6250);
+        assertThat(actual.getHeight().getValue()).isEqualTo(6400);
+    }
+
+    @Test
+    @DisplayName("Image.of は総ピクセル数が 40MP を超える場合に例外を送出する")
+    void should_throwException_when_totalPixelsExceedLimit() {
         assertThatThrownBy(() -> Image.of(
                 DomainTestFixtures.storageObject(),
                 DomainTestFixtures.fileExtension(),
                 DomainTestFixtures.fileSize(),
-                Pixel.of(5001),
-                Pixel.of(8000),
+                Pixel.of(6251),
+                Pixel.of(6400),
                 DomainTestFixtures.location(),
                 true,
                 LocalDateTime.of(2026, 4, 1, 12, 30)
@@ -79,7 +102,8 @@ class ImageTest {
     }
 
     @Test
-    void of_shouldRejectWhenShortSidePixelsAreLessThanMinimum() throws Exception {
+    @DisplayName("Image.of は短辺が 320px 未満の場合に例外を送出する")
+    void should_throwException_when_shortSideIsLessThanMinimum() throws Exception {
         final Constructor<Pixel> constructor = Pixel.class.getDeclaredConstructor(int.class);
         constructor.setAccessible(true);
         final Pixel invalidShortSide = constructor.newInstance(319);
@@ -96,5 +120,4 @@ class ImageTest {
         )).isInstanceOf(InvalidModelException.class)
                 .hasMessageContaining("reason=short_side_pixels_too_small");
     }
-
 }
