@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.domain.value;
 
+import jp.i432kg.footprint.domain.DomainTestFixtures;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -74,5 +75,64 @@ class ObjectKeyTest {
     @DisplayName("ObjectKey.of は許可外文字を含む値を拒否する")
     void should_throwException_when_objectKeyContainsUnsupportedCharacters() {
         assertInvalidValue(() -> ObjectKey.of("a b/c.jpg"), "object_key", "invalid_format");
+    }
+
+    @Test
+    @DisplayName("ObjectKey.createPostImageKey は投稿画像用のオブジェクトキーを生成する")
+    void should_createPostImageKey_when_argumentsAreValid() {
+        final ObjectKey actual = ObjectKey.createPostImageKey(
+                DomainTestFixtures.userId(),
+                DomainTestFixtures.postId(),
+                DomainTestFixtures.imageId(),
+                FileExtension.of("jpg")
+        );
+
+        assertThat(actual.getValue())
+                .isEqualTo("users/01ARZ3NDEKTSV4RRFFQ69G5FAV/posts/01ARZ3NDEKTSV4RRFFQ69G5FAX/images/01ARZ3NDEKTSV4RRFFQ69G5FB1.jpg");
+    }
+
+    @Test
+    @DisplayName("ObjectKey.createPostImageKey は null の引数を拒否する")
+    void should_throwException_when_createPostImageKeyArgumentsAreNull() {
+        assertInvalidValue(
+                () -> ObjectKey.createPostImageKey(
+                        null,
+                        DomainTestFixtures.postId(),
+                        DomainTestFixtures.imageId(),
+                        FileExtension.of("jpg")
+                ),
+                "user_id",
+                "required"
+        );
+        assertInvalidValue(
+                () -> ObjectKey.createPostImageKey(
+                        DomainTestFixtures.userId(),
+                        null,
+                        DomainTestFixtures.imageId(),
+                        FileExtension.of("jpg")
+                ),
+                "post_id",
+                "required"
+        );
+        assertInvalidValue(
+                () -> ObjectKey.createPostImageKey(
+                        DomainTestFixtures.userId(),
+                        DomainTestFixtures.postId(),
+                        null,
+                        FileExtension.of("jpg")
+                ),
+                "image_id",
+                "required"
+        );
+        assertInvalidValue(
+                () -> ObjectKey.createPostImageKey(
+                        DomainTestFixtures.userId(),
+                        DomainTestFixtures.postId(),
+                        DomainTestFixtures.imageId(),
+                        null
+                ),
+                "file_extension",
+                "required"
+        );
     }
 }

@@ -12,7 +12,6 @@ import com.github.f4b6a3.ulid.UlidCreator;
 import jp.i432kg.footprint.application.command.model.ImageMetadata;
 import jp.i432kg.footprint.application.port.ImageMetadataExtractor;
 import jp.i432kg.footprint.application.port.ImageStorage;
-import jp.i432kg.footprint.domain.ObjectKeyFactory;
 import jp.i432kg.footprint.domain.model.Location;
 import jp.i432kg.footprint.domain.value.Byte;
 import jp.i432kg.footprint.domain.value.FileExtension;
@@ -176,7 +175,7 @@ public class S3ImageRepositoryImpl implements ImageStorage, ImageMetadataExtract
             final FileExtension extension = FileExtension.of(extensionStr);
 
             final ImageId imageId = ImageId.of(UlidCreator.getUlid().toString());
-            final ObjectKey objectKey = ObjectKeyFactory.createPostImageKey(userId, postId, imageId, extension);
+            final ObjectKey objectKey = ObjectKey.createPostImageKey(userId, postId, imageId, extension);
             final StorageObject storageObject = StorageObject.s3(objectKey);
 
             final String bucket = s3ObjectResolver.resolveBucket(storageObject);

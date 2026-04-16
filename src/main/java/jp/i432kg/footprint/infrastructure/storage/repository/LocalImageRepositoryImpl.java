@@ -12,7 +12,6 @@ import com.github.f4b6a3.ulid.UlidCreator;
 import jp.i432kg.footprint.application.command.model.ImageMetadata;
 import jp.i432kg.footprint.application.port.ImageMetadataExtractor;
 import jp.i432kg.footprint.application.port.ImageStorage;
-import jp.i432kg.footprint.domain.ObjectKeyFactory;
 import jp.i432kg.footprint.domain.model.Location;
 import jp.i432kg.footprint.domain.value.*;
 import jp.i432kg.footprint.domain.value.Byte;
@@ -152,7 +151,7 @@ public class LocalImageRepositoryImpl implements ImageStorage, ImageMetadataExtr
 
             // 4. ドメインルールに基づいた ObjectKey の生成
             final ImageId imageId = ImageId.of(UlidCreator.getUlid().toString());
-            final ObjectKey objectKey = ObjectKeyFactory.createPostImageKey(userId, postId, imageId, extension);
+            final ObjectKey objectKey = ObjectKey.createPostImageKey(userId, postId, imageId, extension);
 
             final StorageObject storageObject = StorageObject.local(objectKey);
             final Path finalPath = localStoragePathResolver.resolve(storageObject);

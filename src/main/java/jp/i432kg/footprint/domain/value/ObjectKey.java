@@ -8,11 +8,18 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
- * を表す値オブジェクト
+ * ストレージ上のオブジェクトキーを表す値オブジェクトです。
+ * <p>
+ * S3 やローカルストレージで利用する相対パス形式のキーを表現し、
+ * 生成時に長さ、許可文字、パストラバーサル、絶対パス混入などを検証します。
  */
 @Value
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ObjectKey {
+
+    private static final String USER_SEGMENT = "users";
+    private static final String POST_SEGMENT = "posts";
+    private static final String IMAGE_SEGMENT = "images";
 
     /**
      * 最大文字数：1024文字
@@ -34,6 +41,15 @@ public class ObjectKey {
 
     String value;
 
+    /**
+     * 文字列から {@link ObjectKey} を生成します。
+     * <p>
+     * 前後空白は除去したうえで、長さ、許可文字、危険なパス表現を検証します。
+     *
+     * @param value オブジェクトキー文字列
+     * @return 検証済みの {@link ObjectKey}
+     * @throws InvalidValueException 値が null、blank、形式不正、または危険なパス表現を含む場合
+     */
     public static ObjectKey of(final @Nullable String value) {
 
         // null 禁止
@@ -88,5 +104,55 @@ public class ObjectKey {
         }
 
         return new ObjectKey(normalized);
+    }
+
+    /**
+     * 投稿画像保存用のオブジェクトキーを生成します。
+     * <p>
+     * 生成フォーマットは
+     * {@code users/{userId}/posts/{postId}/images/{imageId}.{extension}}
+     * です。
+     *
+     * @param userId ユーザー ID
+     * @param postId 投稿ID
+     * @param imageId 画像ID
+     * @param extension 拡張子
+     * @return 投稿画像保存用の {@link ObjectKey}
+     * @throws InvalidValueException いずれかの引数が null の場合、または生成結果が {@link #of(String)} の検証を満たさない場合
+     */
+    public static ObjectKey createPostImageKey(
+            final @Nullable UserId userId,
+            final @Nullable PostId postId,
+            final @Nullable ImageId imageId,
+            final @Nullable FileExtension extension
+    ) {
+        if (Objects.isNull(userId)) {
+            throw InvalidValueException.required("user_id");
+        }
+
+        if (Objects.isNull(postId)) {
+            throw InvalidValueException.required("post_id");
+        }
+
+        if (Objects.isNull(imageId)) {
+            throw InvalidValueException.required("image_id");
+        }
+
+        if (Objects.isNull(extension)) {
+            throw InvalidValueException.required("file_extension");
+        }
+
+        final String key = String.format(
+                "%s/%s/%s/%s/%s/%s.%s",
+                USER_SEGMENT,
+                userId.getValue(),
+                POST_SEGMENT,
+                postId.getValue(),
+                IMAGE_SEGMENT,
+                imageId.getValue(),
+                extension.getValue()
+        );
+
+        return ObjectKey.of(key);
     }
 }
