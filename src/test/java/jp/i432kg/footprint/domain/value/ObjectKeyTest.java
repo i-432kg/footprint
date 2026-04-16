@@ -131,7 +131,7 @@ class ObjectKeyTest {
                         DomainTestFixtures.imageId(),
                         null
                 ),
-                "file_extension",
+                "extension",
                 "required"
         );
     }

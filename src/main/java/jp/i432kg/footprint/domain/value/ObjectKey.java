@@ -127,19 +127,19 @@ public class ObjectKey {
             final @Nullable FileExtension extension
     ) {
         if (Objects.isNull(userId)) {
-            throw InvalidValueException.required("user_id");
+            throw InvalidValueException.required(UserId.FIELD_NAME);
         }
 
         if (Objects.isNull(postId)) {
-            throw InvalidValueException.required("post_id");
+            throw InvalidValueException.required(PostId.FIELD_NAME);
         }
 
         if (Objects.isNull(imageId)) {
-            throw InvalidValueException.required("image_id");
+            throw InvalidValueException.required(ImageId.FIELD_NAME);
         }
 
         if (Objects.isNull(extension)) {
-            throw InvalidValueException.required("file_extension");
+            throw InvalidValueException.required(FileExtension.FIELD_NAME);
         }
 
         final String key = String.format(

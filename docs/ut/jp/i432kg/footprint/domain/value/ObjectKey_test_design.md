@@ -49,7 +49,7 @@
 | 14 | 異常系 | `userId` が `null` の場合を拒否する | `userId=null` | `required("user_id")` |  |
 | 15 | 異常系 | `postId` が `null` の場合を拒否する | `postId=null` | `required("post_id")` |  |
 | 16 | 異常系 | `imageId` が `null` の場合を拒否する | `imageId=null` | `required("image_id")` |  |
-| 17 | 異常系 | `extension` が `null` の場合を拒否する | `extension=null` | `required("file_extension")` |  |
+| 17 | 異常系 | `extension` が `null` の場合を拒否する | `extension=null` | `required("extension")` |  |
 
 ## 5. 実装メモ
 
