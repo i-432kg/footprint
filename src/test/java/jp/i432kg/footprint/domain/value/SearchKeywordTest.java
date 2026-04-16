@@ -30,9 +30,19 @@ class SearchKeywordTest {
     }
 
     @Test
+    @DisplayName("SearchKeyword.of は最大長ちょうどの値を受け入れる")
+    void should_createSearchKeyword_when_valueLengthIsMaxBoundary() {
+        final String value = "a".repeat(100);
+
+        final SearchKeyword actual = SearchKeyword.of(value);
+
+        assertThat(actual.getValue()).isEqualTo(value);
+    }
+
+    @Test
     @DisplayName("SearchKeyword.of は制御文字を含む値を拒否する")
     void should_throwException_when_searchKeywordContainsControlCharacters() {
-        assertInvalidValue(() -> SearchKeyword.of("\n"), "search_keyword", "blank");
+        assertInvalidValue(() -> SearchKeyword.of("\n"), "search_keyword", "invalid_format");
         assertInvalidValue(() -> SearchKeyword.of("\u0000"), "search_keyword", "invalid_format");
     }
 }

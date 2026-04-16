@@ -38,6 +38,16 @@ class ObjectKeyTest {
     }
 
     @Test
+    @DisplayName("ObjectKey.of は最大長ちょうどの値を受け入れる")
+    void should_createObjectKey_when_valueLengthIsMaxBoundary() {
+        final String value = "a".repeat(1024);
+
+        final ObjectKey actual = ObjectKey.of(value);
+
+        assertThat(actual.getValue()).isEqualTo(value);
+    }
+
+    @Test
     @DisplayName("ObjectKey.of は絶対パス表現を拒否する")
     void should_throwException_when_objectKeyStartsWithSlash() {
         assertInvalidValue(() -> ObjectKey.of("/abc"), "object_key", "cannot start with \"/\"");
