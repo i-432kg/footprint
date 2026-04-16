@@ -39,6 +39,11 @@ class HashedPasswordTest {
         final RawPassword rawPassword = RawPassword.of("Secret12!");
 
         assertInvalidValue(() -> HashedPassword.from(rawPassword, value -> ""), "hashed_password", "blank");
-        assertInvalidValue(() -> HashedPassword.from(rawPassword, value -> null), "hashed_password", "required");
+        assertInvalidValue(() -> HashedPassword.from(rawPassword, nullReturningHasher()), "hashed_password", "required");
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    private static HashedPassword.Hasher nullReturningHasher() {
+        return value -> null;
     }
 }
