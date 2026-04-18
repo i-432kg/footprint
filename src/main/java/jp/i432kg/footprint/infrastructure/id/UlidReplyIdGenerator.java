@@ -1,7 +1,7 @@
 package jp.i432kg.footprint.infrastructure.id;
 
 import com.github.f4b6a3.ulid.UlidCreator;
-import jp.i432kg.footprint.application.port.ReplyIdGenerator;
+import jp.i432kg.footprint.application.port.id.ReplyIdGenerator;
 import jp.i432kg.footprint.domain.value.ReplyId;
 import org.springframework.stereotype.Component;
 

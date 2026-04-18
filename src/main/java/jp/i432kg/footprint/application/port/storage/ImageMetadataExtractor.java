@@ -1,4 +1,4 @@
-package jp.i432kg.footprint.application.port;
+package jp.i432kg.footprint.application.port.storage;
 
 import com.drew.imaging.ImageProcessingException;
 import jp.i432kg.footprint.application.command.model.ImageMetadata;

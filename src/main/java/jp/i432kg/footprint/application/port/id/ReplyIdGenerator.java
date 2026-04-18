@@ -1,4 +1,4 @@
-package jp.i432kg.footprint.application.port;
+package jp.i432kg.footprint.application.port.id;
 
 import jp.i432kg.footprint.domain.value.ReplyId;
 

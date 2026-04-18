@@ -1,7 +1,7 @@
 package jp.i432kg.footprint.infrastructure.id;
 
 import com.github.f4b6a3.ulid.UlidCreator;
-import jp.i432kg.footprint.application.port.PostIdGenerator;
+import jp.i432kg.footprint.application.port.id.PostIdGenerator;
 import jp.i432kg.footprint.domain.value.PostId;
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package jp.i432kg.footprint.application.port;
+package jp.i432kg.footprint.application.port.storage;
 
 import jp.i432kg.footprint.domain.value.FileName;
 import jp.i432kg.footprint.domain.value.PostId;

@@ -5,7 +5,7 @@ import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;
 import jp.i432kg.footprint.application.exception.resource.ReplyNotFoundException;
 import jp.i432kg.footprint.application.exception.resource.UserNotFoundException;
 import jp.i432kg.footprint.application.exception.usecase.ReplyCommandFailedException;
-import jp.i432kg.footprint.application.port.ReplyIdGenerator;
+import jp.i432kg.footprint.application.port.id.ReplyIdGenerator;
 import jp.i432kg.footprint.domain.model.Reply;
 import jp.i432kg.footprint.domain.repository.ReplyRepository;
 import jp.i432kg.footprint.domain.service.PostDomainService;

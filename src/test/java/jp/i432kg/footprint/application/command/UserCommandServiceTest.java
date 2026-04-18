@@ -2,7 +2,7 @@ package jp.i432kg.footprint.application.command;
 
 import jp.i432kg.footprint.application.command.model.CreateUserCommand;
 import jp.i432kg.footprint.application.exception.usecase.UserCommandFailedException;
-import jp.i432kg.footprint.application.port.UserIdGenerator;
+import jp.i432kg.footprint.application.port.id.UserIdGenerator;
 import jp.i432kg.footprint.domain.exception.EmailAlreadyUsedException;
 import jp.i432kg.footprint.domain.model.User;
 import jp.i432kg.footprint.domain.repository.UserRepository;
