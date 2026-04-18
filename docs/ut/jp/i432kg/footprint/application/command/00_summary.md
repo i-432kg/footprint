@@ -1,0 +1,37 @@
+# `jp.i432kg.footprint.application.command` パッケージ UT仕様書サマリー
+
+## 1. 対象概要
+
+- 対象パッケージ: `jp.i432kg.footprint.application.command`
+- 対象クラス: `PostCommandService`, `ReplyCommandService`, `UserCommandService`
+- 個別仕様書: 各クラスごとに `ファイル名_test_design.md` を作成
+
+## 2. 横断観点
+
+| No. | 観点 | 内容 |
+|---|---|---|
+| 1 | 事前検証 | リソース存在確認や重複確認を先に行い、不正時は repository や port を呼ばないこと |
+| 2 | 永続化 | ドメインモデルを組み立てて repository へ保存委譲すること |
+| 3 | 例外変換 | `IOException`, `ImageProcessingException`, `DataAccessException` をユースケース例外へ変換すること |
+| 4 | 補償処理 | 投稿作成失敗時に保存済み画像を削除すること |
+| 5 | 分岐 | 親返信あり / なし、正常 / 異常などの分岐ごとに副作用が正しいこと |
+
+## 3. グルーピング方針
+
+- 投稿系: `PostCommandService`
+  - ユーザー存在確認、画像保存、メタデータ抽出、投稿保存、補償削除を確認する
+- 返信系: `ReplyCommandService`
+  - 投稿存在確認、ユーザー存在確認、親返信の存在・投稿整合性確認、保存、返信数更新を確認する
+- ユーザー系: `UserCommandService`
+  - メール重複確認、パスワードハッシュ化、保存失敗時の例外変換を確認する
+
+## 4. テスト実装メモ
+
+- モック化する依存:
+  - `PostRepository`, `ReplyRepository`, `UserRepository`
+  - `ImageStorage`, `ImageMetadataExtractor`
+  - `PostDomainService`, `ReplyDomainService`, `UserDomainService`
+  - `PasswordEncoder`
+- `LocalDateTime.now()` と ULID 生成は直接固定しにくいため、生成済みドメインオブジェクトの内容は必要最小限の検証に留める
+- `PostCommandService` の cleanup 失敗は再送出せずログのみなので、UT は一次例外優先を確認する
+- 各テストメソッドには `@DisplayName` を付与し、日本語の見出しで観点を明示する
