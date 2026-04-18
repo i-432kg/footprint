@@ -1,4 +1,4 @@
-package jp.i432kg.footprint.application.command;
+package jp.i432kg.footprint.application.command.service;
 
 import jp.i432kg.footprint.application.command.model.CreateUserCommand;
 import jp.i432kg.footprint.application.exception.usecase.UserCommandFailedException;

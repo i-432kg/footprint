@@ -1,8 +1,8 @@
 package jp.i432kg.footprint.infrastructure.seed.local;
 
-import jp.i432kg.footprint.application.command.PostCommandService;
-import jp.i432kg.footprint.application.command.ReplyCommandService;
-import jp.i432kg.footprint.application.command.UserCommandService;
+import jp.i432kg.footprint.application.command.service.PostCommandService;
+import jp.i432kg.footprint.application.command.service.ReplyCommandService;
+import jp.i432kg.footprint.application.command.service.UserCommandService;
 import jp.i432kg.footprint.infrastructure.seed.shared.AbstractFixedSeedService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;

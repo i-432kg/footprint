@@ -1,4 +1,4 @@
-package jp.i432kg.footprint.application.command;
+package jp.i432kg.footprint.application.command.service;
 
 import jp.i432kg.footprint.application.command.model.CreateReplyCommand;
 import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;

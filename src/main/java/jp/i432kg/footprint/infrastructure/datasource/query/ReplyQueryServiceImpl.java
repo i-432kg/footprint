@@ -1,6 +1,6 @@
 package jp.i432kg.footprint.infrastructure.datasource.query;
 
-import jp.i432kg.footprint.application.query.ReplyQueryService;
+import jp.i432kg.footprint.application.query.service.ReplyQueryService;
 import jp.i432kg.footprint.application.query.model.ReplySummary;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.ReplyId;

@@ -2,9 +2,9 @@ package jp.i432kg.footprint.presentation.api;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
-import jp.i432kg.footprint.application.command.ReplyCommandService;
+import jp.i432kg.footprint.application.command.service.ReplyCommandService;
 import jp.i432kg.footprint.application.command.model.CreateReplyCommand;
-import jp.i432kg.footprint.application.query.ReplyQueryService;
+import jp.i432kg.footprint.application.query.service.ReplyQueryService;
 import jp.i432kg.footprint.application.query.model.ReplySummary;
 import jp.i432kg.footprint.domain.model.ParentReply;
 import jp.i432kg.footprint.domain.value.PostId;

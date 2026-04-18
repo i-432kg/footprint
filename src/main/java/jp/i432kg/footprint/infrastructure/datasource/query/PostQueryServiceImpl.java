@@ -1,7 +1,7 @@
 package jp.i432kg.footprint.infrastructure.datasource.query;
 
 import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;
-import jp.i432kg.footprint.application.query.PostQueryService;
+import jp.i432kg.footprint.application.query.service.PostQueryService;
 import jp.i432kg.footprint.application.query.model.PostSummary;
 import jp.i432kg.footprint.domain.value.*;
 import jp.i432kg.footprint.infrastructure.datasource.mapper.query.PostQueryMapper;

@@ -1,7 +1,7 @@
 package jp.i432kg.footprint.infrastructure.datasource.query;
 
 import jp.i432kg.footprint.application.exception.resource.UserNotFoundException;
-import jp.i432kg.footprint.application.query.UserQueryService;
+import jp.i432kg.footprint.application.query.service.UserQueryService;
 import jp.i432kg.footprint.application.query.model.UserProfileSummary;
 import jp.i432kg.footprint.domain.value.UserId;
 import jp.i432kg.footprint.infrastructure.datasource.mapper.query.UserQueryMapper;

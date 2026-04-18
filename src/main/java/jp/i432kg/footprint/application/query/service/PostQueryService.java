@@ -1,4 +1,4 @@
-package jp.i432kg.footprint.application.query;
+package jp.i432kg.footprint.application.query.service;
 
 import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;
 import jp.i432kg.footprint.application.query.model.PostSummary;

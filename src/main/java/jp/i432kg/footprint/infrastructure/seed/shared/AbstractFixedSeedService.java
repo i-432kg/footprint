@@ -1,8 +1,8 @@
 package jp.i432kg.footprint.infrastructure.seed.shared;
 
-import jp.i432kg.footprint.application.command.PostCommandService;
-import jp.i432kg.footprint.application.command.ReplyCommandService;
-import jp.i432kg.footprint.application.command.UserCommandService;
+import jp.i432kg.footprint.application.command.service.PostCommandService;
+import jp.i432kg.footprint.application.command.service.ReplyCommandService;
+import jp.i432kg.footprint.application.command.service.UserCommandService;
 import jp.i432kg.footprint.application.command.model.CreatePostCommand;
 import jp.i432kg.footprint.application.command.model.CreateReplyCommand;
 import jp.i432kg.footprint.application.command.model.CreateUserCommand;

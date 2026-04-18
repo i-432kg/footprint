@@ -1,6 +1,7 @@
 package jp.i432kg.footprint.application.command;
 
 import jp.i432kg.footprint.application.command.model.CreateReplyCommand;
+import jp.i432kg.footprint.application.command.service.ReplyCommandService;
 import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;
 import jp.i432kg.footprint.application.exception.resource.ReplyNotFoundException;
 import jp.i432kg.footprint.application.exception.resource.UserNotFoundException;

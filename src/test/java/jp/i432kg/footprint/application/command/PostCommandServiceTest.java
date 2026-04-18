@@ -3,6 +3,7 @@ package jp.i432kg.footprint.application.command;
 import com.drew.imaging.ImageProcessingException;
 import jp.i432kg.footprint.application.command.model.CreatePostCommand;
 import jp.i432kg.footprint.application.command.model.ImageMetadata;
+import jp.i432kg.footprint.application.command.service.PostCommandService;
 import jp.i432kg.footprint.application.exception.resource.UserNotFoundException;
 import jp.i432kg.footprint.application.exception.usecase.PostCommandFailedException;
 import jp.i432kg.footprint.application.port.storage.ImageMetadataExtractor;

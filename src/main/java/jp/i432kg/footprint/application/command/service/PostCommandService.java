@@ -1,4 +1,4 @@
-package jp.i432kg.footprint.application.command;
+package jp.i432kg.footprint.application.command.service;
 
 import com.drew.imaging.ImageProcessingException;
 import jp.i432kg.footprint.application.command.model.CreatePostCommand;
