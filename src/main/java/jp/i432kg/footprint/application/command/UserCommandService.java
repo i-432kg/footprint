@@ -1,8 +1,8 @@
 package jp.i432kg.footprint.application.command;
 
-import com.github.f4b6a3.ulid.UlidCreator;
 import jp.i432kg.footprint.application.command.model.CreateUserCommand;
 import jp.i432kg.footprint.application.exception.usecase.UserCommandFailedException;
+import jp.i432kg.footprint.application.port.UserIdGenerator;
 import jp.i432kg.footprint.domain.model.User;
 import jp.i432kg.footprint.domain.repository.UserRepository;
 import jp.i432kg.footprint.domain.service.UserDomainService;
@@ -23,6 +23,7 @@ public class UserCommandService {
     private final UserDomainService userDomainService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserIdGenerator userIdGenerator;
 
     /**
      * 新しいユーザーを作成し、システムに登録します。
@@ -37,7 +38,7 @@ public class UserCommandService {
         userDomainService.ensureEmailNotAlreadyUsed(command.getEmail());
 
         // UserId を生成 (ULID)
-        final UserId userId = UserId.of(UlidCreator.getUlid().toString());
+        final UserId userId = userIdGenerator.generate();
 
         // User ドメインモデルを構築し、DBに永続化する
         final User user = User.of(

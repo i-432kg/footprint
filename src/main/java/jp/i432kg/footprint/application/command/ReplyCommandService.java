@@ -1,11 +1,11 @@
 package jp.i432kg.footprint.application.command;
 
-import com.github.f4b6a3.ulid.UlidCreator;
 import jp.i432kg.footprint.application.command.model.CreateReplyCommand;
 import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;
 import jp.i432kg.footprint.application.exception.resource.ReplyNotFoundException;
 import jp.i432kg.footprint.application.exception.resource.UserNotFoundException;
 import jp.i432kg.footprint.application.exception.usecase.ReplyCommandFailedException;
+import jp.i432kg.footprint.application.port.ReplyIdGenerator;
 import jp.i432kg.footprint.domain.model.Reply;
 import jp.i432kg.footprint.domain.repository.ReplyRepository;
 import jp.i432kg.footprint.domain.service.PostDomainService;
@@ -37,6 +37,8 @@ public class ReplyCommandService {
 
     private final Clock clock;
 
+    private final ReplyIdGenerator replyIdGenerator;
+
     /**
      * 指定された投稿または返信に対して、新しい返信を作成します。
      * 返信の保存と、親返信が存在する場合のカウントアップを同一トランザクション内で実行します。
@@ -65,7 +67,7 @@ public class ReplyCommandService {
         }
 
         // ReplyId を生成 (ULID)
-        final ReplyId replyId = ReplyId.of(UlidCreator.getUlid().toString());
+        final ReplyId replyId = replyIdGenerator.generate();
 
         // Reply ドメインモデルを構築し、DBに永続化する
         final Reply reply = Reply.of(

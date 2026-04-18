@@ -5,6 +5,7 @@ import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;
 import jp.i432kg.footprint.application.exception.resource.ReplyNotFoundException;
 import jp.i432kg.footprint.application.exception.resource.UserNotFoundException;
 import jp.i432kg.footprint.application.exception.usecase.ReplyCommandFailedException;
+import jp.i432kg.footprint.application.port.ReplyIdGenerator;
 import jp.i432kg.footprint.domain.DomainTestFixtures;
 import jp.i432kg.footprint.domain.model.ParentReply;
 import jp.i432kg.footprint.domain.model.Reply;
@@ -41,6 +42,7 @@ class ReplyCommandServiceTest {
             Instant.parse("2026-04-18T10:15:30Z"),
             ZoneId.of("Asia/Tokyo")
     );
+    private static final String FIXED_REPLY_ID = "01ARZ3NDEKTSV4RRFFQ69G5FAZ";
 
     @Mock
     private ReplyRepository replyRepository;
@@ -60,7 +62,8 @@ class ReplyCommandServiceTest {
                 postDomainService,
                 replyDomainService,
                 userDomainService,
-                FIXED_CLOCK
+                FIXED_CLOCK,
+                fixedReplyIdGenerator(FIXED_REPLY_ID)
         );
     }
 
@@ -87,7 +90,7 @@ class ReplyCommandServiceTest {
         assertThat(actual.getMessage()).isEqualTo(command.getMessage());
         assertThat(actual.getParentReply()).isEqualTo(command.getParentReply());
         assertThat(actual.hasParentReply()).isFalse();
-        assertThat(actual.getReplyId()).isNotNull();
+        assertThat(actual.getReplyId().getValue()).isEqualTo(FIXED_REPLY_ID);
         assertThat(actual.getCreatedAt()).isEqualTo(LocalDateTime.of(2026, 4, 18, 19, 15, 30));
         verify(replyRepository, never()).increaseReplyCount(any());
     }
@@ -226,5 +229,9 @@ class ReplyCommandServiceTest {
                             .containsEntry("reason", "increase_reply_count_failed")
                             .containsEntry("rejectedValue", DomainTestFixtures.replyId().getValue());
                 });
+    }
+
+    private static ReplyIdGenerator fixedReplyIdGenerator(final String value) {
+        return () -> jp.i432kg.footprint.domain.value.ReplyId.of(value);
     }
 }

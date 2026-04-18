@@ -8,8 +8,8 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDirectory;
-import com.github.f4b6a3.ulid.UlidCreator;
 import jp.i432kg.footprint.application.command.model.ImageMetadata;
+import jp.i432kg.footprint.application.port.ImageIdGenerator;
 import jp.i432kg.footprint.application.port.ImageMetadataExtractor;
 import jp.i432kg.footprint.application.port.ImageStorage;
 import jp.i432kg.footprint.domain.model.Location;
@@ -49,15 +49,18 @@ public class LocalImageRepositoryImpl implements ImageStorage, ImageMetadataExtr
     private final Path storageRoot;
     private final LocalStoragePathResolver localStoragePathResolver;
     private final Clock clock;
+    private final ImageIdGenerator imageIdGenerator;
 
     // final フィールドにするためにコンストラクタで注入
     public LocalImageRepositoryImpl(
             @Value("${app.storage.local.root-dir}") String storageLocation,
             LocalStoragePathResolver localStoragePathResolver,
-            Clock clock) {
+            Clock clock,
+            ImageIdGenerator imageIdGenerator) {
         this.storageRoot = Paths.get(storageLocation);
         this.localStoragePathResolver = localStoragePathResolver;
         this.clock = clock;
+        this.imageIdGenerator = imageIdGenerator;
     }
 
     @Override
@@ -154,7 +157,7 @@ public class LocalImageRepositoryImpl implements ImageStorage, ImageMetadataExtr
             final FileExtension extension = FileExtension.of(extensionStr);
 
             // 4. ドメインルールに基づいた ObjectKey の生成
-            final ImageId imageId = ImageId.of(UlidCreator.getUlid().toString());
+            final ImageId imageId = imageIdGenerator.generate();
             final ObjectKey objectKey = ObjectKey.createPostImageKey(userId, postId, imageId, extension);
 
             final StorageObject storageObject = StorageObject.local(objectKey);

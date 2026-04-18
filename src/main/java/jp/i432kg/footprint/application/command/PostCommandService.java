@@ -1,13 +1,13 @@
 package jp.i432kg.footprint.application.command;
 
 import com.drew.imaging.ImageProcessingException;
-import com.github.f4b6a3.ulid.UlidCreator;
 import jp.i432kg.footprint.application.command.model.CreatePostCommand;
 import jp.i432kg.footprint.application.command.model.ImageMetadata;
 import jp.i432kg.footprint.application.exception.resource.UserNotFoundException;
 import jp.i432kg.footprint.application.exception.usecase.PostCommandFailedException;
 import jp.i432kg.footprint.application.port.ImageMetadataExtractor;
 import jp.i432kg.footprint.application.port.ImageStorage;
+import jp.i432kg.footprint.application.port.PostIdGenerator;
 import jp.i432kg.footprint.domain.model.Image;
 import jp.i432kg.footprint.domain.model.Post;
 import jp.i432kg.footprint.domain.repository.PostRepository;
@@ -41,6 +41,8 @@ public class PostCommandService {
 
     private final Clock clock;
 
+    private final PostIdGenerator postIdGenerator;
+
     /**
      * 新しい投稿を作成します。
      * 画像ファイルの保存、メタデータの抽出、および投稿情報の永続化を一連のトランザクションとして実行します。
@@ -56,7 +58,7 @@ public class PostCommandService {
         }
 
         // PostId を生成 (ULID)
-        final PostId postId = PostId.of(UlidCreator.getUlid().toString());
+        final PostId postId = postIdGenerator.generate();
 
         final StorageObject storageObject;
         try {

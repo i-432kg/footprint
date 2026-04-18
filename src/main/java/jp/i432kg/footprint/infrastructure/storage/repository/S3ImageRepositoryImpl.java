@@ -8,8 +8,8 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDirectory;
-import com.github.f4b6a3.ulid.UlidCreator;
 import jp.i432kg.footprint.application.command.model.ImageMetadata;
+import jp.i432kg.footprint.application.port.ImageIdGenerator;
 import jp.i432kg.footprint.application.port.ImageMetadataExtractor;
 import jp.i432kg.footprint.application.port.ImageStorage;
 import jp.i432kg.footprint.domain.model.Location;
@@ -59,15 +59,18 @@ public class S3ImageRepositoryImpl implements ImageStorage, ImageMetadataExtract
     private final S3Client s3Client;
     private final S3ObjectResolver s3ObjectResolver;
     private final Clock clock;
+    private final ImageIdGenerator imageIdGenerator;
 
     public S3ImageRepositoryImpl(
             final S3Client s3Client,
             final S3ObjectResolver s3ObjectResolver,
-            final Clock clock
+            final Clock clock,
+            final ImageIdGenerator imageIdGenerator
     ) {
         this.s3Client = s3Client;
         this.s3ObjectResolver = s3ObjectResolver;
         this.clock = clock;
+        this.imageIdGenerator = imageIdGenerator;
     }
 
     @Override
@@ -178,7 +181,7 @@ public class S3ImageRepositoryImpl implements ImageStorage, ImageMetadataExtract
             final String extensionStr = determineExtension(fileType, originalFilename);
             final FileExtension extension = FileExtension.of(extensionStr);
 
-            final ImageId imageId = ImageId.of(UlidCreator.getUlid().toString());
+            final ImageId imageId = imageIdGenerator.generate();
             final ObjectKey objectKey = ObjectKey.createPostImageKey(userId, postId, imageId, extension);
             final StorageObject storageObject = StorageObject.s3(objectKey);
 

@@ -2,6 +2,7 @@ package jp.i432kg.footprint.application.command;
 
 import jp.i432kg.footprint.application.command.model.CreateUserCommand;
 import jp.i432kg.footprint.application.exception.usecase.UserCommandFailedException;
+import jp.i432kg.footprint.application.port.UserIdGenerator;
 import jp.i432kg.footprint.domain.exception.EmailAlreadyUsedException;
 import jp.i432kg.footprint.domain.model.User;
 import jp.i432kg.footprint.domain.repository.UserRepository;
@@ -32,6 +33,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class UserCommandServiceTest {
 
+    private static final String FIXED_USER_ID = "01ARZ3NDEKTSV4RRFFQ69G5FAV";
+
     @Mock
     private UserDomainService userDomainService;
 
@@ -45,7 +48,8 @@ class UserCommandServiceTest {
         return new UserCommandService(
                 userDomainService,
                 userRepository,
-                passwordEncoder
+                passwordEncoder,
+                fixedUserIdGenerator(FIXED_USER_ID)
         );
     }
 
@@ -61,7 +65,7 @@ class UserCommandServiceTest {
         verify(userRepository).saveUser(captor.capture());
         final User actual = captor.getValue();
 
-        assertThat(actual.getUserId()).isNotNull();
+        assertThat(actual.getUserId().getValue()).isEqualTo(FIXED_USER_ID);
         assertThat(actual.getUserName()).isEqualTo(command.getUserName());
         assertThat(actual.getEmail()).isEqualTo(command.getEmail());
         assertThat(actual.getBirthDate()).isEqualTo(command.getBirthDate());
@@ -106,5 +110,9 @@ class UserCommandServiceTest {
                 RawPassword.of("Secret12!"),
                 BirthDate.restore(LocalDate.of(2000, 1, 1))
         );
+    }
+
+    private static UserIdGenerator fixedUserIdGenerator(final String value) {
+        return () -> jp.i432kg.footprint.domain.value.UserId.of(value);
     }
 }

@@ -17,6 +17,7 @@ Accepted
 1. `@Nullable` は「外部入力や framework 由来の `null` が実際に入りうる境界」に限定して付与する
 2. `@NullMarked` は全パッケージ一律ではなく、効果が高いパッケージに絞って適用する
 3. domain 内部や private constructor、private helper は non-null 前提とし、factory / mapper / adapter で `null` を吸収する
+4. `presentation` / `infrastructure` 配下でも、対応する interface の non-null 契約を素直に実装する package には、package 単位で `@NullMarked` を付与してよい
 
 ## 運用ルール
 
@@ -42,6 +43,12 @@ Accepted
 - Java の型システム上どうしても必要な箇所だけに限定する
 - 代表例は unchecked cast などであり、nullness の回避策として常用しない
 
+### 5. package 単位で判断する
+- `infrastructure` を一律に未注釈とせず、package の責務に応じて判断する
+- framework 由来の nullable 境界を多く含む package は未注釈のままとする
+- application / domain の port や interface を実装し、non-null 契約が明確な package は `@NullMarked` を付与してよい
+- 個別クラスや個別メソッドへの `@NullMarked` / `@NonNull` の都度付与より、まず package 単位の方針を優先する
+
 ## パッケージ方針
 
 ### `@NullMarked` を残すパッケージ
@@ -61,11 +68,13 @@ Accepted
 - `jp.i432kg.footprint.application.query.model`
 - `jp.i432kg.footprint.exception`
 - `jp.i432kg.footprint.logging.masking`
+- `jp.i432kg.footprint.infrastructure.id`
 
 理由:
 - framework 依存が比較的少ない
 - non-null default の恩恵が大きい
 - 業務ルールやアプリケーションルールを明示しやすい
+- `infrastructure.id` は application port の non-null 契約を実装する package であり、戻り値の nullness 契約を package 単位でそろえる方が自然
 
 ### `@NullMarked` を外すパッケージ
 - `jp.i432kg.footprint.presentation`
@@ -95,6 +104,7 @@ Accepted
 - Spring / MyBatis / Jackson / SDK など framework 由来の nullable 境界が多い
 - DTO、mapper、type handler、controller では `null` が一時的に入りやすい
 - 一律 `@NullMarked` にすると `@Nullable` の氾濫や冗長な警告回避が起きやすい
+- ただし、この判断は層単位の固定ルールではなく、package の責務に応じて例外を許容する
 
 ## 実装上のベストプラクティス
 - `@NullMarked` 配下では `@NonNull` を原則付けない

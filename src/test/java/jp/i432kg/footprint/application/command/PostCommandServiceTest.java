@@ -7,6 +7,7 @@ import jp.i432kg.footprint.application.exception.resource.UserNotFoundException;
 import jp.i432kg.footprint.application.exception.usecase.PostCommandFailedException;
 import jp.i432kg.footprint.application.port.ImageMetadataExtractor;
 import jp.i432kg.footprint.application.port.ImageStorage;
+import jp.i432kg.footprint.application.port.PostIdGenerator;
 import jp.i432kg.footprint.domain.DomainTestFixtures;
 import jp.i432kg.footprint.domain.model.Post;
 import jp.i432kg.footprint.domain.repository.PostRepository;
@@ -45,6 +46,7 @@ class PostCommandServiceTest {
             Instant.parse("2026-04-18T10:15:30Z"),
             ZoneId.of("Asia/Tokyo")
     );
+    private static final String FIXED_POST_ID = "01ARZ3NDEKTSV4RRFFQ69G5FAX";
 
     @Mock
     private PostRepository postRepository;
@@ -64,7 +66,8 @@ class PostCommandServiceTest {
                 imageStorage,
                 imageMetadataExtractor,
                 userDomainService,
-                FIXED_CLOCK
+                FIXED_CLOCK,
+                fixedPostIdGenerator(FIXED_POST_ID)
         );
     }
 
@@ -107,7 +110,7 @@ class PostCommandServiceTest {
         assertThat(actual.getImage().getLocation()).isEqualTo(metadata.getLocation());
         assertThat(actual.getImage().isHasEXIF()).isEqualTo(metadata.isHasEXIF());
         assertThat(actual.getImage().getTakenAt()).isEqualTo(metadata.getTakenAt());
-        assertThat(actual.getPostId()).isNotNull();
+        assertThat(actual.getPostId().getValue()).isEqualTo(FIXED_POST_ID);
         assertThat(actual.getCreatedAt()).isEqualTo(LocalDateTime.of(2026, 4, 18, 19, 15, 30));
         verify(imageStorage).store(command.getImageStream(), command.getOriginalFilename(), command.getUserId(), actual.getPostId());
         verify(imageMetadataExtractor).extract(storageObject);
@@ -231,5 +234,9 @@ class PostCommandServiceTest {
                 new ByteArrayInputStream(new byte[]{1, 2, 3}),
                 FileName.of("image.jpg")
         );
+    }
+
+    private static PostIdGenerator fixedPostIdGenerator(final String value) {
+        return () -> jp.i432kg.footprint.domain.value.PostId.of(value);
     }
 }
