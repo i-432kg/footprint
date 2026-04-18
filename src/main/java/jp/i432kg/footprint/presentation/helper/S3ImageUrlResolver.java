@@ -41,16 +41,19 @@ public class S3ImageUrlResolver implements ImageUrlResolver {
         final String bucket = s3ObjectResolver.resolveBucket(storageObject);
         final String key = s3ObjectResolver.resolveKey(storageObject);
 
+        // 画像取得用の S3 GetObject リクエストを組み立てる
         final GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
                 .build();
 
+        // 有効期限付き URL 発行用の presign リクエストを組み立てる
         final GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
                 .signatureDuration(Duration.ofMinutes(s3StorageProperties.getPresignedGetExpireMinutes()))
                 .getObjectRequest(getObjectRequest)
                 .build();
 
+        // ブラウザから直接参照できる presigned URL を返す
         return s3Presigner.presignGetObject(presignRequest).url().toString();
     }
 }
