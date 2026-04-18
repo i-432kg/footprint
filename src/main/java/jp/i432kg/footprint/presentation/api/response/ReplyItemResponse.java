@@ -2,6 +2,7 @@ package jp.i432kg.footprint.presentation.api.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;
+import org.jspecify.annotations.Nullable;
 
 import java.time.OffsetDateTime;
 
@@ -25,6 +26,7 @@ public class ReplyItemResponse {
     /**
      * 親返信 ID です。ルート返信では `null` になりえます。
      */
+    @Nullable
     String parentReplyId;
 
     /**

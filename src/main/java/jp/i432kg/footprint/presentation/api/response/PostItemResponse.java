@@ -2,6 +2,7 @@ package jp.i432kg.footprint.presentation.api.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;
+import org.jspecify.annotations.Nullable;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -36,6 +37,7 @@ public class PostItemResponse {
     /**
      * 位置情報です。位置情報がない投稿では `null` になりえます。
      */
+    @Nullable
     LocationResponse location;
 
     /**
