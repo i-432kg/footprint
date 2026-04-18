@@ -22,7 +22,8 @@
 | 3 | 正常系 | 自分の返信一覧取得 | `lastId` を `ReplyId` へ変換して `listMyReplies(...)` を呼ぶこと |
 | 4 | 正常系 | サインアップ | `SignUpRequest` を各値オブジェクトへ変換し `CreateUserCommand` を生成すること |
 | 5 | 正常系 | 生年月日基準日 | `BirthDate.of(..., LocalDate.now(clock))` の基準日として固定 `Clock` を使うこと |
-| 6 | 正常系 | login 呼び出し | ユーザー作成後に `request.login(email, rawPassword)` を呼ぶこと |
+| 6 | 異常系 | 固定 Clock に対する未来日 | fixed `Clock` 基準で未来日となる `birthDate` を拒否すること |
+| 7 | 正常系 | login 呼び出し | ユーザー作成後に `request.login(email, rawPassword)` を呼ぶこと |
 
 ## 4. テストケース一覧
 
@@ -33,7 +34,8 @@
 | 3 | 正常系 | 自分の返信一覧を取得する | `lastId` あり | `ReplyId` 変換後に service を呼ぶ |
 | 4 | 正常系 | サインアップを受け付ける | 妥当な `SignUpRequest` | status=201、`CreateUserCommand` を生成して service を呼ぶ |
 | 5 | 正常系 | 固定 Clock を使って生年月日を生成する | `clock` を fixed にする | command の `BirthDate` がその基準日で評価される |
-| 6 | 正常系 | 作成後にログインする | `request.login(...)` が成功する | `userCommandService.createUser(...)` 後に login が呼ばれる |
+| 6 | 異常系 | fixed `Clock` 基準で未来日の生年月日を拒否する | `birthDate=2026-04-20`, `clock=2026-04-19` | `InvalidValueException` が送出される |
+| 7 | 正常系 | 作成後にログインする | `request.login(...)` が成功する | `userCommandService.createUser(...)` 後に login が呼ばれる |
 
 ## 5. 実装メモ
 
@@ -50,4 +52,5 @@
 | 3 | `should_returnMyReplies_when_getMyRepliesIsCalled` | `UserRestController は自分の返信一覧取得時に 200 を返す` |
 | 4 | `should_createUser_when_createIsCalled` | `UserRestController はサインアップ情報から command を生成して 201 を返す` |
 | 5 | `should_useFixedClockDate_when_creatingBirthDate` | `UserRestController は固定 Clock の当日を基準に BirthDate を生成する` |
-| 6 | `should_loginAfterUserCreation_when_createSucceeds` | `UserRestController はユーザー作成後に request.login を呼ぶ` |
+| 6 | `should_throwException_when_birthDateIsFutureAgainstFixedClock` | `UserRestController は固定 Clock 基準で未来日の birthDate を拒否する` |
+| 7 | `should_loginAfterUserCreation_when_createSucceeds` | `UserRestController はユーザー作成後に request.login を呼ぶ` |
