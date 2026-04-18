@@ -4,7 +4,7 @@
 
 - 対象クラス: `ReplyCommandService`
 - 対象メソッド: `createReply(CreateReplyCommand)`
-- 対象パッケージ: `jp.i432kg.footprint.application.command`
+- 対象パッケージ: `jp.i432kg.footprint.application.command.service`
 - 対応するテストクラス: `ReplyCommandServiceTest`
 - 作成者: Codex
 - 作成日: 2026-04-17

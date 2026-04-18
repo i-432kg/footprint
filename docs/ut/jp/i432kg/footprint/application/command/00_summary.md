@@ -1,8 +1,8 @@
-# `jp.i432kg.footprint.application.command` パッケージ UT仕様書サマリー
+# `jp.i432kg.footprint.application.command.service` パッケージ UT仕様書サマリー
 
 ## 1. 対象概要
 
-- 対象パッケージ: `jp.i432kg.footprint.application.command`
+- 対象パッケージ: `jp.i432kg.footprint.application.command.service`
 - 対象クラス: `PostCommandService`, `ReplyCommandService`, `UserCommandService`
 - 個別仕様書: 各クラスごとに `ファイル名_test_design.md` を作成
 

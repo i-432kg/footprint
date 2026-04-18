@@ -4,7 +4,7 @@
 
 - 対象クラス: `PostCommandService`
 - 対象メソッド: `createPost(CreatePostCommand)`
-- 対象パッケージ: `jp.i432kg.footprint.application.command`
+- 対象パッケージ: `jp.i432kg.footprint.application.command.service`
 - 対応するテストクラス: `PostCommandServiceTest`
 - 作成者: Codex
 - 作成日: 2026-04-17
