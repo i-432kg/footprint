@@ -20,7 +20,7 @@
 
 | No. | 区分 | 観点 | 確認内容 |
 |---|---|---|---|
-| 1 | 正常系 | 投稿作成成功 | 依存処理が正常な場合に画像保存・メタデータ抽出・投稿保存が行われること |
+| 1 | 正常系 | 投稿作成成功 | 依存処理が正常な場合に画像保存・メタデータ抽出・投稿保存が行われ、固定 `Clock` と固定 `PostIdGenerator` に基づく `createdAt` / `PostId` が設定されること |
 | 2 | 異常系 | ユーザー不存在 | `UserNotFoundException` を送出し、後続処理を呼ばないこと |
 | 3 | 異常系 | 画像保存失敗 | `IOException` を `PostCommandFailedException.imageSaveFailed(...)` へ変換すること |
 | 4 | 異常系 | メタデータ抽出失敗 | 保存済み画像を削除し、`imageMetadataExtractFailed(...)` へ変換すること |
@@ -31,7 +31,7 @@
 
 | No. | 区分 | テストケース | 入力値 / 事前条件 | 期待結果 | 備考 |
 |---|---|---|---|---|---|
-| 1 | 正常系 | 投稿を作成する | ユーザー存在、画像保存成功、メタデータ抽出成功、保存成功 | 画像保存・メタデータ抽出・投稿保存が呼ばれる |  |
+| 1 | 正常系 | 投稿を作成する | ユーザー存在、画像保存成功、メタデータ抽出成功、保存成功、固定 `Clock` / 固定 `PostIdGenerator` | 画像保存・メタデータ抽出・投稿保存が呼ばれ、保存される `Post` の `createdAt` と `PostId` が固定値になる |  |
 | 2 | 異常系 | ユーザー不存在を拒否する | `isExistUser=false` | `UserNotFoundException` | `imageStorage`, `imageMetadataExtractor`, `postRepository` 未呼び出し |
 | 3 | 異常系 | 画像保存失敗を変換する | `imageStorage.store` が `IOException` | `PostCommandFailedException` | cleanup なし |
 | 4 | 異常系 | メタデータ抽出失敗時に cleanup する | `extract` が `ImageProcessingException` または `IOException` | `PostCommandFailedException`, `imageStorage.delete` 呼び出し |  |
@@ -41,10 +41,11 @@
 ## 5. 実装メモ
 
 - モック化する依存: `PostRepository`, `ImageStorage`, `ImageMetadataExtractor`, `UserDomainService`
-- 固定化が必要な値: `StorageObject`, `ImageMetadata`, `CreatePostCommand`
+- 固定化が必要な値: `StorageObject`, `ImageMetadata`, `CreatePostCommand`, `Clock`, `PostIdGenerator`
 - `@DisplayName` 方針: `createPost の正常系と失敗箇所を記載する`
 - 備考:
-  - `PostId` や `createdAt` は内部生成のため、repository へ渡される `Post` の主要プロパティ確認を優先する
+  - 固定 `Clock` により `createdAt` を `2026-04-18T19:15:30` として確認する
+  - 固定 `PostIdGenerator` により `PostId` を明示的に確認する
 
 ## 6. 対応するテストメソッド
 

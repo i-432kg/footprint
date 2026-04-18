@@ -15,6 +15,7 @@
 | 3 | 例外変換 | `IOException`, `ImageProcessingException`, `DataAccessException` をユースケース例外へ変換すること |
 | 4 | 補償処理 | 投稿作成失敗時に保存済み画像を削除すること |
 | 5 | 分岐 | 親返信あり / なし、正常 / 異常などの分岐ごとに副作用が正しいこと |
+| 6 | 固定値生成 | `Clock.fixed(...)` と固定 ID generator により、保存対象の `createdAt` / ID を明示的に検証すること |
 
 ## 3. グルーピング方針
 
@@ -32,6 +33,10 @@
   - `ImageStorage`, `ImageMetadataExtractor`
   - `PostDomainService`, `ReplyDomainService`, `UserDomainService`
   - `PasswordEncoder`
-- `LocalDateTime.now()` と ULID 生成は直接固定しにくいため、生成済みドメインオブジェクトの内容は必要最小限の検証に留める
+- 固定化する値:
+  - `Clock.fixed(...)` による `createdAt`
+  - `application.port.id.*IdGenerator` の test double による生成 ID
+- `PostCommandService`, `ReplyCommandService` は保存対象の `createdAt` と生成 ID を検証する
+- `UserCommandService` は生成された `UserId` を検証する
 - `PostCommandService` の cleanup 失敗は再送出せずログのみなので、UT は一次例外優先を確認する
 - 各テストメソッドには `@DisplayName` を付与し、日本語の見出しで観点を明示する

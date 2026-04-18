@@ -20,7 +20,7 @@
 
 | No. | 区分 | 観点 | 確認内容 |
 |---|---|---|---|
-| 1 | 正常系 | ルート返信作成 | 親返信なしの場合に保存のみ行い、返信数更新をしないこと |
+| 1 | 正常系 | ルート返信作成 | 親返信なしの場合に保存のみ行い、返信数更新をしないこと。固定 `Clock` と固定 `ReplyIdGenerator` に基づく `createdAt` / `ReplyId` が設定されること |
 | 2 | 正常系 | 子返信作成 | 親返信ありの場合に親返信の存在確認・投稿整合性確認後、保存と返信数更新を行うこと |
 | 3 | 異常系 | 投稿不存在 | `PostNotFoundException` を送出し、後続処理を呼ばないこと |
 | 4 | 異常系 | ユーザー不存在 | `UserNotFoundException` を送出し、後続処理を呼ばないこと |
@@ -32,7 +32,7 @@
 
 | No. | 区分 | テストケース | 入力値 / 事前条件 | 期待結果 | 備考 |
 |---|---|---|---|---|---|
-| 1 | 正常系 | ルート返信を作成する | `ParentReply.root()`, 各存在確認成功 | `saveReply` 呼び出し、`increaseReplyCount` 未呼び出し |  |
+| 1 | 正常系 | ルート返信を作成する | `ParentReply.root()`, 各存在確認成功、固定 `Clock` / 固定 `ReplyIdGenerator` | `saveReply` 呼び出し、`increaseReplyCount` 未呼び出し、保存される `Reply` の `createdAt` と `ReplyId` が固定値になる |  |
 | 2 | 正常系 | 子返信を作成する | 親返信あり、親返信取得成功、投稿整合性確認成功 | `saveReply` と `increaseReplyCount` 呼び出し |  |
 | 3 | 異常系 | 投稿不存在を拒否する | `isExistPost=false` | `PostNotFoundException` | repository 未呼び出し |
 | 4 | 異常系 | ユーザー不存在を拒否する | `isExistUser=false` | `UserNotFoundException` | repository 未呼び出し |
@@ -43,10 +43,11 @@
 ## 5. 実装メモ
 
 - モック化する依存: `ReplyRepository`, `PostDomainService`, `ReplyDomainService`, `UserDomainService`
-- 固定化が必要な値: `CreateReplyCommand`, 親返信用 `Reply`
+- 固定化が必要な値: `CreateReplyCommand`, 親返信用 `Reply`, `Clock`, `ReplyIdGenerator`
 - `@DisplayName` 方針: `createReply の事前検証、保存、返信数更新を記載する`
 - 備考:
   - 親返信ありケースでは `validateParentReplyBelongsToPost(...)` が呼ばれることも確認対象とする
+  - ルート返信ケースでは固定 `Clock` による `createdAt` と固定 `ReplyIdGenerator` による `ReplyId` を確認する
 
 ## 6. 対応するテストメソッド
 
