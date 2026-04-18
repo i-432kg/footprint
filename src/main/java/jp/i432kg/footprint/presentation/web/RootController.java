@@ -10,16 +10,18 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import java.util.Objects;
 
 /**
- * 画面に関する処理を行うコントローラー
+ * 画面遷移用の Web エンドポイントを提供する controller です。
+ * <p>
+ * 認証済みユーザーの表示名を共通モデルへ追加し、各画面テンプレート名を返します。
  */
 @Controller
 public class RootController {
 
     /**
-     * ログインユーザーの情報をモデルに追加します。
+     * 認証済みユーザーが存在する場合に、表示名を共通モデル属性へ追加します。
      *
-     * @param model       モデルオブジェクト
-     * @param userDetails 認証されたユーザーの詳細情報
+     * @param model ビュー描画に利用する model
+     * @param userDetails 認証済みユーザー。未認証時は {@code null}
      */
     @ModelAttribute
     public void addLoginUserToModel(final Model model, @AuthenticationPrincipal final UserDetailsImpl userDetails) {
@@ -29,9 +31,9 @@ public class RootController {
     }
 
     /**
-     * トップページにリダイレクトします。
+     * ルートパスに対してタイムライン画面を返します。
      *
-     * @return トップページ（タイムライン画面）
+     * @return タイムライン画面のテンプレート名
      */
     @GetMapping("/")
     public String index() {
@@ -39,9 +41,9 @@ public class RootController {
     }
 
     /**
-     * ログイン画面にリダイレクトします。
+     * ログイン画面を返します。
      *
-     * @return ログイン画面
+     * @return ログイン画面のテンプレート名
      */
     @GetMapping("/login")
     public String login() {
@@ -49,9 +51,9 @@ public class RootController {
     }
 
     /**
-     * 投稿マップ画面にリダイレクトします。
+     * 投稿マップ画面を返します。
      *
-     * @return 投稿マップ画面
+     * @return 投稿マップ画面のテンプレート名
      */
     @GetMapping("/map")
     public String map() {
@@ -59,9 +61,9 @@ public class RootController {
     }
 
     /**
-     * マイページ画面にリダイレクトします。
+     * マイページ画面を返します。
      *
-     * @return マイページ画面
+     * @return マイページ画面のテンプレート名
      */
     @GetMapping("/mypage")
     public String mypage() {
@@ -69,9 +71,9 @@ public class RootController {
     }
 
     /**
-     * 検索画面にリダイレクトします。
+     * 検索画面を返します。
      *
-     * @return 検索画面
+     * @return 検索画面のテンプレート名
      */
     @GetMapping("/search")
     public String search() {
@@ -79,9 +81,9 @@ public class RootController {
     }
 
     /**
-     * タイムライン画面にリダイレクトします。
+     * タイムライン画面を返します。
      *
-     * @return タイムライン画面
+     * @return タイムライン画面のテンプレート名
      */
     @GetMapping("/timeline")
     public String timeline() {

@@ -18,6 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Vite manifest から画面ごとの JS/CSS asset を解決する component です。
+ * <p>
+ * stg/prod 環境で manifest を読み込み、テンプレートから参照する
+ * {@link FrontendAssetProperties} を組み立てます。
+ */
 @Component
 @Profile({"stg", "prod"})
 public class ViteManifestAssetResolver {
@@ -34,6 +40,13 @@ public class ViteManifestAssetResolver {
         this.viteManifestProperties = viteManifestProperties;
     }
 
+    /**
+     * manifest を読み込み、各画面エントリに対応する frontend asset 情報を生成します。
+     *
+     * @return テンプレートから参照する frontend asset 情報
+     * @throws IllegalStateException manifest が存在しない場合、読み込みに失敗した場合、
+     *                               または必須エントリが存在しない場合
+     */
     public FrontendAssetProperties resolve() {
         final Map<String, ManifestChunk> manifest = loadManifest();
 
@@ -117,6 +130,9 @@ public class ViteManifestAssetResolver {
         }
     }
 
+    /**
+     * Vite manifest の 1 エントリを表す DTO です。
+     */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ManifestChunk {
         private String file;
