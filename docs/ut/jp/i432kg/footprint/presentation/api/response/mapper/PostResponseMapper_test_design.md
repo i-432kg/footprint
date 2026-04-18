@@ -24,9 +24,6 @@
 | 4 | 正常系 | 位置情報未設定 | `location=null` の場合に `lat/lng=null` の `LocationResponse` を返すこと |
 | 5 | 正常系 | nullable 座標 | `LocationSummary.lat/lng` の `null` が `LocationResponse` に引き継がれること |
 | 6 | 正常系 | 一覧変換 | `fromList(...)` が要素順を維持してレスポンス一覧へ変換すること |
-| 7 | 正常系 | 一覧中 null 除外 | 一覧中の `null` 要素を除外すること |
-| 8 | 正常系 | null 一覧 | `fromList(null)` が空リストを返すこと |
-| 9 | 正常系 | null 入力 | `from(null)` が `null` を返すこと |
 
 ## 4. テストケース一覧
 
@@ -38,9 +35,6 @@
 | 4 | 正常系 | 位置情報なし投稿を変換する | `location=null`, `hasLocation=false` | `location.lat/lng=null` のオブジェクトを返す |
 | 5 | 正常系 | nullable 座標を引き継ぐ | `lat=null`, `lng=null` | `LocationResponse.lat/lng` が `null` |
 | 6 | 正常系 | 投稿一覧を変換する | `PostSummary` 2 件 | 2 件の response を順序維持で返す |
-| 7 | 正常系 | 一覧中の `null` を除外する | `[summary, null]` | response 1 件のみ返す |
-| 8 | 正常系 | `null` 一覧を空リストにする | `summaries=null` | 空リスト |
-| 9 | 正常系 | `null` 投稿を受け取る | `summary=null` | `null` |
 
 ## 5. 実装メモ
 
@@ -58,6 +52,3 @@
 | 4 | `should_returnNullFieldLocationObject_when_postHasNoLocation` | `PostResponseMapper は位置情報なし投稿を null 項目入りの location オブジェクトとして変換する` |
 | 5 | `should_preserveNullableCoordinates_when_locationSummaryHasNullValues` | `PostResponseMapper は nullable な緯度経度をそのまま引き継ぐ` |
 | 6 | `should_mapPostSummaryList_when_summariesArePresent` | `PostResponseMapper は投稿一覧を順序を保って変換する` |
-| 7 | `should_filterOutNullSummaries_when_mappingPostSummaryList` | `PostResponseMapper は一覧中の null 要素を除外して変換する` |
-| 8 | `should_returnEmptyList_when_postSummaryListIsNull` | `PostResponseMapper は null の一覧入力に対して空リストを返す` |
-| 9 | `should_returnNull_when_postSummaryIsNull` | `PostResponseMapper は null の投稿サマリー入力に対して null を返す` |

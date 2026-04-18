@@ -18,14 +18,12 @@
 | No. | 区分 | 観点 | 確認内容 |
 |---|---|---|---|
 | 1 | 正常系 | 単体変換 | `UserProfileSummary` の全項目が `UserProfileItemResponse` に正しく写像されること |
-| 2 | 正常系 | null 入力 | `from(null)` が `null` を返すこと |
 
 ## 4. テストケース一覧
 
 | No. | 区分 | テストケース | 入力値 / 事前条件 | 期待結果 |
 |---|---|---|---|---|
 | 1 | 正常系 | ユーザープロフィールをレスポンスへ変換する | 全項目が入った `UserProfileSummary` | 全項目が response に写像される |
-| 2 | 正常系 | `null` プロフィールを受け取る | `summary=null` | `null` |
 
 ## 5. 実装メモ
 
@@ -36,4 +34,3 @@
 | No. | テストメソッド名 | `@DisplayName` |
 |---|---|---|
 | 1 | `should_mapUserProfileSummaryToResponse_when_summaryHasAllFields` | `UserProfileResponseMapper はプロフィールサマリーの全項目をレスポンスへ変換する` |
-| 2 | `should_returnNull_when_userProfileSummaryIsNull` | `UserProfileResponseMapper は null のプロフィールサマリー入力に対して null を返す` |
