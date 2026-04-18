@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.application.query.model;
 
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 import org.jspecify.annotations.Nullable;
@@ -10,9 +11,9 @@ import java.time.LocalDateTime;
  * 返信の参照専用モデル
  */
 @Value
+@AllArgsConstructor
 @NoArgsConstructor(force = true)
 public class ReplySummary {
-
 
     /**
      * 返信 ID

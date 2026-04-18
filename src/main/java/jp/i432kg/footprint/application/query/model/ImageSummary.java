@@ -2,6 +2,7 @@ package jp.i432kg.footprint.application.query.model;
 
 import jp.i432kg.footprint.domain.value.ObjectKey;
 import jp.i432kg.footprint.domain.value.StorageType;
+import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
  * 画像の参照専用モデル
  */
 @Value
+@AllArgsConstructor
 @NoArgsConstructor(force = true)
 public class ImageSummary {
 

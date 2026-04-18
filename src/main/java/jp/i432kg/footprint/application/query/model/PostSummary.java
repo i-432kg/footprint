@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.application.query.model;
 
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 import org.jspecify.annotations.Nullable;
@@ -11,6 +12,7 @@ import java.util.List;
  * 投稿の参照専用モデル
  */
 @Value
+@AllArgsConstructor
 @NoArgsConstructor(force = true)
 public class PostSummary {
 
