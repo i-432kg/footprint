@@ -7,40 +7,39 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 /**
- * 投稿アイテムのレスポンス
+ * 投稿一覧および投稿詳細で返却する投稿レスポンス DTO です。
  */
 @Value
 @AllArgsConstructor(staticName = "of")
 public class PostItemResponse {
 
     /**
-     * 投稿 ID
+     * 投稿 ID です。
      */
     String id;
 
     /**
-     * 投稿コメント
+     * 投稿コメントです。
      */
     String caption;
 
     /**
-     * 投稿画像
+     * 投稿に紐づく画像一覧です。
      */
     List<ImageResponse> images;
 
     /**
-     * 位置情報があるかどうか
+     * 位置情報が含まれているかどうかを表します。
      */
     boolean hasLocation;
 
     /**
-     * 位置情報
+     * 位置情報です。位置情報がない投稿では `null` になりえます。
      */
     LocationResponse location;
 
     /**
-     * 投稿作成日時
-     * ISO 8601 形式の日時フォーマット
+     * 投稿作成日時です。ISO 8601 形式で返却します。
      */
     OffsetDateTime createdAt;
 }

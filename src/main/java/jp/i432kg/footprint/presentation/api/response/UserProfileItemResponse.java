@@ -4,34 +4,34 @@ import lombok.AllArgsConstructor;
 import lombok.Value;
 
 /**
- * ユーザーのプロフィールアイテムのレスポンス
+ * 現在ユーザーのプロフィール情報を表す API レスポンス DTO です。
  */
 @Value
 @AllArgsConstructor(staticName = "of")
 public class UserProfileItemResponse {
 
     /**
-     * ユーザー ID
+     * ユーザー ID です。
      */
     String id;
 
     /**
-     * ユーザー名
+     * ユーザー名です。
      */
     String username;
 
     /**
-     * 登録メールアドレス
+     * 登録メールアドレスです。
      */
     String email;
 
     /**
-     * 投稿数
+     * 投稿数です。
      */
     int postCount;
 
     /**
-     * 返信数
+     * 返信数です。
      */
     int replyCount;
 }

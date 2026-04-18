@@ -6,40 +6,39 @@ import lombok.Value;
 import java.time.OffsetDateTime;
 
 /**
- * 返信アイテムのレスポンス
+ * 返信一覧で返却する返信レスポンス DTO です。
  */
 @Value
 @AllArgsConstructor(staticName = "of")
 public class ReplyItemResponse {
 
     /**
-     * 返信 ID
+     * 返信 ID です。
      */
     String id;
 
     /**
-     * 投稿 ID
+     * 紐づく投稿 ID です。
      */
     String postId;
 
     /**
-     * この返信の親返信 ID
+     * 親返信 ID です。ルート返信では `null` になりえます。
      */
     String parentReplyId;
 
     /**
-     * 返信本文
+     * 返信本文です。
      */
     String message;
 
     /**
-     * この返信の子返信の数
+     * 子返信数です。
      */
     Integer childCount;
 
     /**
-     * 投稿作成日時
-     * ISO 8601 形式の日時フォーマット
+     * 返信作成日時です。ISO 8601 形式で返却します。
      */
     OffsetDateTime createdAt;
 }
