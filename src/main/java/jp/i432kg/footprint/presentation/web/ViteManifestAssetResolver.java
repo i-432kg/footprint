@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.i432kg.footprint.config.FrontendAssetProperties;
 import jp.i432kg.footprint.config.ViteManifestProperties;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -71,7 +73,8 @@ public class ViteManifestAssetResolver {
             try (InputStream inputStream = resource.getInputStream()) {
                 return objectMapper.readValue(
                         inputStream,
-                        new TypeReference<Map<String, ManifestChunk>>() {}
+                        new TypeReference<>() {
+                        }
                 );
             }
         } catch (Exception e) {
@@ -133,34 +136,12 @@ public class ViteManifestAssetResolver {
     /**
      * Vite manifest の 1 エントリを表す DTO です。
      */
+    @Setter
+    @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ManifestChunk {
         private String file;
         private List<String> css;
         private List<String> imports;
-
-        public String getFile() {
-            return file;
-        }
-
-        public void setFile(final String file) {
-            this.file = file;
-        }
-
-        public List<String> getCss() {
-            return css;
-        }
-
-        public void setCss(final List<String> css) {
-            this.css = css;
-        }
-
-        public List<String> getImports() {
-            return imports;
-        }
-
-        public void setImports(final List<String> imports) {
-            this.imports = imports;
-        }
     }
 }
