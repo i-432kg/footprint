@@ -20,6 +20,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataAccessResourceFailureException;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,6 +36,11 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ReplyCommandServiceTest {
+
+    private static final Clock FIXED_CLOCK = Clock.fixed(
+            Instant.parse("2026-04-18T10:15:30Z"),
+            ZoneId.of("Asia/Tokyo")
+    );
 
     @Mock
     private ReplyRepository replyRepository;
@@ -50,7 +59,8 @@ class ReplyCommandServiceTest {
                 replyRepository,
                 postDomainService,
                 replyDomainService,
-                userDomainService
+                userDomainService,
+                FIXED_CLOCK
         );
     }
 
@@ -78,7 +88,7 @@ class ReplyCommandServiceTest {
         assertThat(actual.getParentReply()).isEqualTo(command.getParentReply());
         assertThat(actual.hasParentReply()).isFalse();
         assertThat(actual.getReplyId()).isNotNull();
-        assertThat(actual.getCreatedAt()).isNotNull();
+        assertThat(actual.getCreatedAt()).isEqualTo(LocalDateTime.of(2026, 4, 18, 19, 15, 30));
         verify(replyRepository, never()).increaseReplyCount(any());
     }
 

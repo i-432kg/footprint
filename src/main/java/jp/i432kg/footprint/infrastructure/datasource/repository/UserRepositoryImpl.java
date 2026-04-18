@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Repository;
 
+import java.time.Clock;
+
 /**
  * ユーザーに関するリポジトリの実装クラス
  */
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Repository;
 public class UserRepositoryImpl implements UserRepository {
 
     private final UserMapper userMapper;
+    private final Clock clock;
 
     @Override
     public boolean existsById(@NonNull UserId userId) {
@@ -44,7 +47,7 @@ public class UserRepositoryImpl implements UserRepository {
     public void saveUser(final @NonNull User user) {
         try {
             // ユーザーレコードを保存する
-            final UserMapper.UserInsertEntity entity = UserMapper.UserInsertEntity.from(user);
+            final UserMapper.UserInsertEntity entity = UserMapper.UserInsertEntity.from(user, clock);
             userMapper.insert(entity);
         } catch (RuntimeException e) {
             log.error(

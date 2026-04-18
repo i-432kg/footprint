@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.ibatis.annotations.*;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 
 /**
@@ -53,7 +54,7 @@ public interface UserMapper {
         private final LocalDateTime createdAt;
         private final LocalDateTime updatedAt;
 
-        public static UserInsertEntity from(final User user) {
+        public static UserInsertEntity from(final User user, final Clock clock) {
             return new UserInsertEntity(
                     null,
                     user.getUserId(),
@@ -64,8 +65,8 @@ public interface UserMapper {
                     false,  // デフォルトで無効
                     false,          // デフォルトで無効
                     null,
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
+                    LocalDateTime.now(clock),
+                    LocalDateTime.now(clock)
             );
         }
     }

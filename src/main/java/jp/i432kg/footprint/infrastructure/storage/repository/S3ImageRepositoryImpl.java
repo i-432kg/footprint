@@ -46,6 +46,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
@@ -57,13 +58,16 @@ public class S3ImageRepositoryImpl implements ImageStorage, ImageMetadataExtract
 
     private final S3Client s3Client;
     private final S3ObjectResolver s3ObjectResolver;
+    private final Clock clock;
 
     public S3ImageRepositoryImpl(
             final S3Client s3Client,
-            final S3ObjectResolver s3ObjectResolver
+            final S3ObjectResolver s3ObjectResolver,
+            final Clock clock
     ) {
         this.s3Client = s3Client;
         this.s3ObjectResolver = s3ObjectResolver;
+        this.clock = clock;
     }
 
     @Override
@@ -106,7 +110,7 @@ public class S3ImageRepositoryImpl implements ImageStorage, ImageMetadataExtract
                 final LocalDateTime takenAt = subIfdDir
                         .map(dir -> dir.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL))
                         .map(date -> date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
-                        .orElse(LocalDateTime.now());
+                        .orElse(LocalDateTime.now(clock));
 
                 final String extensionStr = extractExtensionFromKey(key);
                 final FileExtension fileExtension = FileExtension.of(extensionStr);

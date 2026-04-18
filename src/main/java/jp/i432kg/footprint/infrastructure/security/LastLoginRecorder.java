@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 
 /**
@@ -17,10 +18,11 @@ import java.time.LocalDateTime;
 public class LastLoginRecorder {
 
     private final AuthMapper authMapper;
+    private final Clock clock;
 
     public void recordSuccessfulLogin(final UserId userId) {
         try {
-            authMapper.updateLastLoginAt(userId, LocalDateTime.now());
+            authMapper.updateLastLoginAt(userId, LocalDateTime.now(clock));
         } catch (RuntimeException e) {
             // 認証自体は成功しているため、監査用更新失敗はログに残して処理は継続する。
             log.warn("Failed to update last login timestamp after authentication success. userId={}", userId.getValue(), e);

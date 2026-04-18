@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.Clock;
 import java.time.LocalDateTime;
 
 /**
@@ -37,6 +38,8 @@ public class PostCommandService {
     private final ImageMetadataExtractor imageMetadataExtractor;
 
     private final UserDomainService userDomainService;
+
+    private final Clock clock;
 
     /**
      * 新しい投稿を作成します。
@@ -102,7 +105,7 @@ public class PostCommandService {
                 command.getUserId(),
                 image,
                 command.getComment(),
-                LocalDateTime.now()
+                LocalDateTime.now(clock)
         );
 
         try {

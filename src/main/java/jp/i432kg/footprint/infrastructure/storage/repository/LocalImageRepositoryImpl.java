@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Objects;
@@ -47,13 +48,16 @@ public class LocalImageRepositoryImpl implements ImageStorage, ImageMetadataExtr
 
     private final Path storageRoot;
     private final LocalStoragePathResolver localStoragePathResolver;
+    private final Clock clock;
 
     // final フィールドにするためにコンストラクタで注入
     public LocalImageRepositoryImpl(
             @Value("${app.storage.local.root-dir}") String storageLocation,
-            LocalStoragePathResolver localStoragePathResolver) {
+            LocalStoragePathResolver localStoragePathResolver,
+            Clock clock) {
         this.storageRoot = Paths.get(storageLocation);
         this.localStoragePathResolver = localStoragePathResolver;
+        this.clock = clock;
     }
 
     @Override
@@ -85,7 +89,7 @@ public class LocalImageRepositoryImpl implements ImageStorage, ImageMetadataExtr
             final LocalDateTime takenAt = subIfdDir
                     .map(dir -> dir.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL))
                     .map(date -> date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
-                    .orElse(LocalDateTime.now());
+                    .orElse(LocalDateTime.now(clock));
 
             // 4. ファイルシステムおよびその他の属性取得
             final Byte fileSize = Byte.of(Files.size(path));

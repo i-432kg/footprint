@@ -17,6 +17,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 
 /**
@@ -33,6 +34,8 @@ public class ReplyCommandService {
     private final ReplyDomainService replyDomainService;
 
     private final UserDomainService userDomainService;
+
+    private final Clock clock;
 
     /**
      * 指定された投稿または返信に対して、新しい返信を作成します。
@@ -71,7 +74,7 @@ public class ReplyCommandService {
                 command.getUserId(),
                 command.getParentReply(),
                 command.getMessage(),
-                LocalDateTime.now()
+                LocalDateTime.now(clock)
         );
 
         try {

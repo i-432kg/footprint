@@ -23,7 +23,10 @@ import org.springframework.dao.DataAccessResourceFailureException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -37,6 +40,11 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PostCommandServiceTest {
+
+    private static final Clock FIXED_CLOCK = Clock.fixed(
+            Instant.parse("2026-04-18T10:15:30Z"),
+            ZoneId.of("Asia/Tokyo")
+    );
 
     @Mock
     private PostRepository postRepository;
@@ -55,7 +63,8 @@ class PostCommandServiceTest {
                 postRepository,
                 imageStorage,
                 imageMetadataExtractor,
-                userDomainService
+                userDomainService,
+                FIXED_CLOCK
         );
     }
 
@@ -99,7 +108,7 @@ class PostCommandServiceTest {
         assertThat(actual.getImage().isHasEXIF()).isEqualTo(metadata.isHasEXIF());
         assertThat(actual.getImage().getTakenAt()).isEqualTo(metadata.getTakenAt());
         assertThat(actual.getPostId()).isNotNull();
-        assertThat(actual.getCreatedAt()).isNotNull();
+        assertThat(actual.getCreatedAt()).isEqualTo(LocalDateTime.of(2026, 4, 18, 19, 15, 30));
         verify(imageStorage).store(command.getImageStream(), command.getOriginalFilename(), command.getUserId(), actual.getPostId());
         verify(imageMetadataExtractor).extract(storageObject);
     }
