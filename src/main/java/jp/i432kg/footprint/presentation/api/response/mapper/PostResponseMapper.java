@@ -9,12 +9,12 @@ import jp.i432kg.footprint.presentation.api.response.LocationResponse;
 import jp.i432kg.footprint.presentation.api.response.PostItemResponse;
 import jp.i432kg.footprint.presentation.helper.ImageUrlResolver;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * 投稿系 query model を API レスポンス DTO へ変換する mapper です。
@@ -30,31 +30,28 @@ public class PostResponseMapper {
      * <p>
      * 作成日時は UTC オフセット付きの値へ変換し、画像 URL は {@link ImageUrlResolver} で解決します。
      *
-     * @param summary 投稿 query model。{@code null} の場合は {@code null}
-     * @return 投稿レスポンス。引数が {@code null} の場合は {@code null}
+     * @param summary 投稿 query model
+     * @return 投稿レスポンス
      */
     public PostItemResponse from(final PostSummary summary) {
-        return Optional.ofNullable(summary)
-                .map(s -> PostItemResponse.of(
-                        s.getId(),
-                        s.getCaption(),
-                        Objects.requireNonNull(s.getImages()).stream().map(this::fromImageSummary).toList(),
-                        s.isHasLocation(),
-                        this.fromLocationSummary(s.getLocation()),
-                        Objects.requireNonNull(s.getCreatedAt()).atOffset(ZoneOffset.UTC)
-                ))
-                .orElse(null);
+        return PostItemResponse.of(
+                summary.getId(),
+                summary.getCaption(),
+                summary.getImages().stream().map(this::fromImageSummary).toList(),
+                summary.isHasLocation(),
+                this.fromLocationSummary(summary.getLocation()),
+                summary.getCreatedAt().atOffset(ZoneOffset.UTC)
+        );
     }
 
     /**
      * 投稿 query model のリストを投稿レスポンスのリストへ変換します。
      *
-     * @param summaries 投稿 query model のリスト。{@code null} 可
-     * @return 変換後のレスポンス一覧。引数が {@code null} の場合は空リスト
+     * @param summaries 投稿 query model のリスト
+     * @return 変換後のレスポンス一覧
      */
     public List<PostItemResponse> fromList(final List<PostSummary> summaries) {
-        return Optional.ofNullable(summaries).orElseGet(List::of).stream()
-                .filter(Objects::nonNull)
+        return summaries.stream()
                 .map(this::from)
                 .toList();
     }
@@ -63,36 +60,33 @@ public class PostResponseMapper {
      * 画像の参照モデルを画像レスポンスに変換します。
      *
      * @param summary 画像の参照モデル
-     * @return 画像レスポンス。引数が null の場合は null を返します。
+     * @return 画像レスポンス
      */
     private ImageResponse fromImageSummary(final ImageSummary summary) {
-        return Optional.ofNullable(summary)
-                .map(s -> {
-                    final StorageObject storageObject =
-                            StorageObject.of(s.getStorageType(), s.getObjectKey());
+        final StorageObject storageObject =
+                StorageObject.of(summary.getStorageType(), summary.getObjectKey());
 
-                    return ImageResponse.of(
-                            s.getId(),
-                            s.getSortOrder(),
-                            imageUrlResolver.resolve(storageObject),
-                            s.getFileExtension(),
-                            s.getSizeBytes(),
-                            s.getWidth(),
-                            s.getHeight()
-                    );
-                })
-                .orElse(null);
+        return ImageResponse.of(
+                summary.getId(),
+                summary.getSortOrder(),
+                imageUrlResolver.resolve(storageObject),
+                summary.getFileExtension(),
+                summary.getSizeBytes(),
+                summary.getWidth(),
+                summary.getHeight()
+        );
     }
 
     /**
      * 位置情報の参照モデルを位置情報レスポンスに変換します。
      *
-     * @param summary 位置情報の参照モデル
-     * @return 位置情報レスポンス。引数が null の場合は null を返します。
+     * @param summary 位置情報の参照モデル。{@code null} の場合は各項目が {@code null} のレスポンスを返します
+     * @return 位置情報レスポンス
      */
-    private LocationResponse fromLocationSummary(final LocationSummary summary) {
-        return Optional.ofNullable(summary)
-                .map(s -> LocationResponse.of(s.getLat(), s.getLng()))
-                .orElse(null);
+    private LocationResponse fromLocationSummary(final @Nullable LocationSummary summary) {
+
+        return Objects.isNull(summary) ?
+                LocationResponse.of(null, null) :
+                LocationResponse.of(summary.getLat(), summary.getLng());
     }
 }
