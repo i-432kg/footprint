@@ -6,17 +6,17 @@ package jp.i432kg.footprint.presentation.validation;
 public final class PresentationValidationPatterns {
 
     /**
-     * ULID の形式
+     * ULID の形式を表す正規表現です。
      */
     public static final String ULID = "^[0-9A-HJKMNP-TV-Z]{26}$";
 
     /**
-     * CR/LF を除く制御文字を禁止する形式
+     * CR/LF を除く制御文字を禁止する正規表現です。
      */
     public static final String NO_CONTROL_CHARS = "^(?!.*[\\x00-\\x09\\x0B\\x0C\\x0E-\\x1F\\x7F]).*$";
 
     /**
-     * 空白を含まない ASCII 可視文字のみを許可する形式
+     * 空白を含まない ASCII 可視文字のみを許可する正規表現です。
      */
     public static final String ASCII_VISIBLE_NO_SPACE = "^[\\x21-\\x7E]+$";
 
