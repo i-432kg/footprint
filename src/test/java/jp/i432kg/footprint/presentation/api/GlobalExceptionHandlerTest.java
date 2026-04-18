@@ -11,9 +11,12 @@ import jp.i432kg.footprint.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.jspecify.annotations.NonNull;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -22,9 +25,12 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -88,7 +94,7 @@ class GlobalExceptionHandlerTest {
         assertThat(actual.getTitle()).isEqualTo("Validation Error");
         assertThat(actual.getDetail()).isEqualTo("リクエストの形式が不正です。");
         assertThat(actual.getProperties()).containsEntry("errorCode", "DOMAIN_INVALID_VALUE");
-        final Map<String, Object> details = castMap(actual.getProperties().get("details"));
+        final Map<String, Object> details = castMap(property(actual));
         final List<Map<String, Object>> errors = castList(details.get("errors"));
         assertThat(errors).singleElement().satisfies(error -> {
             assertThat(error).containsEntry("field", "userName");
@@ -101,7 +107,7 @@ class GlobalExceptionHandlerTest {
     @DisplayName("GlobalExceptionHandler は HttpMessageNotReadableException を validation error の ProblemDetail へ変換する")
     void should_createValidationProblemDetail_when_httpMessageNotReadableExceptionIsHandled() {
         final HttpMessageNotReadableException exception =
-                new HttpMessageNotReadableException("bad json", new IOException("broken body"), null);
+                new HttpMessageNotReadableException("bad json", new IOException("broken body"), dummyHttpInputMessage());
 
         final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker)
                 .handleHttpMessageNotReadable(exception);
@@ -109,7 +115,7 @@ class GlobalExceptionHandlerTest {
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(actual.getTitle()).isEqualTo("Validation Error");
         assertThat(actual.getDetail()).isEqualTo("リクエストボディを解析できませんでした。");
-        final Map<String, Object> details = castMap(actual.getProperties().get("details"));
+        final Map<String, Object> details = castMap(property(actual));
         final List<Map<String, Object>> errors = castList(details.get("errors"));
         assertThat(errors).singleElement().satisfies(error -> {
             assertThat(error).containsEntry("field", "requestBody");
@@ -167,6 +173,20 @@ class GlobalExceptionHandlerTest {
         return new MethodParameter(method, 0);
     }
 
+    private static HttpInputMessage dummyHttpInputMessage() {
+        return new HttpInputMessage() {
+            @Override
+            public @NonNull InputStream getBody() {
+                return new ByteArrayInputStream(new byte[0]);
+            }
+
+            @Override
+            public @NonNull HttpHeaders getHeaders() {
+                return HttpHeaders.EMPTY;
+            }
+        };
+    }
+
     @SuppressWarnings("unused")
     private void dummy(@Valid final SignUpRequest request) {
     }
@@ -179,6 +199,10 @@ class GlobalExceptionHandlerTest {
     @SuppressWarnings("unchecked")
     private static List<Map<String, Object>> castList(final Object value) {
         return (List<Map<String, Object>>) value;
+    }
+
+    private static Object property(final ProblemDetail problemDetail) {
+        return Objects.requireNonNull(problemDetail.getProperties()).get("details");
     }
 
 }
