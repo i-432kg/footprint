@@ -19,7 +19,7 @@ class CreateUserCommandTest {
         final UserName userName = UserName.of("user_01");
         final EmailAddress email = EmailAddress.of("user@example.com");
         final RawPassword rawPassword = RawPassword.of("Secret12!");
-        final BirthDate birthDate = BirthDate.of(LocalDate.of(2000, 1, 1));
+        final BirthDate birthDate = BirthDate.restore(LocalDate.of(2000, 1, 1));
 
         final CreateUserCommand actual = CreateUserCommand.of(
                 userName,

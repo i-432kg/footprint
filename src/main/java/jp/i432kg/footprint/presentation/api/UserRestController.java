@@ -35,6 +35,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -53,6 +55,8 @@ public class UserRestController {
     private final UserQueryService userQueryService;
 
     private final UserCommandService userCommandService;
+
+    private final Clock clock;
 
     private final PostResponseMapper postResponseMapper;
 
@@ -148,7 +152,7 @@ public class UserRestController {
                 UserName.of(signUpRequest.getUserName()),
                 email,
                 password,
-                BirthDate.of(signUpRequest.getBirthDate())
+                BirthDate.of(signUpRequest.getBirthDate(), LocalDate.now(clock))
         );
 
         userCommandService.createUser(command);

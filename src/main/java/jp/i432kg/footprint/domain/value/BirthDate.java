@@ -22,12 +22,15 @@ public class BirthDate {
 
     /**
      * 生年月日を指定して {@link BirthDate} インスタンスを生成します。
+     * <p>
+     * 入力値の妥当性検証として、基準日 {@code today} より未来の日付を拒否します。
      *
      * @param value 生年月日
+     * @param today 未来日判定に用いる基準日
      * @return {@link BirthDate} インスタンス
      * @throws InvalidValueException バリデーションエラーの場合
      */
-    public static BirthDate of(final @Nullable LocalDate value) {
+    public static BirthDate of(final @Nullable LocalDate value, final LocalDate today) {
 
         // null 禁止
         if (Objects.isNull(value)) {
@@ -35,8 +38,25 @@ public class BirthDate {
         }
 
         // 未来日を不許可
-        if (value.isAfter(LocalDate.now())) {
+        if (value.isAfter(today)) {
             throw InvalidValueException.invalid(FIELD_NAME, value, "must not be in the future");
+        }
+
+        return new BirthDate(value);
+    }
+
+    /**
+     * 永続化済みデータなどから {@link BirthDate} を再構築します。
+     * <p>
+     * 既に妥当性確認済みの値を復元する用途を想定し、未来日チェックは行いません。
+     *
+     * @param value 生年月日
+     * @return {@link BirthDate} インスタンス
+     * @throws InvalidValueException 値が null の場合
+     */
+    public static BirthDate restore(final @Nullable LocalDate value) {
+        if (Objects.isNull(value)) {
+            throw InvalidValueException.required(FIELD_NAME);
         }
 
         return new BirthDate(value);

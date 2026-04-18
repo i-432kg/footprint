@@ -137,7 +137,7 @@ public final class DomainTestFixtures {
                 UserName.of("user_01"),
                 EmailAddress.of("user@example.com"),
                 HashedPassword.of("hashed-password"),
-                BirthDate.of(LocalDate.of(2000, 1, 1))
+                BirthDate.restore(LocalDate.of(2000, 1, 1))
         );
     }
 }

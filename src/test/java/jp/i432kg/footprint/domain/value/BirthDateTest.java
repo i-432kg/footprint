@@ -15,7 +15,7 @@ class BirthDateTest {
     void should_createBirthDate_when_valueIsToday() {
         final LocalDate today = LocalDate.now();
 
-        final BirthDate actual = BirthDate.of(today);
+        final BirthDate actual = BirthDate.of(today, today);
 
         assertThat(actual.getValue()).isEqualTo(today);
     }
@@ -23,9 +23,10 @@ class BirthDateTest {
     @Test
     @DisplayName("BirthDate.of は過去日の生年月日を生成できる")
     void should_createBirthDate_when_valueIsPastDate() {
-        final LocalDate yesterday = LocalDate.now().minusDays(1);
+        final LocalDate today = LocalDate.now();
+        final LocalDate yesterday = today.minusDays(1);
 
-        final BirthDate actual = BirthDate.of(yesterday);
+        final BirthDate actual = BirthDate.of(yesterday, today);
 
         assertThat(actual.getValue()).isEqualTo(yesterday);
     }
@@ -33,16 +34,17 @@ class BirthDateTest {
     @Test
     @DisplayName("BirthDate.of は null を拒否する")
     void should_throwException_when_birthDateIsNull() {
-        assertInvalidValue(() -> BirthDate.of(null), "birthdate", "required");
+        assertInvalidValue(() -> BirthDate.of(null, LocalDate.now()), "birthdate", "required");
     }
 
     @Test
     @DisplayName("BirthDate.of は未来日を拒否する")
     void should_throwException_when_birthDateIsFuture() {
-        final LocalDate tomorrow = LocalDate.now().plusDays(1);
+        final LocalDate today = LocalDate.now();
+        final LocalDate tomorrow = today.plusDays(1);
 
         assertInvalidValue(
-                () -> BirthDate.of(tomorrow),
+                () -> BirthDate.of(tomorrow, today),
                 "birthdate",
                 "must not be in the future"
         );

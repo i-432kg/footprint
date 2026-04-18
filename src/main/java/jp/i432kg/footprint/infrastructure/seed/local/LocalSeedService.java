@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
+
 /**
  * local 環境向けの固定シナリオ seed データを投入するサービスです。
  * <p>
@@ -27,7 +29,8 @@ public class LocalSeedService extends AbstractFixedSeedService {
             final ReplyCommandService replyCommandService,
             final LocalSeedAdminMapper localSeedAdminMapper,
             final LocalSeedSourceImageProvider seedSourceImageProvider,
-            final LocalSeedImageManifestLoader localSeedImageManifestLoader
+            final LocalSeedImageManifestLoader localSeedImageManifestLoader,
+            final Clock clock
     ) {
         super(
                 properties.getEmailPrefix(),
@@ -37,7 +40,8 @@ public class LocalSeedService extends AbstractFixedSeedService {
                 replyCommandService,
                 localSeedAdminMapper,
                 seedSourceImageProvider,
-                localSeedImageManifestLoader
+                localSeedImageManifestLoader,
+                clock
         );
     }
 

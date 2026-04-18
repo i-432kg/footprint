@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -42,6 +43,7 @@ public abstract class AbstractFixedSeedService {
     private final SeedAdminOperations seedAdminOperations;
     private final SeedSourceImageLoader seedSourceImageLoader;
     private final SeedImageEntryLoader seedImageEntryLoader;
+    private final Clock clock;
 
     /**
      * fixed seed scenario のユーザー、投稿、返信を投入します。
@@ -102,7 +104,7 @@ public abstract class AbstractFixedSeedService {
                             UserName.of(username),
                             EmailAddress.of(email),
                             RawPassword.of(testPassword),
-                            BirthDate.of(LocalDate.of(1990, 1, birthDay))
+                            BirthDate.of(LocalDate.of(1990, 1, birthDay), LocalDate.now(clock))
                     )
             );
             log.info("{} seed user created. email={}, username={}", seedLogName(), email, username);

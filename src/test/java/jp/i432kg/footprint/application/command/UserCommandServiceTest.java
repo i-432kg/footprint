@@ -104,7 +104,7 @@ class UserCommandServiceTest {
                 UserName.of("user_01"),
                 EmailAddress.of("user@example.com"),
                 RawPassword.of("Secret12!"),
-                BirthDate.of(LocalDate.of(2000, 1, 1))
+                BirthDate.restore(LocalDate.of(2000, 1, 1))
         );
     }
 }

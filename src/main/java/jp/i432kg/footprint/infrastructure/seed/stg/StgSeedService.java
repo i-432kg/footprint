@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
+
 /**
  * STG 環境向けの固定シナリオ seed データを投入するサービスです。
  * <p>
@@ -27,7 +29,8 @@ public class StgSeedService extends AbstractFixedSeedService {
             final ReplyCommandService replyCommandService,
             final StgSeedAdminMapper seedAdminMapper,
             final S3SeedSourceImageProvider seedSourceImageProvider,
-            final StgSeedImageManifestLoader seedImageManifestLoader
+            final StgSeedImageManifestLoader seedImageManifestLoader,
+            final Clock clock
     ) {
         super(
                 properties.getEmailPrefix(),
@@ -37,7 +40,8 @@ public class StgSeedService extends AbstractFixedSeedService {
                 replyCommandService,
                 seedAdminMapper,
                 seedSourceImageProvider,
-                seedImageManifestLoader
+                seedImageManifestLoader,
+                clock
         );
     }
 

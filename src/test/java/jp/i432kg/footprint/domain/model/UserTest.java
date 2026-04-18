@@ -22,7 +22,7 @@ class UserTest {
                 UserName.of("user_01"),
                 EmailAddress.of("user@example.com"),
                 HashedPassword.of("hashed-password"),
-                BirthDate.of(LocalDate.of(2000, 1, 1))
+                BirthDate.restore(LocalDate.of(2000, 1, 1))
         );
 
         assertThat(actual).isNotNull();
@@ -36,13 +36,13 @@ class UserTest {
                 UserName.of("user_01"),
                 EmailAddress.of("user@example.com"),
                 HashedPassword.of("hashed-password"),
-                BirthDate.of(LocalDate.of(2000, 1, 1))
+                BirthDate.restore(LocalDate.of(2000, 1, 1))
         );
 
         assertThat(actual.getUserId()).isEqualTo(DomainTestFixtures.userId());
         assertThat(actual.getUserName()).isEqualTo(UserName.of("user_01"));
         assertThat(actual.getEmail()).isEqualTo(EmailAddress.of("user@example.com"));
         assertThat(actual.getHashedPassword()).isEqualTo(HashedPassword.of("hashed-password"));
-        assertThat(actual.getBirthDate()).isEqualTo(BirthDate.of(LocalDate.of(2000, 1, 1)));
+        assertThat(actual.getBirthDate()).isEqualTo(BirthDate.restore(LocalDate.of(2000, 1, 1)));
     }
 }

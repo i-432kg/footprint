@@ -25,18 +25,18 @@ public class BirthDateTypeHandler extends BaseTypeHandler<BirthDate> {
     @Override
     public BirthDate getNullableResult(ResultSet rs, String columnName) throws SQLException {
         LocalDate value = rs.getObject(columnName, LocalDate.class);
-        return value == null ? null : BirthDate.of(value);
+        return value == null ? null : BirthDate.restore(value);
     }
 
     @Override
     public BirthDate getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
         LocalDate value = rs.getObject(columnIndex, LocalDate.class);
-        return value == null ? null : BirthDate.of(value);
+        return value == null ? null : BirthDate.restore(value);
     }
 
     @Override
     public BirthDate getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
         LocalDate value = cs.getObject(columnIndex, LocalDate.class);
-        return value == null ? null : BirthDate.of(value);
+        return value == null ? null : BirthDate.restore(value);
     }
 }
