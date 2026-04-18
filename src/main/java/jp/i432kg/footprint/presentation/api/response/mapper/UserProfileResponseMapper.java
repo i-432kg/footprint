@@ -7,16 +7,16 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 /**
- * ユーザープロフィールのクエリモデルをレスポンス形式に変換するマッパー
+ * ユーザープロフィール query model を API レスポンス DTO へ変換する mapper です。
  */
 @Component
 public class UserProfileResponseMapper {
 
     /**
-     * {@link UserProfileSummary} を {@link UserProfileItemResponse} に変換します。
+     * ユーザープロフィール query model をレスポンスへ変換します。
      *
-     * @param summary ユーザープロフィールの参照専用モデル
-     * @return ユーザープロフィールのレスポンス。引数が null の場合は null を返します。
+     * @param summary ユーザープロフィール query model。{@code null} の場合は {@code null}
+     * @return ユーザープロフィールレスポンス。引数が {@code null} の場合は {@code null}
      */
     public UserProfileItemResponse from(final UserProfileSummary summary) {
         return Optional.ofNullable(summary)

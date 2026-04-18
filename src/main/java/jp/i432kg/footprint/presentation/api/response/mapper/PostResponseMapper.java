@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * 投稿のクエリモデルをレスポンス形式に変換するマッパー
+ * 投稿系 query model を API レスポンス DTO へ変換する mapper です。
  */
 @Component
 @RequiredArgsConstructor
@@ -26,10 +26,12 @@ public class PostResponseMapper {
     private final ImageUrlResolver imageUrlResolver;
 
     /**
-     * {@link PostSummary} を {@link PostItemResponse} に変換します。
+     * 投稿 query model を投稿レスポンスへ変換します。
+     * <p>
+     * 作成日時は UTC オフセット付きの値へ変換し、画像 URL は {@link ImageUrlResolver} で解決します。
      *
-     * @param summary 投稿の参照専用モデル
-     * @return 投稿のアイテムレスポンス。引数が null の場合は null を返します。
+     * @param summary 投稿 query model。{@code null} の場合は {@code null}
+     * @return 投稿レスポンス。引数が {@code null} の場合は {@code null}
      */
     public PostItemResponse from(final PostSummary summary) {
         return Optional.ofNullable(summary)
@@ -45,10 +47,10 @@ public class PostResponseMapper {
     }
 
     /**
-     * {@link PostSummary} のリストを {@link PostItemResponse} のリストに変換します。
+     * 投稿 query model のリストを投稿レスポンスのリストへ変換します。
      *
-     * @param summaries 投稿の参照専用モデルのリスト
-     * @return 投稿のアイテムレスポンスリスト。引数が null の場合は空のリストを返します。
+     * @param summaries 投稿 query model のリスト。{@code null} 可
+     * @return 変換後のレスポンス一覧。引数が {@code null} の場合は空リスト
      */
     public List<PostItemResponse> fromList(final List<PostSummary> summaries) {
         return Optional.ofNullable(summaries).orElseGet(List::of).stream()

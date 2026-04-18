@@ -10,18 +10,18 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * 返信のクエリモデルをレスポンス形式に変換するマッパー
+ * 返信系 query model を API レスポンス DTO へ変換する mapper です。
  */
 @Component
 public class ReplyResponseMapper {
 
     /**
-     * {@link ReplySummary} を {@link ReplyItemResponse} に変換します。
+     * 返信 query model を返信レスポンスへ変換します。
      * <p>
-     * 作成日時は UTC オフセットに変換されます。
+     * 作成日時は UTC オフセット付きの値へ変換します。
      *
-     * @param summary 返信の参照専用モデル
-     * @return 返信のアイテムレスポンス。引数が null の場合は null を返します。
+     * @param summary 返信 query model。{@code null} の場合は {@code null}
+     * @return 返信レスポンス。引数が {@code null} の場合は {@code null}
      */
     public ReplyItemResponse from(final ReplySummary summary) {
         return Optional.ofNullable(summary)
@@ -37,10 +37,10 @@ public class ReplyResponseMapper {
     }
 
     /**
-     * {@link ReplySummary} のリストを {@link ReplyItemResponse} のリストに変換します。
+     * 返信 query model のリストを返信レスポンスのリストへ変換します。
      *
-     * @param summaries 返信の参照専用モデルのリスト
-     * @return 返信のアイテムレスポンスリスト。引数が null の場合は空のリストを返します。
+     * @param summaries 返信 query model のリスト。{@code null} 可
+     * @return 変換後のレスポンス一覧。引数が {@code null} の場合は空リスト
      */
     public List<ReplyItemResponse> fromList(final List<ReplySummary> summaries) {
         return Optional.ofNullable(summaries).orElseGet(List::of).stream()
