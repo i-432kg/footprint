@@ -10,8 +10,8 @@ public interface ImageUrlResolver {
     /**
      * 指定された保存オブジェクトから、ブラウザ表示用の URL を解決します。
      *
-     * @param storageObject 保存先情報。実装によっては {@code null} を許容し、その場合は {@code null} を返す
-     * @return 画像表示用 URL。入力が不十分な場合は {@code null}
+     * @param storageObject 保存先情報
+     * @return 画像表示用 URL
      */
     String resolve(StorageObject storageObject);
 }

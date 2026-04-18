@@ -27,15 +27,13 @@ public class S3ImageUrlResolver implements ImageUrlResolver {
     /**
      * S3 保存画像の一時取得 URL を解決します。
      *
-     * @param storageObject S3 保存の {@link StorageObject}。{@code null} または objectKey 未設定の場合は {@code null}
-     * @return 画像取得用の presigned URL。入力が不十分な場合は {@code null}
+     * @param storageObject S3 保存の {@link StorageObject}
+     * @return 画像取得用の presigned URL
+     * @throws NullPointerException storageObject が {@code null} の場合
      * @throws IllegalArgumentException LOCAL など S3 以外の保存種別が渡された場合
      */
     @Override
     public String resolve(final StorageObject storageObject) {
-        if (storageObject == null || storageObject.getObjectKey() == null) {
-            return null;
-        }
 
         if (!storageObject.isS3()) {
             throw new IllegalArgumentException("storageObject is not S3.");
