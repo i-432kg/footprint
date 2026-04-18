@@ -3,7 +3,7 @@ package jp.i432kg.footprint.presentation.api.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import jp.i432kg.footprint.presentation.validation.PresentationValidationPatterns;
@@ -54,10 +54,10 @@ public class SignUpRequest {
     /**
      * 生年月日です。
      * <p>
-     * 必須項目であり、過去日である必要があります。
+     * 必須項目であり、過去日または当日である必要があります。
      */
     @NotNull
-    @Past
+    @PastOrPresent
     private LocalDate birthDate;
 
 }
