@@ -12,6 +12,9 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 
 import java.time.Duration;
 
+/**
+ * S3 保存画像に対する presigned URL を解決する resolver です。
+ */
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.storage.type", havingValue = "S3")
@@ -21,6 +24,13 @@ public class S3ImageUrlResolver implements ImageUrlResolver {
     private final S3StorageProperties s3StorageProperties;
     private final S3Presigner s3Presigner;
 
+    /**
+     * S3 保存画像の一時取得 URL を解決します。
+     *
+     * @param storageObject S3 保存の {@link StorageObject}。{@code null} または objectKey 未設定の場合は {@code null}
+     * @return 画像取得用の presigned URL。入力が不十分な場合は {@code null}
+     * @throws IllegalArgumentException LOCAL など S3 以外の保存種別が渡された場合
+     */
     @Override
     public String resolve(final StorageObject storageObject) {
         if (storageObject == null || storageObject.getObjectKey() == null) {
