@@ -49,4 +49,20 @@ class BirthDateTest {
                 "must not be in the future"
         );
     }
+
+    @Test
+    @DisplayName("BirthDate.restore は未来日の生年月日を復元できる")
+    void should_restoreBirthDate_when_valueIsFutureDate() {
+        final LocalDate futureDate = LocalDate.now().plusDays(1);
+
+        final BirthDate actual = BirthDate.restore(futureDate);
+
+        assertThat(actual.getValue()).isEqualTo(futureDate);
+    }
+
+    @Test
+    @DisplayName("BirthDate.restore は null を拒否する")
+    void should_throwException_when_restoredBirthDateIsNull() {
+        assertInvalidValue(() -> BirthDate.restore(null), "birthdate", "required");
+    }
 }
