@@ -4,6 +4,8 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Objects;
+
 /**
  * {@link NotEmptyFile} の検証ロジックを提供する validator です。
  */
@@ -17,8 +19,8 @@ public class NotEmptyFileValidator implements ConstraintValidator<NotEmptyFile, 
      * @return ファイルが選択されている場合は {@code true}
      */
     @Override
-    public boolean isValid(MultipartFile value, ConstraintValidatorContext context) {
-        return value != null && !value.isEmpty();
+    public boolean isValid(final MultipartFile value, final ConstraintValidatorContext context) {
+        return Objects.nonNull(value) && !value.isEmpty();
     }
 
 }
