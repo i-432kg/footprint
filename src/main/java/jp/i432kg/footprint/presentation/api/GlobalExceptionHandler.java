@@ -115,7 +115,6 @@ public class GlobalExceptionHandler {
 
         log.warn("Validation failed. errors={}", errors);
         return createValidationProblemDetail(
-                "Validation Error",
                 "リクエストの形式が不正です。",
                 errors
         );
@@ -136,7 +135,6 @@ public class GlobalExceptionHandler {
 
         log.warn("Binding failed. errors={}", errors);
         return createValidationProblemDetail(
-                "Validation Error",
                 "リクエストの形式が不正です。",
                 errors
         );
@@ -157,7 +155,6 @@ public class GlobalExceptionHandler {
 
         log.warn("Constraint violation. errors={}", errors);
         return createValidationProblemDetail(
-                "Validation Error",
                 "リクエストの形式が不正です。",
                 errors
         );
@@ -174,7 +171,6 @@ public class GlobalExceptionHandler {
 
         log.warn("Missing request parameter. parameter={}", ex.getParameterName());
         return createValidationProblemDetail(
-                "Validation Error",
                 "必須パラメータが不足しています。",
                 errors
         );
@@ -191,7 +187,6 @@ public class GlobalExceptionHandler {
 
         log.warn("Missing request part. part={}", ex.getRequestPartName());
         return createValidationProblemDetail(
-                "Validation Error",
                 "必須ファイルが不足しています。",
                 errors
         );
@@ -206,9 +201,11 @@ public class GlobalExceptionHandler {
                 validationError("requestBody", "not readable", null)
         );
 
-        log.warn("Request body is not readable.");
+        log.warn(
+                "Request body is not readable. cause={}",
+                ex.getMostSpecificCause().getClass().getSimpleName()
+        );
         return createValidationProblemDetail(
-                "Validation Error",
                 "リクエストボディを解析できませんでした。",
                 errors
         );
@@ -225,7 +222,6 @@ public class GlobalExceptionHandler {
 
         log.warn("Type mismatch. parameter={}, value={}", ex.getName(), ex.getValue());
         return createValidationProblemDetail(
-                "Validation Error",
                 "リクエストパラメータの型が不正です。",
                 errors
         );
@@ -304,18 +300,16 @@ public class GlobalExceptionHandler {
     /**
      * バリデーションエラーの ProblemDetail を生成します。
      *
-     * @param title title
      * @param detail detail
      * @param errors エラー一覧
      * @return ProblemDetail
      */
     private ProblemDetail createValidationProblemDetail(
-            final String title,
             final String detail,
             final List<Map<String, Object>> errors
     ) {
         final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detail);
-        problemDetail.setTitle(title);
+        problemDetail.setTitle("Validation Error");
         problemDetail.setProperty("errorCode", ERROR_CODE_DOMAIN_INVALID_VALUE);
         problemDetail.setProperty("details", Map.of("errors", errors));
         return problemDetail;
@@ -360,8 +354,8 @@ public class GlobalExceptionHandler {
             case POST_NOT_FOUND, REPLY_NOT_FOUND, USER_NOT_FOUND -> HttpStatus.NOT_FOUND;
             case EMAIL_ALREADY_USED -> HttpStatus.CONFLICT;
             case REPLY_POST_MISMATCH, DOMAIN_INVALID_VALUE, DOMAIN_INVALID_MODEL -> HttpStatus.BAD_REQUEST;
-            case POST_COMMAND_FAILED, REPLY_COMMAND_FAILED, USER_COMMAND_FAILED -> HttpStatus.INTERNAL_SERVER_ERROR;
-            case FILE_STORAGE_ERROR, PERSISTENCE_ERROR, UNEXPECTED_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
+            case POST_COMMAND_FAILED, REPLY_COMMAND_FAILED, USER_COMMAND_FAILED, FILE_STORAGE_ERROR, PERSISTENCE_ERROR,
+                 UNEXPECTED_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
     }
 }
