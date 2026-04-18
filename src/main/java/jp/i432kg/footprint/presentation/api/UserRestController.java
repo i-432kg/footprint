@@ -40,7 +40,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * ユーザーに関する情報を管理する API コントローラー
+ * ユーザー情報に関する REST API を提供する controller です。
+ * <p>
+ * 現在ユーザーのプロフィール取得、自分の投稿・返信一覧取得、サインアップを扱います。
  */
 @RestController
 @RequestMapping("/api/users")
@@ -65,10 +67,10 @@ public class UserRestController {
     private final UserProfileResponseMapper userProfileResponseMapper;
 
     /**
-     * 現在ログインしているユーザーのプロフィール情報を取得します。
+     * 現在ログイン中のユーザープロフィールを取得します。
      *
-     * @param userDetails 認証済みユーザーの詳細情報
-     * @return ユーザープロフィールのレスポンス
+     * @param userDetails 認証済みユーザー
+     * @return ユーザープロフィールレスポンス
      */
     @GetMapping("/me")
     public ResponseEntity<UserProfileItemResponse> getCurrentUser(
@@ -84,12 +86,12 @@ public class UserRestController {
     }
 
     /**
-     * 自分の投稿一覧を取得します。
+     * 現在ユーザー自身の投稿一覧を取得します。
      *
-     * @param lastId      最後の投稿 ID
-     * @param size        取得する投稿数
-     * @param userDetails 認証済みユーザーの詳細情報
-     * @return 自分の投稿一覧のレスポンス
+     * @param lastId スクロール読み込み用の基準投稿 ID。未指定可
+     * @param size 取得件数。1 から 20 の範囲
+     * @param userDetails 認証済みユーザー
+     * @return 投稿一覧レスポンス
      */
     @GetMapping("/me/posts")
     public ResponseEntity<List<PostItemResponse>> getMyPosts(
@@ -108,12 +110,12 @@ public class UserRestController {
     }
 
     /**
-     * 自分の返信一覧を取得します。
+     * 現在ユーザー自身の返信一覧を取得します。
      *
-     * @param lastId      最後の返信 ID
-     * @param size        取得する返信数
-     * @param userDetails 認証済みユーザーの詳細情報
-     * @return 自分の返信一覧のレスポンス
+     * @param lastId スクロール読み込み用の基準返信 ID。未指定可
+     * @param size 取得件数。1 から 20 の範囲
+     * @param userDetails 認証済みユーザー
+     * @return 返信一覧レスポンス
      */
     @GetMapping("/me/replies")
     public ResponseEntity<List<ReplyItemResponse>> getMyReplies(
@@ -132,12 +134,12 @@ public class UserRestController {
     }
 
     /**
-     * ユーザー登録処理を行います。
+     * サインアップを受け付け、登録後にそのままログイン状態へ移行します。
      *
      * @param signUpRequest ユーザー登録リクエスト
-     * @param request       HTTP リクエスト
-     * @return ユーザー登録結果
-     * @throws Exception ログイン処理等で発生しうる例外
+     * @param request HTTP リクエスト
+     * @return 201 Created
+     * @throws Exception `request.login(...)` を含む後続処理が失敗した場合
      */
     @PostMapping
     public ResponseEntity<Void> create(

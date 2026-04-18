@@ -31,22 +31,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * API 全体の例外をハンドリングする ControllerAdvice。
+ * REST API 全体の例外を {@link ProblemDetail} へ変換する例外ハンドラです。
  * <p>
- * 独自例外を HTTP ステータスおよび {@link ProblemDetail} に変換し、
- * クライアントへ一貫したエラー応答を返します。
- * </p>
- *
- * <p>
- * 返却する ProblemDetail には以下を含めます。
- * </p>
- * <ul>
- *   <li>HTTP ステータス</li>
- *   <li>title</li>
- *   <li>detail</li>
- *   <li>errorCode</li>
- *   <li>details</li>
- * </ul>
+ * application/domain の独自例外と validation 例外を一貫したレスポンス形式へ変換し、
+ * `errorCode` と `details` を含むエラー応答を返します。
  */
 @Slf4j
 @RestControllerAdvice
@@ -59,10 +47,7 @@ public class GlobalExceptionHandler {
     private final SensitiveDataMasker sensitiveDataMasker;
 
     /**
-     * 投稿が見つからない場合の例外を処理します。
-     *
-     * @param ex 投稿未検出例外
-     * @return ProblemDetail
+     * 投稿未検出例外を 404 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(PostNotFoundException.class)
     public ProblemDetail handlePostNotFound(final PostNotFoundException ex) {
@@ -71,10 +56,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 返信が見つからない場合の例外を処理します。
-     *
-     * @param ex 返信未検出例外
-     * @return ProblemDetail
+     * 返信未検出例外を 404 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(ReplyNotFoundException.class)
     public ProblemDetail handleReplyNotFound(final ReplyNotFoundException ex) {
@@ -83,10 +65,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * ユーザーが見つからない場合の例外を処理します。
-     *
-     * @param ex ユーザー未検出例外
-     * @return ProblemDetail
+     * ユーザー未検出例外を 404 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(UserNotFoundException.class)
     public ProblemDetail handleUserNotFound(final UserNotFoundException ex) {
@@ -95,10 +74,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * メールアドレスが既に使用されている場合の例外を処理します。
-     *
-     * @param ex メール重複例外
-     * @return ProblemDetail
+     * メール重複例外を 409 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(EmailAlreadyUsedException.class)
     public ProblemDetail handleEmailAlreadyUsed(final EmailAlreadyUsedException ex) {
@@ -107,10 +83,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 値オブジェクトの検証失敗を処理します。
-     *
-     * @param ex 値オブジェクト検証失敗例外
-     * @return ProblemDetail
+     * 値オブジェクト検証失敗を 400 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(InvalidValueException.class)
     public ProblemDetail handleInvalidValue(final InvalidValueException ex) {
@@ -119,10 +92,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 親返信と投稿の不整合がある場合の例外を処理します。
-     *
-     * @param ex 親返信と投稿の不整合例外
-     * @return ProblemDetail
+     * 親返信と投稿の不整合例外を 400 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(ReplyPostMismatchException.class)
     public ProblemDetail handleReplyPostMismatch(final ReplyPostMismatchException ex) {
@@ -131,10 +101,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * リクエストボディのバリデーション失敗を処理します。
-     *
-     * @param ex リクエストボディ検証失敗例外
-     * @return ProblemDetail
+     * リクエストボディの Bean Validation 失敗を 400 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleMethodArgumentNotValid(final MethodArgumentNotValidException ex) {
@@ -155,10 +122,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * フォーム/クエリのバインド失敗を処理します。
-     *
-     * @param ex バインド失敗例外
-     * @return ProblemDetail
+     * フォーム・クエリパラメータのバインド失敗を 400 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(BindException.class)
     public ProblemDetail handleBindException(final BindException ex) {
@@ -179,10 +143,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * パラメータ制約違反を処理します。
-     *
-     * @param ex 制約違反例外
-     * @return ProblemDetail
+     * メソッド引数の制約違反を 400 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ProblemDetail handleConstraintViolation(final ConstraintViolationException ex) {
@@ -203,10 +164,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 必須リクエストパラメータ欠落を処理します。
-     *
-     * @param ex 欠落例外
-     * @return ProblemDetail
+     * 必須リクエストパラメータ欠落を 400 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ProblemDetail handleMissingRequestParameter(final MissingServletRequestParameterException ex) {
@@ -223,10 +181,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 必須リクエストパート欠落を処理します。
-     *
-     * @param ex 欠落例外
-     * @return ProblemDetail
+     * 必須 multipart パート欠落を 400 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(MissingServletRequestPartException.class)
     public ProblemDetail handleMissingRequestPart(final MissingServletRequestPartException ex) {
@@ -243,10 +198,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * リクエストの JSON 解析失敗を処理します。
-     *
-     * @param ex JSON 解析失敗例外
-     * @return ProblemDetail
+     * リクエストボディの JSON 解析失敗を 400 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ProblemDetail handleHttpMessageNotReadable(final HttpMessageNotReadableException ex) {
@@ -263,10 +215,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 型不一致によるパラメータ変換失敗を処理します。
-     *
-     * @param ex 型不一致例外
-     * @return ProblemDetail
+     * リクエストパラメータの型変換失敗を 400 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ProblemDetail handleMethodArgumentTypeMismatch(final MethodArgumentTypeMismatchException ex) {
@@ -283,10 +232,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * ユースケース実行時の例外を処理します。
-     *
-     * @param ex ユースケース実行例外
-     * @return ProblemDetail
+     * use case 実行失敗例外を、`ErrorCode` に応じた HTTP ステータスの {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(UseCaseExecutionException.class)
     public ProblemDetail handleUseCaseExecutionException(final UseCaseExecutionException ex) {
@@ -295,10 +241,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * ドメイン例外を処理します。
-     *
-     * @param ex ドメイン例外
-     * @return ProblemDetail
+     * domain 例外を、`ErrorCode` に応じた HTTP ステータスの {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(DomainException.class)
     public ProblemDetail handleDomainException(final DomainException ex) {
@@ -307,10 +250,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * アプリケーション例外を処理します。
-     *
-     * @param ex アプリケーション例外
-     * @return ProblemDetail
+     * application 例外を、`ErrorCode` に応じた HTTP ステータスの {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(ApplicationException.class)
     public ProblemDetail handleApplicationException(final ApplicationException ex) {
@@ -319,10 +259,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 想定外の例外を処理します。
-     *
-     * @param ex 想定外例外
-     * @return ProblemDetail
+     * 想定外例外を 500 の汎用 {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleException(final Exception ex) {

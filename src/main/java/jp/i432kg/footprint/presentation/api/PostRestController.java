@@ -35,7 +35,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 投稿に関する操作を提供する API コントローラー
+ * 投稿に関する REST API を提供する controller です。
+ * <p>
+ * 投稿一覧・検索・詳細取得・投稿作成と、投稿配下のトップレベル返信取得を扱います。
  */
 @RestController
 @RequestMapping("/api/posts")
@@ -56,9 +58,9 @@ public class PostRestController {
     /**
      * 最新の投稿一覧を取得します。
      *
-     * @param lastId 最後に取得した投稿の識別子（スクロール読み込み用、任意）
-     * @param size   取得する投稿件数（デフォルト 10件）
-     * @return 投稿アイテムのリスト
+     * @param lastId スクロール読み込み用の基準投稿 ID。未指定可
+     * @param size 取得件数。1 から 20 の範囲
+     * @return 投稿一覧レスポンス
      */
     @GetMapping
     public ResponseEntity<List<PostItemResponse>> getRecentPosts(
@@ -77,10 +79,10 @@ public class PostRestController {
     /**
      * キーワードに基づいて投稿を検索します。
      *
-     * @param keyword 検索キーワード
-     * @param lastId  最後に取得した投稿の識別子（スクロール読み込み用、任意）
-     * @param size    取得する投稿件数（デフォルト 10件）
-     * @return 検索結果の投稿アイテムリスト
+     * @param keyword 検索キーワード。空白のみ不可、100 文字以内
+     * @param lastId スクロール読み込み用の基準投稿 ID。未指定可
+     * @param size 取得件数。1 から 20 の範囲
+     * @return 検索結果レスポンス
      */
     @GetMapping("/search")
     public ResponseEntity<List<PostItemResponse>> search(
@@ -103,13 +105,13 @@ public class PostRestController {
     }
 
     /**
-     * 指定された範囲内の投稿を検索します。
+     * 指定した地理範囲内の投稿を検索します。
      *
      * @param minLat 最小緯度
      * @param maxLat 最大緯度
      * @param minLng 最小経度
      * @param maxLng 最大経度
-     * @return 検索結果の投稿アイテムリスト
+     * @return 検索結果レスポンス
      */
     @GetMapping("/search/map")
     public ResponseEntity<List<PostItemResponse>> searchMap(
@@ -133,10 +135,10 @@ public class PostRestController {
     }
 
     /**
-     * 指定された投稿IDの詳細情報を取得します。
+     * 指定した投稿 ID の詳細情報を取得します。
      *
-     * @param postId 投稿の識別子
-     * @return 投稿詳細のレスポンス
+     * @param postId 投稿 ID
+     * @return 投稿詳細レスポンス
      */
     @GetMapping("/{postId}")
     public ResponseEntity<PostItemResponse> getPost(
@@ -153,10 +155,10 @@ public class PostRestController {
     }
 
     /**
-     * 指定された投稿IDに紐づくトップレベルの返信一覧を取得します。
+     * 指定した投稿に紐づくトップレベル返信一覧を取得します。
      *
-     * @param postId 投稿の識別子
-     * @return 返信アイテムのリスト
+     * @param postId 投稿 ID
+     * @return 返信一覧レスポンス
      */
     @GetMapping("/{postId}/replies")
     public ResponseEntity<List<ReplyItemResponse>> getReplies(
@@ -175,10 +177,10 @@ public class PostRestController {
     /**
      * 新しい投稿を作成します。
      *
-     * @param request     投稿作成リクエスト
-     * @param userDetails 認証済みユーザーの詳細情報
-     * @return 投稿作成結果
-     * @throws IOException 画像処理時に発生した例外
+     * @param request 投稿作成リクエスト
+     * @param userDetails 認証済みユーザー
+     * @return 201 Created
+     * @throws IOException アップロードファイルの読み取りに失敗した場合
      */
     @PostMapping
     public ResponseEntity<Void> create(

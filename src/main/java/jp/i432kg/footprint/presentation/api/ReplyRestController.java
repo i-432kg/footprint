@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 返信（コメント）に関する操作を提供する API コントローラー
+ * 返信に関する REST API を提供する controller です。
+ * <p>
+ * ネスト返信の取得と返信作成を扱います。
  */
 @RestController
 @RequestMapping("/api/replies")
@@ -41,10 +43,10 @@ public class ReplyRestController {
     private final ReplyResponseMapper replyResponseMapper;
 
     /**
-     * 指定された親返信IDに紐づく、ネストされた返信一覧を取得します。
+     * 指定した親返信に紐づくネスト返信一覧を取得します。
      *
-     * @param parentReplyId 親返信の識別子
-     * @return 返信アイテムのリスト
+     * @param parentReplyId 親返信 ID
+     * @return 返信一覧レスポンス
      */
     @GetMapping("/{parentReplyId}")
     public ResponseEntity<List<ReplyItemResponse>> getNextReplies(
@@ -61,12 +63,12 @@ public class ReplyRestController {
     }
 
     /**
-     * 返信作成処理を行います。
+     * 指定した投稿に対する返信を作成します。
      *
-     * @param postId 投稿の識別子
+     * @param postId 投稿 ID
      * @param request 返信作成リクエスト
-     * @param userDetails 認証済みユーザーの詳細情報
-     * @return 返信作成結果
+     * @param userDetails 認証済みユーザー
+     * @return 201 Created
      */
     @PostMapping("/{postId}/reply")
     public ResponseEntity<Void> reply(
