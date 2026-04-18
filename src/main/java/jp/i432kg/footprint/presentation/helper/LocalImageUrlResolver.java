@@ -20,7 +20,6 @@ public class LocalImageUrlResolver implements ImageUrlResolver {
      *
      * @param storageObject LOCAL 保存の {@link StorageObject}
      * @return 表示 URL
-     * @throws NullPointerException storageObject が {@code null} の場合
      * @throws IllegalArgumentException S3 など LOCAL 以外の保存種別が渡された場合
      */
     @Override

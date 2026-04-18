@@ -29,7 +29,6 @@ public class S3ImageUrlResolver implements ImageUrlResolver {
      *
      * @param storageObject S3 保存の {@link StorageObject}
      * @return 画像取得用の presigned URL
-     * @throws NullPointerException storageObject が {@code null} の場合
      * @throws IllegalArgumentException LOCAL など S3 以外の保存種別が渡された場合
      */
     @Override
