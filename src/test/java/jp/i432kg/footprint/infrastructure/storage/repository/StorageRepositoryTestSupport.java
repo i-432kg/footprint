@@ -27,8 +27,8 @@ final class StorageRepositoryTestSupport {
     private StorageRepositoryTestSupport() {
     }
 
-    static byte[] jpegBytes(final int width, final int height) throws IOException {
-        return imageBytes("jpg", width, height);
+    static byte[] jpegBytes() throws IOException {
+        return imageBytes("jpg", 2, 3);
     }
 
     static byte[] pngBytes(final int width, final int height) throws IOException {

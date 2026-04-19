@@ -64,7 +64,7 @@ class LocalImageRepositoryImplTest {
     @Test
     @DisplayName("LocalImageRepositoryImpl.store は JPEG 画像をローカル保存して StorageObject を返す")
     void should_storeJpegImageToLocalPath_when_validImageProvided() throws IOException {
-        final byte[] imageBytes = StorageRepositoryTestSupport.jpegBytes(2, 3);
+        final byte[] imageBytes = StorageRepositoryTestSupport.jpegBytes();
         final FileName originalFilename = FileName.of("sample.png");
         final UserId userId = DomainTestFixtures.userId();
         final PostId postId = DomainTestFixtures.postId();
@@ -133,7 +133,7 @@ class LocalImageRepositoryImplTest {
         final BigDecimal latitude = new BigDecimal("35.681236");
         final BigDecimal longitude = new BigDecimal("139.767125");
         final LocalDateTime takenAt = LocalDateTime.of(2026, 4, 1, 12, 30);
-        final byte[] imageBytes = StorageRepositoryTestSupport.jpegBytes(2, 3);
+        final byte[] imageBytes = StorageRepositoryTestSupport.jpegBytes();
         final Path imagePath = tempDir.resolve("sample.jpg");
         Files.write(imagePath, imageBytes);
         final StorageObject storageObject = StorageObject.local(DomainTestFixtures.objectKey());
@@ -234,7 +234,7 @@ class LocalImageRepositoryImplTest {
     @Test
     @DisplayName("LocalImageRepositoryImpl.store はファイル移動失敗時に IOException を再送出する")
     void should_rethrowIOException_when_moveFails() throws IOException {
-        final byte[] imageBytes = StorageRepositoryTestSupport.jpegBytes(2, 3);
+        final byte[] imageBytes = StorageRepositoryTestSupport.jpegBytes();
         final FileName originalFilename = FileName.of("sample.jpg");
         final UserId userId = DomainTestFixtures.userId();
         final PostId postId = DomainTestFixtures.postId();

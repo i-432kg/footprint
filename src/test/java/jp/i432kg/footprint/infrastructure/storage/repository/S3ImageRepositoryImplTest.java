@@ -73,7 +73,7 @@ class S3ImageRepositoryImplTest {
     @Test
     @DisplayName("S3ImageRepositoryImpl.store は JPEG 画像を S3 にアップロードして StorageObject を返す")
     void should_uploadJpegImageToS3_when_validImageProvided() throws IOException {
-        final byte[] imageBytes = StorageRepositoryTestSupport.jpegBytes(2, 3);
+        final byte[] imageBytes = StorageRepositoryTestSupport.jpegBytes();
         final UserId userId = DomainTestFixtures.userId();
         final PostId postId = DomainTestFixtures.postId();
         final ImageId imageId = DomainTestFixtures.imageId();
@@ -100,7 +100,7 @@ class S3ImageRepositoryImplTest {
         assertThat(request.bucket()).isEqualTo("footprint-bucket");
         assertThat(request.key()).isEqualTo(expectedObjectKey.getValue());
         assertThat(request.contentType()).isEqualTo("image/jpeg");
-        assertThat(request.contentLength()).isEqualTo((long) imageBytes.length);
+        assertThat(request.contentLength()).isEqualTo(imageBytes.length);
 
         verify(imageIdGenerator).generate();
         verify(s3ObjectResolver).resolveBucket(expectedStorageObject);
@@ -149,7 +149,7 @@ class S3ImageRepositoryImplTest {
     @Test
     @DisplayName("S3ImageRepositoryImpl.extract は EXIF 付き S3 画像からメタデータを抽出する")
     void should_extractMetadataFromS3Object_when_exifImageProvided() throws Exception {
-        final byte[] imageBytes = StorageRepositoryTestSupport.jpegBytes(2, 3);
+        final byte[] imageBytes = StorageRepositoryTestSupport.jpegBytes();
         final BigDecimal latitude = new BigDecimal("35.681236");
         final BigDecimal longitude = new BigDecimal("139.767125");
         final LocalDateTime takenAt = LocalDateTime.of(2026, 4, 1, 12, 30);
