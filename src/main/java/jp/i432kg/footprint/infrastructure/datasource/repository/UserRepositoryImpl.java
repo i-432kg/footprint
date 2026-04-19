@@ -7,7 +7,6 @@ import jp.i432kg.footprint.domain.value.UserId;
 import jp.i432kg.footprint.infrastructure.datasource.mapper.repository.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Repository;
 
 import java.time.Clock;
@@ -24,7 +23,7 @@ public class UserRepositoryImpl implements UserRepository {
     private final Clock clock;
 
     @Override
-    public boolean existsById(@NonNull UserId userId) {
+    public boolean existsById(UserId userId) {
         try {
             return userMapper.countByUserId(userId) > 0;
         } catch (RuntimeException e) {
@@ -34,7 +33,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean existsByEmail(@NonNull EmailAddress email) {
+    public boolean existsByEmail(EmailAddress email) {
         try {
             return userMapper.countByEmail(email) > 0;
         } catch (RuntimeException e) {
@@ -44,7 +43,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void saveUser(final @NonNull User user) {
+    public void saveUser(final User user) {
         try {
             // ユーザーレコードを保存する
             final UserMapper.UserInsertEntity entity = UserMapper.UserInsertEntity.from(user, clock);
