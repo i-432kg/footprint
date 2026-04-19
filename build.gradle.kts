@@ -24,6 +24,28 @@ repositories {
     mavenCentral()
 }
 
+dependencyManagement {
+    dependencies {
+        // 脆弱性対応のため Spring Boot 管理依存を個別上書きしている。
+        // Spring Boot 更新時は各 override を一時的に外し、
+        // `./gradlew dependencyInsight --dependency <module>` で安全版へ自然解決されるか確認すること。
+        // override を外した状態で `./gradlew test` が通るなら、その override は削除してよい。
+        dependency("org.thymeleaf:thymeleaf:3.1.4.RELEASE")
+        dependency("org.thymeleaf:thymeleaf-spring6:3.1.4.RELEASE")
+
+        dependencySet("org.apache.tomcat.embed:11.0.21") {
+            entry("tomcat-embed-core")
+            entry("tomcat-embed-el")
+            entry("tomcat-embed-websocket")
+        }
+
+        dependencySet("tools.jackson.core:3.1.1") {
+            entry("jackson-core")
+            entry("jackson-databind")
+        }
+    }
+}
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-security")
