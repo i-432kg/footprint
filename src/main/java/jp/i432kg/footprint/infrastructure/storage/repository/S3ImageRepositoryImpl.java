@@ -12,6 +12,7 @@ import jp.i432kg.footprint.application.command.model.ImageMetadata;
 import jp.i432kg.footprint.application.port.id.ImageIdGenerator;
 import jp.i432kg.footprint.application.port.storage.ImageMetadataExtractor;
 import jp.i432kg.footprint.application.port.storage.ImageStorage;
+import jp.i432kg.footprint.domain.exception.DomainException;
 import jp.i432kg.footprint.domain.model.Location;
 import jp.i432kg.footprint.domain.value.Byte;
 import jp.i432kg.footprint.domain.value.FileExtension;
@@ -149,7 +150,7 @@ public class S3ImageRepositoryImpl implements ImageStorage, ImageMetadataExtract
                     e
             );
             throw new IOException("S3上の画像ファイルへのアクセスに失敗しました: " + storageObject.getObjectKey().getValue(), e);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | DomainException e) {
             log.error(
                     "Failed to extract image metadata from S3. storageObjectKey={}",
                     storageObject.getObjectKey().getValue(),
@@ -199,7 +200,7 @@ public class S3ImageRepositoryImpl implements ImageStorage, ImageMetadataExtract
             );
 
             return storageObject;
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | DomainException e) {
             log.error(
                     "Failed to save image to S3. userId={}, postId={}, originalFilename={}",
                     userId.getValue(),

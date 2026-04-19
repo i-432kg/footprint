@@ -12,6 +12,7 @@ import jp.i432kg.footprint.application.command.model.ImageMetadata;
 import jp.i432kg.footprint.application.port.id.ImageIdGenerator;
 import jp.i432kg.footprint.application.port.storage.ImageMetadataExtractor;
 import jp.i432kg.footprint.application.port.storage.ImageStorage;
+import jp.i432kg.footprint.domain.exception.DomainException;
 import jp.i432kg.footprint.domain.model.Location;
 import jp.i432kg.footprint.domain.value.*;
 import jp.i432kg.footprint.domain.value.Byte;
@@ -114,7 +115,7 @@ public class LocalImageRepositoryImpl implements ImageStorage, ImageMetadataExtr
                     takenAt
             );
 
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | DomainException e) {
             log.error(
                     "Failed to extract image metadata. storageObjectKey={}",
                     storageObject.getObjectKey().getValue(),
@@ -170,7 +171,7 @@ public class LocalImageRepositoryImpl implements ImageStorage, ImageMetadataExtr
             Files.move(tempPath, finalPath);
 
             return storageObject;
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | DomainException e) {
             log.error(
                     "Failed to save image. userId={}, postId={}, originalFilename={}",
                     userId.getValue(),
