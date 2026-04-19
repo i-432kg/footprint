@@ -32,27 +32,30 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:4.0.0")
     implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
-	implementation("com.github.f4b6a3:ulid-creator:5.2.3")
-    compileOnly("org.projectlombok:lombok")
-    runtimeOnly("com.mysql:mysql-connector-j")
-    annotationProcessor("org.projectlombok:lombok")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-security-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-thymeleaf-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-    testImplementation("org.mybatis.spring.boot:mybatis-spring-boot-starter-test:4.0.0")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation("com.github.f4b6a3:ulid-creator:5.2.3")
     implementation("com.drewnoakes:metadata-extractor:2.19.0")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0")
-    implementation("org.jspecify:jspecify:1.0.0")
     implementation(platform("software.amazon.awssdk:bom:2.31.20"))
     implementation("software.amazon.awssdk:s3")
-    implementation("org.flywaydb:flyway-core")
-    implementation("org.flywaydb:flyway-mysql")
     implementation("org.springframework.boot:spring-boot-starter-flyway")
-    implementation("org.springframework.boot:spring-boot-starter-flyway-test")
+    implementation("org.flywaydb:flyway-mysql")
+
+    compileOnly("org.projectlombok:lombok")
+    compileOnly("org.jspecify:jspecify:1.0.0")
+
+    runtimeOnly("com.mysql:mysql-connector-j")
+
+    annotationProcessor("org.projectlombok:lombok")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
+    testCompileOnly("org.jspecify:jspecify:1.0.0")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-security-test")
+    testImplementation("org.mybatis.spring.boot:mybatis-spring-boot-starter-test:4.0.0")
+    testImplementation("org.springframework.boot:spring-boot-starter-flyway-test")
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks.withType<Test> {
