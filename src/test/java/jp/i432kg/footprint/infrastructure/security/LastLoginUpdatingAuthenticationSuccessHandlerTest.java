@@ -24,7 +24,7 @@ class LastLoginUpdatingAuthenticationSuccessHandlerTest {
 
     @Test
     @DisplayName("LastLoginUpdatingAuthenticationSuccessHandler.onAuthenticationSuccess は UserDetailsImpl の principal を recorder へ委譲して 200 を返す")
-    void should_delegateToRecorderAndReturnOk_when_principalIsUserDetailsImpl() throws Exception {
+    void should_delegateToRecorderAndReturnOk_when_principalIsUserDetailsImpl() {
         final var handler = new LastLoginUpdatingAuthenticationSuccessHandler(lastLoginRecorder);
         final var principal = UserDetailsImpl.fromEntity(
                 new AuthMapper.AuthUserEntity(
@@ -47,7 +47,7 @@ class LastLoginUpdatingAuthenticationSuccessHandlerTest {
 
     @Test
     @DisplayName("LastLoginUpdatingAuthenticationSuccessHandler.onAuthenticationSuccess は principal が UserDetailsImpl でない場合も 200 を返す")
-    void should_returnOkWithoutDelegation_when_principalIsNotUserDetailsImpl() throws Exception {
+    void should_returnOkWithoutDelegation_when_principalIsNotUserDetailsImpl() {
         final var handler = new LastLoginUpdatingAuthenticationSuccessHandler(lastLoginRecorder);
         final Authentication authentication =
                 UsernamePasswordAuthenticationToken.authenticated("anonymousUser", null, java.util.List.of());

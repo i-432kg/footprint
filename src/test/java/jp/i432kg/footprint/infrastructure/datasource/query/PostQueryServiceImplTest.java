@@ -39,7 +39,7 @@ class PostQueryServiceImplTest {
     @DisplayName("PostQueryServiceImpl.listRecentPosts は mapper から取得した最新投稿一覧を返す")
     void should_returnRecentPosts_when_listRecentPostsCalled() {
         final PostId lastId = DomainTestFixtures.postId();
-        final List<PostSummary> expected = List.of(postSummary("post-01"));
+        final List<PostSummary> expected = List.of(postSummary());
         when(postQueryMapper.findRecentPosts(lastId, 10)).thenReturn(expected);
 
         final List<PostSummary> actual = newService().listRecentPosts(lastId, 10);
@@ -52,7 +52,7 @@ class PostQueryServiceImplTest {
     @Test
     @DisplayName("PostQueryServiceImpl.listRecentPosts は lastId が null の場合もそのまま mapper へ委譲する")
     void should_delegateNullLastId_when_listRecentPostsCalledWithoutPagingCursor() {
-        final List<PostSummary> expected = List.of(postSummary("post-01"));
+        final List<PostSummary> expected = List.of(postSummary());
         when(postQueryMapper.findRecentPosts(null, 10)).thenReturn(expected);
 
         final List<PostSummary> actual = newService().listRecentPosts(null, 10);
@@ -67,7 +67,7 @@ class PostQueryServiceImplTest {
     void should_returnMyPosts_when_listMyPostsCalled() {
         final UserId userId = DomainTestFixtures.userId();
         final PostId lastId = DomainTestFixtures.postId();
-        final List<PostSummary> expected = List.of(postSummary("post-01"));
+        final List<PostSummary> expected = List.of(postSummary());
         when(postQueryMapper.findMyPosts(userId, lastId, 10)).thenReturn(expected);
 
         final List<PostSummary> actual = newService().listMyPosts(userId, lastId, 10);
@@ -82,7 +82,7 @@ class PostQueryServiceImplTest {
     void should_returnSearchedPosts_when_searchPostsCalled() {
         final SearchKeyword keyword = SearchKeyword.of("hello");
         final PostId lastId = DomainTestFixtures.postId();
-        final List<PostSummary> expected = List.of(postSummary("post-01"));
+        final List<PostSummary> expected = List.of(postSummary());
         when(postQueryMapper.findPostsByKeyword(keyword, lastId, 10)).thenReturn(expected);
 
         final List<PostSummary> actual = newService().searchPosts(keyword, lastId, 10);
@@ -99,7 +99,7 @@ class PostQueryServiceImplTest {
         final Latitude maxLat = Latitude.of(new BigDecimal("35.700000"));
         final Longitude minLng = DomainTestFixtures.longitude();
         final Longitude maxLng = Longitude.of(new BigDecimal("139.800000"));
-        final List<PostSummary> expected = List.of(postSummary("post-01"));
+        final List<PostSummary> expected = List.of(postSummary());
         when(postQueryMapper.findPostsByBBox(minLat, maxLat, minLng, maxLng)).thenReturn(expected);
 
         final List<PostSummary> actual = newService().searchPostsByBBox(minLat, maxLat, minLng, maxLng);
@@ -113,7 +113,7 @@ class PostQueryServiceImplTest {
     @DisplayName("PostQueryServiceImpl.getPost は投稿が存在する場合に投稿詳細を返す")
     void should_returnPostSummary_when_getPostFindsPost() {
         final PostId postId = DomainTestFixtures.postId();
-        final PostSummary expected = postSummary("post-01");
+        final PostSummary expected = postSummary();
         when(postQueryMapper.findPostById(postId)).thenReturn(Optional.of(expected));
 
         final PostSummary actual = newService().getPost(postId);
@@ -141,7 +141,7 @@ class PostQueryServiceImplTest {
     @DisplayName("PostQueryServiceImpl.findPost は mapper の Optional 結果をそのまま返す")
     void should_returnOptionalResult_when_findPostCalled() {
         final PostId postId = DomainTestFixtures.postId();
-        final Optional<PostSummary> expected = Optional.of(postSummary("post-01"));
+        final Optional<PostSummary> expected = Optional.of(postSummary());
         when(postQueryMapper.findPostById(postId)).thenReturn(expected);
 
         final Optional<PostSummary> actual = newService().findPost(postId);
@@ -168,9 +168,9 @@ class PostQueryServiceImplTest {
         return new PostQueryServiceImpl(postQueryMapper);
     }
 
-    private static PostSummary postSummary(final String id) {
+    private static PostSummary postSummary() {
         return new PostSummary(
-                id,
+                "post-01",
                 "caption",
                 List.of(new ImageSummary(
                         "image-01",
