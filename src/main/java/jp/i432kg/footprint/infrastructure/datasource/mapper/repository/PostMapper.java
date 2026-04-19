@@ -12,35 +12,34 @@ import org.apache.ibatis.annotations.*;
 import java.time.LocalDateTime;
 
 /**
- * 投稿に関する Mybatis マッパーインターフェース
+ * 投稿永続化用の MyBatis マッパーインターフェース。
  */
 @Mapper
 public interface PostMapper {
 
     /**
-     * 指定された投稿 IDの投稿数をカウントします。
+     * 指定した投稿 ID の登録件数を取得する。
+     *
      * @param postId 投稿 ID
      * @return 検索にヒットした件数
      */
     int countByPostId(@Param("postId") PostId postId);
 
     /**
-     * Posts テーブルに新しいレコードを挿入します。
+     * 投稿レコードを登録する。
      *
-     * @param params 挿入するデータを保持する {@link PostInsertEntity} オブジェクト
+     * @param params 登録する投稿パラメータ
      */
     void insertPosts(PostInsertEntity params);
 
     /**
-     * PostImages テーブルに新しいレコードを挿入します。
+     * 投稿画像レコードを登録する。
      *
-     * @param params 挿入するデータを保持する {@link PostImageInsertEntity} オブジェクト
+     * @param params 登録する投稿画像パラメータ
      */
     void insertPostImages(PostImageInsertEntity params);
 
-    /**
-     * Insert 用のパラメータ保持クラス
-     */
+    /** 投稿 insert 用のパラメータ。 */
     @Getter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     class PostInsertEntity {
@@ -71,9 +70,7 @@ public interface PostMapper {
         }
     }
 
-    /**
-     * Insert 用のパラメータ保持クラス
-     */
+    /** 投稿画像 insert 用のパラメータ。 */
     @Getter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     class PostImageInsertEntity {

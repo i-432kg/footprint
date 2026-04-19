@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 /**
- * 投稿に関するリポジトリの実装クラス
+ * {@link PostRepository} のデータソース永続化実装。
  */
 @Slf4j
 @Repository
@@ -19,7 +19,7 @@ public class PostRepositoryImpl implements PostRepository {
     private final PostMapper postMapper;
 
     @Override
-    public boolean existsById(PostId postId) {
+    public boolean existsById(final PostId postId) {
         try {
             return postMapper.countByPostId(postId) > 0;
         } catch (RuntimeException e) {

@@ -12,17 +12,17 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 /**
- * ユーザーの参照サービス実装クラス
+ * {@link UserQueryService} のデータソース参照実装。
  */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserQueryServiceImpl implements UserQueryService {
 
-    final private UserQueryMapper userQueryMapper;
+    private final UserQueryMapper userQueryMapper;
 
     @Override
-    public UserProfileSummary getUserProfile(final UserId userId) throws UserNotFoundException{
+    public UserProfileSummary getUserProfile(final UserId userId) throws UserNotFoundException {
         return findUserProfile(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
 

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * 返信に関するリポジトリの実装クラス
+ * {@link ReplyRepository} のデータソース永続化実装。
  */
 @Slf4j
 @Repository
@@ -21,7 +21,7 @@ public class ReplyRepositoryImpl implements ReplyRepository {
     private final ReplyMapper replyMapper;
 
     @Override
-    public Optional<Reply> findReplyById(ReplyId replyId) {
+    public Optional<Reply> findReplyById(final ReplyId replyId) {
         try {
             return replyMapper.findReplyById(replyId)
                     .map(ReplyMapper.ReplyResultEntity::toDomain);

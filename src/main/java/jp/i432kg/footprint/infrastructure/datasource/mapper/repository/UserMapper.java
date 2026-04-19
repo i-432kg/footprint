@@ -10,13 +10,13 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 
 /**
- * ユーザーに関する Mybatis マッパーインターフェース
+ * ユーザー永続化用の MyBatis マッパーインターフェース。
  */
 @Mapper
 public interface UserMapper {
 
     /**
-     * 指定されたユーザーIDを基に有効なユーザーの登録数を取得します。
+     * 指定したユーザー ID の登録件数を取得する。
      *
      * @param userId ユーザー ID
      * @return 検索にヒットした件数
@@ -24,21 +24,21 @@ public interface UserMapper {
     int countByUserId(@Param("userId") UserId userId);
 
     /**
-     * 指定されたメールアドレスの登録数を取得します。
+     * 指定したメールアドレスの登録件数を取得する。
      *
-     * @param email 検索対象のメールアドレス
+     * @param email メールアドレス
      * @return 検索にヒットした件数
      */
     int countByEmail(@Param("email") EmailAddress email);
 
     /**
-     * ユーザーレコードを挿入します。
+     * ユーザーレコードを登録する。
+     *
+     * @param params 登録するユーザーパラメータ
      */
     void insert(UserInsertEntity params);
 
-    /**
-     * User 用の Insert パラメータ保持クラス
-     */
+    /** ユーザー insert 用のパラメータ。 */
     @Getter
     @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
     class UserInsertEntity {

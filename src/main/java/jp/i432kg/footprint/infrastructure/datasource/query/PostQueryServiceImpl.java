@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 投稿の参照サービス実装クラス
+ * {@link PostQueryService} のデータソース参照実装。
  */
 @Service
 @RequiredArgsConstructor
@@ -43,12 +43,13 @@ public class PostQueryServiceImpl implements PostQueryService {
             final Latitude minLat,
             final Latitude maxLat,
             final Longitude minLng,
-            final Longitude maxLng) {
+            final Longitude maxLng
+    ) {
         return postQueryMapper.findPostsByBBox(minLat, maxLat, minLng, maxLng);
     }
 
     @Override
-    public PostSummary getPost(final PostId postId) throws PostNotFoundException{
+    public PostSummary getPost(final PostId postId) throws PostNotFoundException {
         return findPost(postId).orElseThrow(() -> new PostNotFoundException(postId));
     }
 

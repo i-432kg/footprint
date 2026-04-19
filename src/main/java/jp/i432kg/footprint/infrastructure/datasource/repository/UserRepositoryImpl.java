@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.time.Clock;
 
 /**
- * ユーザーに関するリポジトリの実装クラス
+ * {@link UserRepository} のデータソース永続化実装。
  */
 @Slf4j
 @Repository
@@ -23,7 +23,7 @@ public class UserRepositoryImpl implements UserRepository {
     private final Clock clock;
 
     @Override
-    public boolean existsById(UserId userId) {
+    public boolean existsById(final UserId userId) {
         try {
             return userMapper.countByUserId(userId) > 0;
         } catch (RuntimeException e) {
@@ -33,7 +33,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean existsByEmail(EmailAddress email) {
+    public boolean existsByEmail(final EmailAddress email) {
         try {
             return userMapper.countByEmail(email) > 0;
         } catch (RuntimeException e) {

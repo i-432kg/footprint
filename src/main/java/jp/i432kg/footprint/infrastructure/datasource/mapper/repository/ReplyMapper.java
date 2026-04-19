@@ -15,29 +15,34 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
- * 返信に関する Mybatis マッパーインターフェース
+ * 返信永続化用の MyBatis マッパーインターフェース。
  */
 @Mapper
 public interface ReplyMapper {
 
     /**
-     * 返信IDに基づいて返信を取得します。
+     * 返信 ID に基づいて返信を取得する。
+     *
+     * @param replyId 返信 ID
+     * @return 返信取得結果
      */
     Optional<ReplyResultEntity> findReplyById(@Param("replyId") ReplyId replyId);
 
     /**
-     * 返信を新規登録します。
+     * 返信レコードを登録する。
+     *
+     * @param params 登録する返信パラメータ
      */
     void insert(ReplyInsertEntity params);
 
     /**
-     * 返信のカウント（子返信数）を1つ増やします。
+     * 子返信数を 1 件増やす。
+     *
+     * @param replyId 親返信 ID
      */
     void incrementChildCount(@Param("id") ReplyId replyId);
 
-    /**
-     * Reply 用の Insert パラメータ保持クラス
-     */
+    /** 返信 insert 用のパラメータ。 */
     @Getter
     @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
     class ReplyInsertEntity {
@@ -66,9 +71,7 @@ public interface ReplyMapper {
         }
     }
 
-    /**
-     * Reply 取得用の result mapping クラス
-     */
+    /** 返信取得結果を domain model へ変換するためのデータ。 */
     @Getter
     @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
     class ReplyResultEntity {

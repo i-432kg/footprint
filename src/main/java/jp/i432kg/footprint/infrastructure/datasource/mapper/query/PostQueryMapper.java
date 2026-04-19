@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 投稿情報の参照専用クエリを行う Mapper インターフェース
+ * 投稿参照用の MyBatis マッパーインターフェース。
  */
 @Mapper
 public interface PostQueryMapper {
 
     /**
-     * 投稿IDで投稿を検索します。
+     * 投稿 ID で投稿を検索する。
      *
      * @param postId 投稿 ID
      * @return 投稿の参照専用モデル
@@ -24,10 +24,10 @@ public interface PostQueryMapper {
     Optional<PostSummary> findPostById(@Param("postId") PostId postId);
 
     /**
-     * 最新の投稿一覧を検索します。
+     * 最新の投稿一覧を検索する。
      *
-     * @param lastId 最後に取得した投稿のID（ページング用）
-     * @param size   取得件数
+     * @param lastId 最後に取得した投稿 ID
+     * @param size 取得件数
      * @return 投稿の参照専用モデルのリスト
      */
     List<PostSummary> findRecentPosts(
@@ -36,11 +36,11 @@ public interface PostQueryMapper {
     );
 
     /**
-     * 自分の投稿一覧を検索します。
+     * 自分の投稿一覧を検索する。
      *
-     * @param userId 自分のユーザー ID
-     * @param lastId 最後に取得した投稿のID（ページング用）
-     * @param size   取得件数
+     * @param userId ユーザー ID
+     * @param lastId 最後に取得した投稿 ID
+     * @param size 取得件数
      * @return 投稿の参照専用モデルのリスト
      */
     List<PostSummary> findMyPosts(
@@ -50,11 +50,11 @@ public interface PostQueryMapper {
     );
 
     /**
-     * キーワードに基づいて投稿一覧を検索します。
+     * キーワードに基づいて投稿一覧を検索する。
      *
      * @param keyword 検索キーワード
-     * @param lastId  最後に取得した投稿のID（ページング用）
-     * @param size    取得件数
+     * @param lastId 最後に取得した投稿 ID
+     * @param size 取得件数
      * @return 投稿の参照専用モデルのリスト
      */
     List<PostSummary> findPostsByKeyword(
@@ -64,7 +64,7 @@ public interface PostQueryMapper {
     );
 
     /**
-     * 緯度経度に基づいて投稿一覧を検索します。
+     * 指定した境界ボックス内の投稿一覧を検索する。
      *
      * @param minLat 最小緯度
      * @param maxLat 最大緯度

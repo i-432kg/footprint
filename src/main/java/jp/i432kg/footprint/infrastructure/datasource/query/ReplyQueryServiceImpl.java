@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * 返信の参照サービス実装クラス
+ * {@link ReplyQueryService} のデータソース参照実装。
  */
 @Service
 @RequiredArgsConstructor

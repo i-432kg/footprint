@@ -8,13 +8,13 @@ import org.apache.ibatis.annotations.Param;
 import java.util.Optional;
 
 /**
- * ユーザー情報の参照専用クエリを行う Mapper インターフェース
+ * ユーザー参照用の MyBatis マッパーインターフェース。
  */
 @Mapper
 public interface UserQueryMapper {
 
     /**
-     * ユーザーIDに基づいてユーザープロフィールを検索します。
+     * ユーザー ID に基づいてユーザープロフィールを検索する。
      *
      * @param userId ユーザー ID
      * @return ユーザープロフィールの参照専用モデル
