@@ -71,6 +71,7 @@ public class SecurityConfig {
                                 "/login",
                                 "/signup",
                                 "/favicon.ico",
+                                "/favicon.svg",
                                 "/css/**",
                                 "/assets/**",
                                 "/images/**",
