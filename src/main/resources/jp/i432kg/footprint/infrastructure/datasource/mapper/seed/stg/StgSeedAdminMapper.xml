@@ -37,27 +37,38 @@
         SELECT pi.object_key
         FROM post_images pi
         INNER JOIN posts p ON p.public_id = pi.post_id
-        WHERE p.caption LIKE '[STG] %'
+        INNER JOIN users u ON u.public_id = p.user_id
+        WHERE u.email LIKE 'stg\\_seed\\_user\\_%@example.com'
+           OR p.caption LIKE '[STG] %'
     </select>
 
     <delete id="deleteSeedReplies">
         DELETE r
         FROM replies r
-        INNER JOIN posts p ON p.public_id = r.post_id
-        WHERE p.caption LIKE '[STG] %'
+        LEFT JOIN posts p ON p.public_id = r.post_id
+        LEFT JOIN users post_user ON post_user.public_id = p.user_id
+        LEFT JOIN users reply_user ON reply_user.public_id = r.user_id
+        WHERE post_user.email LIKE 'stg\\_seed\\_user\\_%@example.com'
+           OR reply_user.email LIKE 'stg\\_seed\\_user\\_%@example.com'
+           OR p.caption LIKE '[STG] %'
+           OR r.message LIKE '[STG] %'
     </delete>
 
     <delete id="deleteSeedPostImages">
         DELETE pi
         FROM post_images pi
         INNER JOIN posts p ON p.public_id = pi.post_id
-        WHERE p.caption LIKE '[STG] %'
+        INNER JOIN users u ON u.public_id = p.user_id
+        WHERE u.email LIKE 'stg\\_seed\\_user\\_%@example.com'
+           OR p.caption LIKE '[STG] %'
     </delete>
 
     <delete id="deleteSeedPosts">
-        DELETE
-        FROM posts
-        WHERE caption LIKE '[STG] %'
+        DELETE p
+        FROM posts p
+        INNER JOIN users u ON u.public_id = p.user_id
+        WHERE u.email LIKE 'stg\\_seed\\_user\\_%@example.com'
+           OR p.caption LIKE '[STG] %'
     </delete>
 
     <delete id="deleteSeedUsers">

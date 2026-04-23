@@ -40,7 +40,7 @@ jobs:
           echo "Required secrets are set"
 
       - name: Checkout frontend repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ${{ vars.FRONTEND_REPO }}
           ref: ${{ env.FRONTEND_REF_FOR_DEPLOY }}
