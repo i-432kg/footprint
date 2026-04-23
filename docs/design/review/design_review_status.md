@@ -21,7 +21,7 @@
 |---|---|---|---|---|---|---|
 | R-01 | `05_screen_spec.md`, `07_authz_authn.md` | 画面公開範囲と認可仕様が初期設計・現状 `SecurityConfig`・新方針で不一致 | Partial | ADR-021 に基づき、画面・API・画像配信を原則認証必須として更新する | In Progress | 画面の認証必須は採用。閲覧系 API と `/images/**` の `permitAll()` は実装修正対象 |
 | R-02 | `04_api_spec.yaml`, `05_screen_spec.md`, `07_authz_authn.md` | API エンドポイント一覧が現実装と不一致 | Yes | 実装 API を基準に仕様書を更新する | Open | `/api/posts/search`, `/api/posts/search/map`, `/api/replies/{parentReplyId}`, `/api/users/me/**` など |
-| R-03 | `03_database.md`, `04_api_spec.yaml`, `05_screen_spec.md`, `06_log_design.md` | ページング仕様が opaque cursor 前提のまま | Yes | `lastId` / `size` ベースへ記述を改める | Open | レスポンスは `page.nextCursor` なしの配列返却 |
+| R-03 | `03_database.md`, `05_screen_spec.md`, `06_log_design.md` | ページング仕様は `lastId` / `size` へ整理できるが、SQL の seek 条件が厳密でない | Partial | ADR-023 に基づき、設計書は `lastId` / `size` と複合ソートキー前提へ更新し、実装は後続で seek 条件を見直す | In Progress | `page.nextCursor` は不要。残課題は `ORDER BY created_at, id` と整合する境界条件 |
 | R-04 | `03_database.md` | DB 設計が `id` 中心で、実装の `public_id` 中心設計に追随していない | Yes | テーブル定義、キー設計、カラム定義を実装準拠に更新する | Open | `public_id`, `birthdate`, `child_count`, `object_key`, `file_extension` など |
 | R-05 | `05_screen_spec.md`, `01_overview.md`, `02_architecture.md` | 初期設計にない検索画面 `/search` が存在する | Yes | 検索画面と検索導線を資料へ追加する | Open | UI 詳細はフロントエンド実装確認後に確定する |
 | R-06 | `05_screen_spec.md`, `04_api_spec.yaml` | サインアップ仕様に `birthDate` 必須、自動ログインが反映されていない | Yes | 登録項目と登録後挙動を実装準拠で更新する | Open | `userName`, `email`, `password`, `birthDate` |
@@ -48,3 +48,4 @@
 |---|---|---|
 | 2026-04-23 | 初版作成 | Codex |
 | 2026-04-23 | ADR-021 に基づく認証必須方針と画像配信暫定方針を反映 | Codex |
+| 2026-04-24 | ADR-023 に基づくページング方針と seek 条件の改善方針を反映 | Codex |

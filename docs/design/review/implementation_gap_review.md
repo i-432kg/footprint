@@ -18,7 +18,7 @@
 
 1. 認可仕様と実装、新たに採用した認証必須方針がずれている
 2. API エンドポイントとリクエスト/レスポンス仕様が大きく変わっている
-3. ページング仕様が opaque cursor 前提から `lastId` ベースへ変わっている
+3. ページング仕様は `lastId` ベースへ整理できるが、SQL の seek 条件は改善余地がある
 4. DB 設計が `id` 中心から `public_id` 中心へ変わっている
 5. 初期設計にない検索画面、検索 API、S3/フロント別リポジトリ連携などの実装が追加されている
 
@@ -122,7 +122,7 @@
 - `lastId` をクエリパラメータで受け取る
 - 件数は `size`
 - レスポンスは `List<...>` であり、ページ情報は返さない
-- SQL は `created_at < (SELECT created_at ...)` ベースのシーク相当実装
+- SQL は `ORDER BY created_at DESC, id DESC` に対して `created_at < (SELECT created_at ...)` ベースのシーク相当実装
 
 関連実装:
 
@@ -130,11 +130,15 @@
 - `src/main/java/jp/i432kg/footprint/presentation/api/UserRestController.java`
 - `src/main/resources/jp/i432kg/footprint/infrastructure/datasource/mapper/query/PostQueryMapper.xml`
 - `src/main/resources/jp/i432kg/footprint/infrastructure/datasource/mapper/query/ReplyQueryMapper.xml`
+- `docs/adr/adr_023_seek_pagination_boundary.md`
 
 判断:
 
-- 設計資料上の cursor ページング説明は現実装と一致しない
-- `03_database.md`, `04_api_spec.yaml`, `05_screen_spec.md`, `06_log_design.md` の cursor 記述は見直しが必要
+- `cursor` / `limit` と `lastId` / `size` の差分は、仕様書を実装に合わせて読み替えれば大きな問題ではない
+- `page.nextCursor` を返さない点も、現行フロントエンドの無限スクロール成立を踏まえると追加不要と判断する
+- 一方で、`ORDER BY created_at DESC, id DESC` に対して seek 条件が `created_at` のみなのは厳密ではなく、同一 `created_at` の行で取りこぼしが起こりうる
+- `03_database.md`, `05_screen_spec.md`, `06_log_design.md` は ADR-023 に沿って更新する
+- `04_api_spec.yaml` は自動生成前提のため、このレビューでは更新対象から外す
 
 ### 3.4 DB 設計
 
