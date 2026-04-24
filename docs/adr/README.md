@@ -117,3 +117,4 @@ Accepted
 | 021 | `adr_021_auth_required_and_temporary_presigned_image_url.md` | 画面・API・画像配信の認証必須方針と暫定 presigned URL 運用 |
 | 022 | `adr_022_seed_cleanup_ownership.md` | seed cleanup の削除対象を seed ユーザー所有データへ拡張する方針 |
 | 023 | `adr_023_seek_pagination_boundary.md` | シークページングの `lastId` / `size` 方針と複合ソートキー境界条件 |
+| 024 | `adr_024_problem_detail_error_response_policy.md` | エラーレスポンスを `ProblemDetail` ベースで統一する方針 |
