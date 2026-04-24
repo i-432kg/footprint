@@ -103,10 +103,14 @@
 - `src/main/java/jp/i432kg/footprint/presentation/api/ReplyRestController.java`
 - `src/main/java/jp/i432kg/footprint/presentation/api/UserRestController.java`
 - `src/main/java/jp/i432kg/footprint/config/SecurityConfig.java`
+- `docs/design/generated/openapi.yaml`
+- `docs/design/review/api_spec_todo.md`
 
 判断:
 
-- `04_api_spec.yaml` は実装に追随できておらず、全面的な更新が必要
+- `04_api_spec.yaml` は実装準拠で更新済み
+- ただし springdoc 自動生成だけではフォームログイン、multipart、認可方針、ProblemDetail 説明が不足するため、手修正は継続して必要
+- API 仕様書まわりの残課題は `docs/design/review/api_spec_todo.md` に切り出して管理する
 - `05_screen_spec.md`、`07_authz_authn.md` 内の API 記述も同時に修正すべき
 
 ### 3.3 ページング仕様
