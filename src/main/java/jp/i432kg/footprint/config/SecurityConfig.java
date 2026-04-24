@@ -115,9 +115,10 @@ public class SecurityConfig {
                         .loginProcessingUrl("/api/login")
                         .usernameParameter("loginId")
                         .successHandler(authenticationSuccessHandler)
-                        .failureHandler((request, response, exception) -> {
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication Failed");
-                        })
+                        .failureHandler(
+                                (request, response, exception) ->
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication Failed")
+                        )
                         .permitAll()
                 )
 
@@ -126,9 +127,10 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-                        })
+                        .logoutSuccessHandler(
+                                (request, response, authentication) ->
+                                response.setStatus(HttpServletResponse.SC_NO_CONTENT)
+                        )
                 )
 
                 .exceptionHandling(ex -> ex
