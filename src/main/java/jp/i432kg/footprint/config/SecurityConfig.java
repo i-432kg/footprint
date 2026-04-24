@@ -65,41 +65,50 @@ public class SecurityConfig {
                     }
                 })
 
-                .authorizeHttpRequests(auth -> auth
-                        // 画面・静的リソース
-                        .requestMatchers(
-                                "/login",
-                                "/signup",
-                                "/favicon.ico",
-                                "/favicon.svg",
-                                "/css/**",
-                                "/assets/**",
-                                "/images/**",
-                                "/actuator/health"
-                        ).permitAll()
+                .authorizeHttpRequests(auth -> {
+                    // 画面・静的リソース
+                    auth.requestMatchers(
+                            "/login",
+                            "/signup",
+                            "/favicon.ico",
+                            "/favicon.svg",
+                            "/css/**",
+                            "/assets/**",
+                            "/images/**",
+                            "/actuator/health"
+                    ).permitAll();
 
-                        // 認証不要 API
-                        .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+                    // ローカル起動時のみ Open API を許可
+                    if (isLocalProfile()) {
+                        auth.requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml"
+                        ).permitAll();
+                    }
 
-                        .requestMatchers(HttpMethod.GET, "/api/posts").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/posts/search").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/posts/search/map").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/posts/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/posts/*/replies").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/replies/*").permitAll()
+                    // 認証不要 API
+                    auth.requestMatchers(HttpMethod.POST, "/api/login").permitAll();
+                    auth.requestMatchers(HttpMethod.POST, "/api/users").permitAll();
 
-                        // 認証必須 API
-                        .requestMatchers("/api/users/me/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/posts").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/replies/**").authenticated()
+                    auth.requestMatchers(HttpMethod.GET, "/api/posts").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/api/posts/search").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/api/posts/search/map").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/api/posts/*").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/api/posts/*/replies").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/api/replies/*").permitAll();
 
-                        // その他の API は閉じる
-                        .requestMatchers("/api/**").authenticated()
+                    // 認証必須 API
+                    auth.requestMatchers("/api/users/me/**").authenticated();
+                    auth.requestMatchers(HttpMethod.POST, "/api/posts").authenticated();
+                    auth.requestMatchers(HttpMethod.POST, "/api/replies/**").authenticated();
 
-                        // それ以外の画面も認証必須
-                        .anyRequest().authenticated()
-                )
+                    // その他の API は閉じる
+                    auth.requestMatchers("/api/**").authenticated();
+
+                    // それ以外の画面も認証必須
+                    auth.anyRequest().authenticated();
+                })
 
                 .formLogin(form -> form
                         .loginPage("/login")
