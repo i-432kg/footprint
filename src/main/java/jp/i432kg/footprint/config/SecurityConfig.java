@@ -74,7 +74,6 @@ public class SecurityConfig {
                             "/favicon.svg",
                             "/css/**",
                             "/assets/**",
-                            "/images/**",
                             "/actuator/health"
                     ).permitAll();
 
@@ -90,18 +89,6 @@ public class SecurityConfig {
                     // 認証不要 API
                     auth.requestMatchers(HttpMethod.POST, "/api/login").permitAll();
                     auth.requestMatchers(HttpMethod.POST, "/api/users").permitAll();
-
-                    auth.requestMatchers(HttpMethod.GET, "/api/posts").permitAll();
-                    auth.requestMatchers(HttpMethod.GET, "/api/posts/search").permitAll();
-                    auth.requestMatchers(HttpMethod.GET, "/api/posts/search/map").permitAll();
-                    auth.requestMatchers(HttpMethod.GET, "/api/posts/*").permitAll();
-                    auth.requestMatchers(HttpMethod.GET, "/api/posts/*/replies").permitAll();
-                    auth.requestMatchers(HttpMethod.GET, "/api/replies/*").permitAll();
-
-                    // 認証必須 API
-                    auth.requestMatchers("/api/users/me/**").authenticated();
-                    auth.requestMatchers(HttpMethod.POST, "/api/posts").authenticated();
-                    auth.requestMatchers(HttpMethod.POST, "/api/replies/**").authenticated();
 
                     // その他の API は閉じる
                     auth.requestMatchers("/api/**").authenticated();
