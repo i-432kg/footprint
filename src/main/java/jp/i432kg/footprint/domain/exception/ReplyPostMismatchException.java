@@ -12,12 +12,12 @@ public class ReplyPostMismatchException extends DomainException {
                 ErrorCode.REPLY_POST_MISMATCH,
                 "Reply post mismatch. expectedPostId=" + expectedPostId + ", actualPostId=" + actualPostId,
                 details(
-                        "reply",
+                        "reply.postId",
                         "post_mismatch",
-                        actualPostId,
+                        null,
                         Map.of(
-                                "expectedPostId", expectedPostId,
-                                "actualPostId", actualPostId
+                                "expectedPostId", expectedPostId.getValue(),
+                                "actualPostId", actualPostId.getValue()
                         )
                 )
         );

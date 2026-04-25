@@ -19,7 +19,7 @@
 |---|---|---|---|
 | 1 | 正常系 | resource 例外 | `PostNotFoundException`, `ReplyNotFoundException`, `UserNotFoundException` を 404 の `ProblemDetail` に変換すること |
 | 2 | 正常系 | domain 例外 | `InvalidValueException`, `ReplyPostMismatchException`, `InvalidModelException`, `EmailAlreadyUsedException` を対応ステータスへ変換すること |
-| 3 | 正常系 | validation 例外 | `MethodArgumentNotValidException`, `BindException`, `ConstraintViolationException` から field error 一覧を `details.errors` に詰めること |
+| 3 | 正常系 | validation 例外 | `MethodArgumentNotValidException`, `BindException`, `ConstraintViolationException` から `target` / `reason` / `rejectedValue` を持つ error 一覧を `details.errors` に詰めること |
 | 4 | 正常系 | 不足入力 | `MissingServletRequestParameterException`, `MissingServletRequestPartException` を validation error に変換すること |
 | 5 | 正常系 | request body / 型変換失敗 | `HttpMessageNotReadableException`, `MethodArgumentTypeMismatchException` を validation error に変換すること |
 | 6 | 正常系 | use case / generic handler | `UseCaseExecutionException`, `DomainException`, `ApplicationException` を `ErrorCode` に応じた HTTP ステータスへ変換すること |
@@ -36,13 +36,13 @@
 | 4 | 正常系 | 不正値例外を変換する | `InvalidValueException.required(...)` | status=400, title=`Invalid Value`, `errorCode=DOMAIN_INVALID_VALUE` |
 | 5 | 正常系 | メール重複例外を変換する | `EmailAlreadyUsedException` | status=409, title=`Email Already Used`, `errorCode=EMAIL_ALREADY_USED` |
 | 6 | 正常系 | 返信投稿不整合例外を変換する | `ReplyPostMismatchException` | status=400, title=`Reply Post Mismatch` |
-| 7 | 正常系 | Bean Validation 失敗を変換する | field error 1 件の `MethodArgumentNotValidException` | status=400, `details.errors[0].field/message/rejectedValue` を含む |
-| 8 | 正常系 | BindException を変換する | field error 1 件の `BindException` | status=400, `details.errors[0].field/message/rejectedValue` を含む |
-| 9 | 正常系 | ConstraintViolation を変換する | violation 1 件の `ConstraintViolationException` | status=400, `details.errors[0].field/message/rejectedValue` を含む |
-| 10 | 正常系 | 必須パラメータ欠落を変換する | `MissingServletRequestParameterException` | status=400, `details.errors[0].field=<parameterName>` |
-| 11 | 正常系 | 必須 multipart パート欠落を変換する | `MissingServletRequestPartException` | status=400, `details.errors[0].field=<partName>` |
-| 12 | 正常系 | request body 解析失敗を変換する | `HttpMessageNotReadableException` | status=400, title=`Validation Error`, `details.errors[0].field=requestBody` |
-| 13 | 正常系 | 型変換失敗を変換する | `MethodArgumentTypeMismatchException` | status=400, `details.errors[0].field=<name>` |
+| 7 | 正常系 | Bean Validation 失敗を変換する | field error 1 件の `MethodArgumentNotValidException` | status=400, `details.errors[0].target/reason/rejectedValue` を含む |
+| 8 | 正常系 | BindException を変換する | field error 1 件の `BindException` | status=400, `details.errors[0].target/reason/rejectedValue` を含む |
+| 9 | 正常系 | ConstraintViolation を変換する | violation 1 件の `ConstraintViolationException` | status=400, `details.errors[0].target/reason/rejectedValue` を含む |
+| 10 | 正常系 | 必須パラメータ欠落を変換する | `MissingServletRequestParameterException` | status=400, `details.errors[0].target=<parameterName>`, `source=query` |
+| 11 | 正常系 | 必須 multipart パート欠落を変換する | `MissingServletRequestPartException` | status=400, `details.errors[0].target=<partName>`, `source=multipart` |
+| 12 | 正常系 | request body 解析失敗を変換する | `HttpMessageNotReadableException` | status=400, title=`Validation Error`, `details.errors[0].target=requestBody`, `source=body` |
+| 13 | 正常系 | 型変換失敗を変換する | `MethodArgumentTypeMismatchException` | status=400, `details.errors[0].target=<name>`, `source=query` |
 | 14 | 正常系 | use case 実行失敗を変換する | `PostCommandFailedException.persistenceFailed(...)` | status=500, title=`Use Case Error` |
 | 15 | 正常系 | generic domain 例外を変換する | `InvalidModelException.invalid(...)` | status=400, title=`Domain Error` |
 | 16 | 正常系 | generic application 例外を変換する | `ApplicationException` test double | status=500, title=`Application Error` |

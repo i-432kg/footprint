@@ -73,6 +73,10 @@ class GlobalExceptionHandlerTest {
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(actual.getTitle()).isEqualTo("Post Not Found");
         assertThat(actual.getProperties()).containsEntry("errorCode", ErrorCode.POST_NOT_FOUND);
+        assertThat(castMap(property(actual)))
+                .containsEntry("target", "post")
+                .containsEntry("reason", "not_found")
+                .containsEntry("resourceId", "01ARZ3NDEKTSV4RRFFQ69G5FAX");
     }
 
     @Test
@@ -86,6 +90,10 @@ class GlobalExceptionHandlerTest {
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(actual.getTitle()).isEqualTo("Reply Not Found");
         assertThat(actual.getProperties()).containsEntry("errorCode", ErrorCode.REPLY_NOT_FOUND);
+        assertThat(castMap(property(actual)))
+                .containsEntry("target", "reply")
+                .containsEntry("reason", "not_found")
+                .containsEntry("resourceId", "01ARZ3NDEKTSV4RRFFQ69G5FAZ");
     }
 
     @Test
@@ -99,6 +107,10 @@ class GlobalExceptionHandlerTest {
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(actual.getTitle()).isEqualTo("User Not Found");
         assertThat(actual.getProperties()).containsEntry("errorCode", ErrorCode.USER_NOT_FOUND);
+        assertThat(castMap(property(actual)))
+                .containsEntry("target", "user")
+                .containsEntry("reason", "not_found")
+                .containsEntry("resourceId", "01ARZ3NDEKTSV4RRFFQ69G5FAV");
     }
 
     @Test
@@ -124,13 +136,20 @@ class GlobalExceptionHandlerTest {
     @DisplayName("GlobalExceptionHandler は EmailAlreadyUsedException を 409 の ProblemDetail へ変換する")
     void should_createConflictProblemDetail_when_emailAlreadyUsedExceptionIsHandled() {
         final EmailAlreadyUsedException exception = new EmailAlreadyUsedException(EmailAddress.of("user@example.com"));
-        when(sensitiveDataMasker.maskMap(exception.getDetails())).thenReturn(exception.getDetails());
+        final Map<String, Object> maskedDetails = Map.of(
+                "target", "email",
+                "reason", "already_used",
+                "rejectedValue", "u***@example.com"
+        );
+        when(sensitiveDataMasker.maskMap(exception.getDetails())).thenReturn(maskedDetails);
 
         final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker).handleEmailAlreadyUsed(exception);
 
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
         assertThat(actual.getTitle()).isEqualTo("Email Already Used");
-        assertThat(actual.getProperties()).containsEntry("errorCode", ErrorCode.EMAIL_ALREADY_USED);
+        assertThat(actual.getProperties())
+                .containsEntry("errorCode", ErrorCode.EMAIL_ALREADY_USED)
+                .containsEntry("details", maskedDetails);
     }
 
     @Test
@@ -145,6 +164,12 @@ class GlobalExceptionHandlerTest {
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(actual.getTitle()).isEqualTo("Reply Post Mismatch");
         assertThat(actual.getProperties()).containsEntry("errorCode", ErrorCode.REPLY_POST_MISMATCH);
+        assertThat(castMap(property(actual)))
+                .containsEntry("target", "reply.postId")
+                .containsEntry("reason", "post_mismatch")
+                .containsEntry("expectedPostId", "01ARZ3NDEKTSV4RRFFQ69G5FAX")
+                .containsEntry("actualPostId", "01ARZ3NDEKTSV4RRFFQ69G5FAY")
+                .doesNotContainKey("rejectedValue");
     }
 
     @Test
@@ -162,8 +187,8 @@ class GlobalExceptionHandlerTest {
         assertThat(actual.getTitle()).isEqualTo("Validation Error");
         final List<Map<String, Object>> errors = errors(actual);
         assertThat(errors).singleElement().satisfies(error -> {
-            assertThat(error).containsEntry("field", "userName");
-            assertThat(error).containsEntry("message", "size");
+            assertThat(error).containsEntry("target", "userName");
+            assertThat(error).containsEntry("reason", "size");
             assertThat(error).containsEntry("rejectedValue", "ab");
         });
     }
@@ -182,8 +207,8 @@ class GlobalExceptionHandlerTest {
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         final List<Map<String, Object>> errors = errors(actual);
         assertThat(errors).singleElement().satisfies(error -> {
-            assertThat(error).containsEntry("field", "email");
-            assertThat(error).containsEntry("message", "email");
+            assertThat(error).containsEntry("target", "email");
+            assertThat(error).containsEntry("reason", "email");
             assertThat(error).containsEntry("rejectedValue", "invalid");
         });
     }
@@ -206,8 +231,8 @@ class GlobalExceptionHandlerTest {
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         final List<Map<String, Object>> errors = errors(actual);
         assertThat(errors).singleElement().satisfies(error -> {
-            assertThat(error).containsEntry("field", "create.userName");
-            assertThat(error).containsEntry("message", "must not be blank");
+            assertThat(error).containsEntry("target", "create.userName");
+            assertThat(error).containsEntry("reason", "must not be blank");
             assertThat(error).containsEntry("rejectedValue", " ");
         });
     }
@@ -221,7 +246,10 @@ class GlobalExceptionHandlerTest {
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(actual.getDetail()).isEqualTo("必須パラメータが不足しています。");
         assertThat(errors(actual)).singleElement().satisfies(error ->
-                assertThat(error).containsEntry("field", "size"));
+                assertThat(error)
+                        .containsEntry("target", "size")
+                        .containsEntry("reason", "required")
+                        .containsEntry("source", "query"));
     }
 
     @Test
@@ -233,7 +261,10 @@ class GlobalExceptionHandlerTest {
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(actual.getDetail()).isEqualTo("必須ファイルが不足しています。");
         assertThat(errors(actual)).singleElement().satisfies(error ->
-                assertThat(error).containsEntry("field", "imageFile"));
+                assertThat(error)
+                        .containsEntry("target", "imageFile")
+                        .containsEntry("reason", "required")
+                        .containsEntry("source", "multipart"));
     }
 
     @Test
@@ -248,9 +279,10 @@ class GlobalExceptionHandlerTest {
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(actual.getTitle()).isEqualTo("Validation Error");
         assertThat(errors(actual)).singleElement().satisfies(error -> {
-            assertThat(error).containsEntry("field", "requestBody");
-            assertThat(error).containsEntry("message", "not readable");
-            assertThat(error).containsEntry("rejectedValue", null);
+            assertThat(error).containsEntry("target", "requestBody");
+            assertThat(error).containsEntry("reason", "not_readable");
+            assertThat(error).containsEntry("source", "body");
+            assertThat(error).doesNotContainKey("rejectedValue");
         });
     }
 
@@ -267,8 +299,9 @@ class GlobalExceptionHandlerTest {
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(actual.getDetail()).isEqualTo("リクエストパラメータの型が不正です。");
         assertThat(errors(actual)).singleElement().satisfies(error -> {
-            assertThat(error).containsEntry("field", "size");
-            assertThat(error).containsEntry("message", "type mismatch");
+            assertThat(error).containsEntry("target", "size");
+            assertThat(error).containsEntry("reason", "type_mismatch");
+            assertThat(error).containsEntry("source", "query");
             assertThat(error).containsEntry("rejectedValue", "abc");
         });
     }

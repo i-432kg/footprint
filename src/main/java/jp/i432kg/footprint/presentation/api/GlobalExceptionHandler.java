@@ -166,7 +166,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ProblemDetail handleMissingRequestParameter(final MissingServletRequestParameterException ex) {
         final List<Map<String, Object>> errors = List.of(
-                validationError(ex.getParameterName(), "required", null)
+                validationError(ex.getParameterName(), "required", null, "query")
         );
 
         log.warn("Missing request parameter. parameter={}", ex.getParameterName());
@@ -182,7 +182,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestPartException.class)
     public ProblemDetail handleMissingRequestPart(final MissingServletRequestPartException ex) {
         final List<Map<String, Object>> errors = List.of(
-                validationError(ex.getRequestPartName(), "required", null)
+                validationError(ex.getRequestPartName(), "required", null, "multipart")
         );
 
         log.warn("Missing request part. part={}", ex.getRequestPartName());
@@ -198,7 +198,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ProblemDetail handleHttpMessageNotReadable(final HttpMessageNotReadableException ex) {
         final List<Map<String, Object>> errors = List.of(
-                validationError("requestBody", "not readable", null)
+                validationError("requestBody", "not_readable", null, "body")
         );
 
         log.warn(
@@ -217,7 +217,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ProblemDetail handleMethodArgumentTypeMismatch(final MethodArgumentTypeMismatchException ex) {
         final List<Map<String, Object>> errors = List.of(
-                validationError(ex.getName(), "type mismatch", ex.getValue())
+                validationError(ex.getName(), "type_mismatch", ex.getValue(), "query")
         );
 
         log.warn("Type mismatch. parameter={}, value={}", ex.getName(), ex.getValue());
@@ -318,20 +318,34 @@ public class GlobalExceptionHandler {
     /**
      * バリデーションエラー1件分の情報を作成します。
      *
-     * @param field フィールド名
-     * @param message エラーメッセージ
+     * @param target 入力対象
+     * @param reason エラー理由
      * @param rejectedValue 入力値
      * @return エラー情報
      */
     private Map<String, Object> validationError(
-            final String field,
-            final String message,
+            final String target,
+            final String reason,
             final Object rejectedValue
     ) {
+        return validationError(target, reason, rejectedValue, null);
+    }
+
+    private Map<String, Object> validationError(
+            final String target,
+            final String reason,
+            final Object rejectedValue,
+            final String source
+    ) {
         final Map<String, Object> error = new LinkedHashMap<>();
-        error.put("field", field);
-        error.put("message", message);
-        error.put("rejectedValue", sanitizeRejectedValue(field, rejectedValue));
+        error.put("target", target);
+        error.put("reason", reason);
+        if (source != null) {
+            error.put("source", source);
+        }
+        if (rejectedValue != null) {
+            error.put("rejectedValue", sanitizeRejectedValue(target, rejectedValue));
+        }
         return error;
     }
 

@@ -21,7 +21,7 @@
 | No. | 区分 | 観点 | 確認内容 |
 |---|---|---|---|
 | 1 | 正常系 | 固定フォーマット message | `expectedPostId`, `actualPostId` を埋め込んだ message を生成すること |
-| 2 | 正常系 | details | `target=reply`, `reason=post_mismatch`, `rejectedValue=actualPostId`, `expectedPostId`, `actualPostId` を保持すること |
+| 2 | 正常系 | details | `target=reply.postId`, `reason=post_mismatch`, `expectedPostId`, `actualPostId` を保持すること |
 | 3 | 正常系 | エラーコード | `REPLY_POST_MISMATCH` を保持すること |
 
 ## 4. テストケース一覧

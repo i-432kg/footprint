@@ -23,10 +23,10 @@ class ReplyPostMismatchExceptionTest {
         );
         assertThat(actual.getErrorCode()).isEqualTo(ErrorCode.REPLY_POST_MISMATCH);
         assertThat(actual.getDetails())
-                .containsEntry("target", "reply")
+                .containsEntry("target", "reply.postId")
                 .containsEntry("reason", "post_mismatch")
-                .containsEntry("rejectedValue", DomainTestFixtures.postId())
-                .containsEntry("expectedPostId", DomainTestFixtures.otherPostId())
-                .containsEntry("actualPostId", DomainTestFixtures.postId());
+                .doesNotContainKey("rejectedValue")
+                .containsEntry("expectedPostId", DomainTestFixtures.otherPostId().getValue())
+                .containsEntry("actualPostId", DomainTestFixtures.postId().getValue());
     }
 }
