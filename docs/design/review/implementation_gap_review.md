@@ -16,13 +16,17 @@
 
 大きな差分は以下の 5 点に集約される。
 
-1. 認可仕様と実装、新たに採用した認証必須方針がずれている
-2. API エンドポイントとリクエスト/レスポンス仕様が大きく変わっている
-3. ページング仕様は `lastId` ベースへ整理できるが、SQL の seek 条件は改善余地がある
-4. DB 設計が `id` 中心から `public_id` 中心へ変わっている
-5. 初期設計にない検索画面、検索 API、S3/フロント別リポジトリ連携などの実装が追加されている
+1. 認可仕様と実装、新たに採用した認証必須方針がずれていた
+2. API エンドポイントとリクエスト/レスポンス仕様が大きく変わっていた
+3. ページング仕様は `lastId` ベースへ整理できるが、SQL の seek 条件に改善余地があった
+4. DB 設計が `id` 中心から `public_id` 中心へ変わっていた
+5. 初期設計にない検索画面、検索 API、S3/フロント別リポジトリ連携などの実装が追加されていた
 
-更新優先度は `04_api_spec.yaml`、`05_screen_spec.md`、`07_authz_authn.md`、`03_database.md`、`06_log_design.md` の順が妥当。
+2026-04-25 時点の対応状況:
+
+- 認可仕様、API エンドポイント、ページング実装、DB 定義の主要差分は設計・実装へ反映済み
+- 未解消の主論点は、ログ設計、位置情報入力元、画像アップロード制約、ログイン成功後挙動、seed 運用である
+- 詳細なクローズ状況は `docs/design/review/design_review_status.md` を参照する
 
 ## 3. 主要差分
 
@@ -36,16 +40,9 @@
 
 一方、現状の `SecurityConfig` では、画面側の `permitAll` は `/login`, `/signup` と静的リソースのみであり、`/`, `/timeline`, `/map`, `/search`, `/mypage` を含むその他画面は `.anyRequest().authenticated()` の対象になっている。
 
-ただし、閲覧系 API は現状 `permitAll()` のまま残っている。
+現在の `SecurityConfig` では、未認証公開は `/login`、サインアップ、静的リソース、ヘルスチェック、local OpenAPI のみであり、`/api/**` は原則認証必須へ整理済みである。
 
-- `GET /api/posts`
-- `GET /api/posts/search`
-- `GET /api/posts/search/map`
-- `GET /api/posts/*`
-- `GET /api/posts/*/replies`
-- `GET /api/replies/*`
-
-また local 画像配信用の `/images/**` も `permitAll()` であり、stg / prod では API レスポンスで S3 presigned URL を返す実装になっている。
+local 画像配信用の `/images/**` は ResourceHandler としては残るが、`permitAll()` ではなく認証必須として扱う。stg / prod では API レスポンスで S3 presigned URL を返す実装になっている。
 
 レビュー後の採用方針:
 
@@ -66,10 +63,9 @@
 判断:
 
 - 初期設計の「閲覧は公開、操作はログイン必須」は採用しない
-- 現状実装の「画面は概ね認証必須」は方針として採用する
-- ただし閲覧系 API と local 画像配信の `permitAll()` は新方針と不一致であり、実装修正が必要
+- 画面・API・画像配信は原則認証必須とする
+- `SecurityConfig` は新方針へ追随済みであり、`07_authz_authn.md` も整合済み
 - stg / prod の presigned URL は暫定策として継続するが、既定 30 分は短縮対象
-- `05_screen_spec.md` と `07_authz_authn.md` は ADR-021 に沿って更新する
 
 ### 3.2 API 仕様
 
@@ -104,14 +100,14 @@
 - `src/main/java/jp/i432kg/footprint/presentation/api/UserRestController.java`
 - `src/main/java/jp/i432kg/footprint/config/SecurityConfig.java`
 - `docs/design/generated/openapi.yaml`
-- `docs/design/review/api_spec_todo.md`
+- `docs/design/todo/api_spec_todo.md`
 
 判断:
 
 - `04_api_spec.yaml` は実装準拠で更新済み
-- ただし springdoc 自動生成だけではフォームログイン、multipart、認可方針、ProblemDetail 説明が不足するため、手修正は継続して必要
-- API 仕様書まわりの残課題は `docs/design/review/api_spec_todo.md` に切り出して管理する
-- `05_screen_spec.md`、`07_authz_authn.md` 内の API 記述も同時に修正すべき
+- 自動生成 OpenAPI は下書き、`04_api_spec.yaml` を最終仕様書とする運用を採る
+- springdoc 自動生成だけではフォームログイン、multipart、認可方針、ProblemDetail 説明が不足するため、手修正は継続して必要
+- API 仕様書まわりの残課題は `docs/design/todo/api_spec_todo.md` で管理する
 
 ### 3.3 ページング仕様
 
@@ -126,7 +122,7 @@
 - `lastId` をクエリパラメータで受け取る
 - 件数は `size`
 - レスポンスは `List<...>` であり、ページ情報は返さない
-- SQL は `ORDER BY created_at DESC, id DESC` に対して `created_at < (SELECT created_at ...)` ベースのシーク相当実装
+- SQL は `ORDER BY created_at DESC, id DESC` に対して複合 seek 条件を採用し、初回表示用と継続取得用に分割している
 
 関連実装:
 
@@ -135,14 +131,14 @@
 - `src/main/resources/jp/i432kg/footprint/infrastructure/datasource/mapper/query/PostQueryMapper.xml`
 - `src/main/resources/jp/i432kg/footprint/infrastructure/datasource/mapper/query/ReplyQueryMapper.xml`
 - `docs/adr/adr_023_seek_pagination_boundary.md`
+- `docs/adr/adr_025_seek_pagination_query_split.md`
 
 判断:
 
 - `cursor` / `limit` と `lastId` / `size` の差分は、仕様書を実装に合わせて読み替えれば大きな問題ではない
 - `page.nextCursor` を返さない点も、現行フロントエンドの無限スクロール成立を踏まえると追加不要と判断する
-- 一方で、`ORDER BY created_at DESC, id DESC` に対して seek 条件が `created_at` のみなのは厳密ではなく、同一 `created_at` の行で取りこぼしが起こりうる
-- `03_database.md`, `05_screen_spec.md`, `06_log_design.md` は ADR-023 に沿って更新する
-- `04_api_spec.yaml` は自動生成前提のため、このレビューでは更新対象から外す
+- seek 条件は `ORDER BY created_at DESC, id DESC` と整合する複合条件へ修正済みである
+- 可読性を優先し、初回表示用と継続取得用で SQL を分割する方針を採用した
 
 ### 3.4 DB 設計
 
@@ -162,8 +158,8 @@
 
 判断:
 
-- `03_database.md` は大枠のエンティティ分類は近いが、列定義とキー設計が現状と大きく異なる
-- 特に `public_id` 中心設計への更新が必要
+- `03_database.md` は現状実装ベースへ更新済みである
+- `id` と `public_id` の役割分担、FK に `public_id` を使う意図、`users` の状態系カラム、`replies.child_count` の整合性責務まで反映した
 
 ### 3.5 画面仕様
 

@@ -8,6 +8,7 @@
 - `docs/design/04_api_spec.yaml`
 - `docs/design/07_authz_authn.md`
 - `docs/adr/adr_024_problem_detail_error_response_policy.md`
+- `docs/adr/adr_027_problem_detail_details_structure.md`
 
 ## 目的
 
@@ -18,9 +19,9 @@
 | ID | 項目 | ステータス | 対応内容 | 備考 |
 |---|---|---|---|---|
 | ERR-01 | `type` を安定 URI として整備する | Open | 問題種別ごとの URI 命名規約と一覧を決める | `about:blank` からの移行 |
-| ERR-02 | `details` の構造を安定化する | Open | バリデーションエラー等の JSON 構造を固定する | `field`, `reason`, `rejectedValue` など |
+| ERR-02 | `details` の構造を安定化する | Closed | ADR-027 に基づき、`details` を object、正規項目を `target`, `reason`, `rejectedValue` とする構造へ実装と OpenAPI を更新した | バリデーションは `details.errors[]` とする |
 | ERR-03 | `application/problem+json` の扱いを明確化する | Open | Content-Type を明示運用するか判断する | 既存クライアント影響を確認 |
-| ERR-04 | `07_authz_authn.md` を `ProblemDetail` 方針へ追随させる | Open | 独自 `ErrorResponse` 前提の記述を修正する | ADR-024 準拠 |
+| ERR-04 | `07_authz_authn.md` を `ProblemDetail` 方針へ追随させる | Closed | `07_authz_authn.md` のエラー応答説明を `ProblemDetail` / `errorCode` / `details` 前提へ更新済み | ADR-024 準拠 |
 | ERR-05 | 機微情報の露出を継続的に抑制する | In Progress | `errorCode` / `details` / `detail` の出力内容を見直す | `SensitiveDataMasker` と連動 |
 
 ## TODO 詳細
@@ -39,15 +40,22 @@ TODO:
 
 ### 2. `details` の構造を安定化する
 
-状況:
+対応済み:
 
-- `details` は拡張プロパティとして有効だが、構造が揺れるとクライアントが扱いづらい
+- `GlobalExceptionHandler.validationError(...)` を `target` / `reason` ベースへ更新した
+- resource not found 系例外を `target` / `reason` / `resourceId` を持つ構造へ更新した
+- `04_api_spec.yaml` の `ProblemDetailError.details` を object スキーマへ修正した
+- バリデーションエラーは `details.errors[]`、独自例外は `details` 直下 object のまま扱うように統一した
 
-TODO:
+方針:
 
-- バリデーションエラーの最小共通項目を決める
-- `field`, `reason`, `rejectedValue` などの項目を固定するか判断する
-- エラー種別ごとに過度なばらつきが出ないようにする
+- ADR-027 に基づき、`details` は常に object とする
+- 正規項目は `target`, `reason`, `rejectedValue` とする
+- バリデーションエラーは `details.errors[]` 配下へ正規項目を並べる
+- 人間向け文言は `detail` に寄せ、`details.message` は正規項目にしない
+
+- `source` は必要なケース（query / body / multipart）に限定して追加する
+- 任意項目 (`min`, `max`, `expectedFormat` など) の使用ルールは ADR-027 を参照する
 
 ### 3. `application/problem+json` の扱いを明確化する
 
@@ -64,15 +72,12 @@ TODO:
 
 ### 4. `07_authz_authn.md` を `ProblemDetail` 方針へ追随させる
 
-状況:
+対応済み:
 
-- API 仕様書は更新済み
-- ただし周辺設計資料には独自 `ErrorResponse` 前提の記述が残る可能性がある
+- `07_authz_authn.md` のエラー応答説明は `ProblemDetail` 前提へ更新済み
+- 標準項目、`errorCode`, `details`, `application/problem+json`, ADR-024 参照まで反映済み
 
-TODO:
-
-- `07_authz_authn.md` のエラー応答説明を更新する
-- 必要なら他の設計書も横断確認する
+- 周辺設計資料の横断確認は、個別 TODO ではなくレビュー資料更新の中で継続的に行う
 
 ### 5. 機微情報の露出を継続的に抑制する
 
