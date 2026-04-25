@@ -3,6 +3,7 @@ package jp.i432kg.footprint.infrastructure.datasource.query;
 import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;
 import jp.i432kg.footprint.application.query.service.PostQueryService;
 import jp.i432kg.footprint.application.query.model.PostSummary;
+import jp.i432kg.footprint.domain.model.BoundingBox;
 import jp.i432kg.footprint.domain.value.*;
 import jp.i432kg.footprint.infrastructure.datasource.mapper.query.PostQueryMapper;
 import lombok.RequiredArgsConstructor;
@@ -46,13 +47,8 @@ public class PostQueryServiceImpl implements PostQueryService {
     }
 
     @Override
-    public List<PostSummary> searchPostsByBBox(
-            final Latitude minLat,
-            final Latitude maxLat,
-            final Longitude minLng,
-            final Longitude maxLng
-    ) {
-        return postQueryMapper.findPostsByBBox(minLat, maxLat, minLng, maxLng);
+    public List<PostSummary> searchPostsByBBox(final BoundingBox boundingBox) {
+        return postQueryMapper.findPostsByBBox(boundingBox);
     }
 
     @Override

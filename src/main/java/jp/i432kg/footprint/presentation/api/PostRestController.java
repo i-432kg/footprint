@@ -14,6 +14,7 @@ import jp.i432kg.footprint.application.query.service.PostQueryService;
 import jp.i432kg.footprint.application.query.service.ReplyQueryService;
 import jp.i432kg.footprint.application.query.model.PostSummary;
 import jp.i432kg.footprint.application.query.model.ReplySummary;
+import jp.i432kg.footprint.domain.model.BoundingBox;
 import jp.i432kg.footprint.domain.value.*;
 import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
 import jp.i432kg.footprint.presentation.api.request.PostRequest;
@@ -122,10 +123,7 @@ public class PostRestController {
 
         // 検索結果を取得する
         final List<PostSummary> postSummaries = postQueryService.searchPostsByBBox(
-                Latitude.of(minLat),
-                Latitude.of(maxLat),
-                Longitude.of(minLng),
-                Longitude.of(maxLng)
+                BoundingBox.of(minLat, maxLat, minLng, maxLng)
         );
 
         // レスポンス形式に変換する

@@ -119,3 +119,4 @@ Accepted
 | 023 | `adr_023_seek_pagination_boundary.md` | シークページングの `lastId` / `size` 方針と複合ソートキー境界条件 |
 | 024 | `adr_024_problem_detail_error_response_policy.md` | エラーレスポンスを `ProblemDetail` ベースで統一する方針 |
 | 025 | `adr_025_seek_pagination_query_split.md` | シークページング SQL を初回表示用と seek 継続取得用へ分割する方針 |
+| 026 | `adr_026_bbox_business_constraints.md` | bbox 検索の最小成立条件を `BoundingBox` ドメインモデルで検証する方針 |

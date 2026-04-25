@@ -3,7 +3,7 @@
 ## 1. 基本情報
 
 - 対象クラス: `PostQueryServiceImpl`
-- 対象メソッド: `listRecentPosts(PostId, int)`, `listMyPosts(UserId, PostId, int)`, `searchPosts(SearchKeyword, PostId, int)`, `searchPostsByBBox(Latitude, Latitude, Longitude, Longitude)`, `getPost(PostId)`, `findPost(PostId)`
+- 対象メソッド: `listRecentPosts(PostId, int)`, `listMyPosts(UserId, PostId, int)`, `searchPosts(SearchKeyword, PostId, int)`, `searchPostsByBBox(BoundingBox)`, `getPost(PostId)`, `findPost(PostId)`
 - 対象パッケージ: `jp.i432kg.footprint.infrastructure.datasource.query`
 - 対応するテストクラス: `PostQueryServiceImplTest`
 - 作成者: Codex
@@ -12,7 +12,7 @@
 ## 2. 対象概要
 
 - 何をする処理か: 投稿参照系ユースケースを `PostQueryMapper` に委譲し、ページング系は `lastId` の有無で初回表示用 mapper と seek 継続取得用 mapper を呼び分ける。詳細取得時のみ `Optional.empty()` を `PostNotFoundException` に変換する
-- 入力: `PostId`, `UserId`, `SearchKeyword`, `Latitude`, `Longitude`, `size`
+- 入力: `PostId`, `UserId`, `SearchKeyword`, `BoundingBox`, `size`
 - 出力: `List<PostSummary>`, `PostSummary`, `Optional<PostSummary>`
 - 主な副作用: なし
 
@@ -36,7 +36,7 @@
 | 4 | 境界値 | 自分の投稿一覧取得で `lastId=null` のとき初回表示用 mapper を呼ぶ | `userId`, `lastId=null`, `size`、mapper が一覧を返す | `findMyPostsFirstPage(userId, size)` が呼ばれる | ページング先頭 |
 | 5 | 正常系 | キーワード検索を seek 継続取得する | `keyword`, `lastId`, `size`、mapper が一覧を返す | `findPostsByKeywordAfterCursor(keyword, lastId, size)` が呼ばれ、同等の一覧を返す |  |
 | 6 | 境界値 | キーワード検索で `lastId=null` のとき初回表示用 mapper を呼ぶ | `keyword`, `lastId=null`, `size`、mapper が一覧を返す | `findPostsByKeywordFirstPage(keyword, size)` が呼ばれる | ページング先頭 |
-| 7 | 正常系 | BBox 検索を行う | `minLat`, `maxLat`, `minLng`, `maxLng`、mapper が一覧を返す | `findPostsByBBox(...)` が呼ばれ、同等の一覧を返す |  |
+| 7 | 正常系 | BBox 検索を行う | `BoundingBox`、mapper が一覧を返す | `findPostsByBBox(boundingBox)` が呼ばれ、同等の一覧を返す |  |
 | 8 | 正常系 | 投稿詳細を取得する | `findPostById(postId)` が `Optional.of(summary)` を返す | `getPost(postId)` が `summary` を返す |  |
 | 9 | 異常系 | 投稿不存在を例外へ変換する | `findPostById(postId)` が `Optional.empty()` を返す | `PostNotFoundException` を送出する | `postId` を保持していることも確認候補 |
 | 10 | 正常系 | 投稿詳細検索で `Optional` を返す | `findPostById(postId)` が `Optional.of(summary)` または `Optional.empty()` | `findPost(postId)` が mapper 戻り値をそのまま返す | 2 パターンに分けてもよい |

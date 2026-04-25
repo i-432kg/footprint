@@ -1,6 +1,7 @@
 package jp.i432kg.footprint.domain;
 
 import jp.i432kg.footprint.domain.model.Image;
+import jp.i432kg.footprint.domain.model.BoundingBox;
 import jp.i432kg.footprint.domain.model.Location;
 import jp.i432kg.footprint.domain.model.ParentReply;
 import jp.i432kg.footprint.domain.model.Post;
@@ -87,6 +88,15 @@ public final class DomainTestFixtures {
 
     public static Location location() {
         return Location.of(latitude(), longitude());
+    }
+
+    public static BoundingBox boundingBox() {
+        return BoundingBox.of(
+                latitude(),
+                Latitude.of(new BigDecimal("35.700000")),
+                longitude(),
+                Longitude.of(new BigDecimal("139.800000"))
+        );
     }
 
     public static Image image() {

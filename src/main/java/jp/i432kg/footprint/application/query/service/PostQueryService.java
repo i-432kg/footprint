@@ -2,6 +2,7 @@ package jp.i432kg.footprint.application.query.service;
 
 import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;
 import jp.i432kg.footprint.application.query.model.PostSummary;
+import jp.i432kg.footprint.domain.model.BoundingBox;
 import jp.i432kg.footprint.domain.value.*;
 import org.jspecify.annotations.Nullable;
 
@@ -43,20 +44,12 @@ public interface PostQueryService {
     List<PostSummary> searchPosts(SearchKeyword keyword, @Nullable PostId lastId, int size);
 
     /**
-     * 指定された座標範囲（緯度経度の境界ボックス）に含まれる位置情報を持つ投稿一覧を取得します。
+     * 指定された境界ボックス内に含まれる位置情報を持つ投稿一覧を取得します。
      *
-     * @param minLat 最小緯度
-     * @param maxLat 最大緯度
-     * @param minLng 最小経度
-     * @param maxLng 最大経度
+     * @param boundingBox 検索対象の境界ボックス
      * @return 範囲内の投稿リスト
      */
-    List<PostSummary> searchPostsByBBox(
-            Latitude minLat,
-            Latitude maxLat,
-            Longitude minLng,
-            Longitude maxLng
-    );
+    List<PostSummary> searchPostsByBBox(BoundingBox boundingBox);
 
     /**
      * 投稿を取得する。

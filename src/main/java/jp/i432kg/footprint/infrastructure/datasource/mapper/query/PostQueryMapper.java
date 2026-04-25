@@ -1,6 +1,7 @@
 package jp.i432kg.footprint.infrastructure.datasource.mapper.query;
 
 import jp.i432kg.footprint.application.query.model.PostSummary;
+import jp.i432kg.footprint.domain.model.BoundingBox;
 import jp.i432kg.footprint.domain.value.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -97,16 +98,8 @@ public interface PostQueryMapper {
     /**
      * 指定した境界ボックス内の投稿一覧を検索する。
      *
-     * @param minLat 最小緯度
-     * @param maxLat 最大緯度
-     * @param minLng 最小経度
-     * @param maxLng 最大経度
+     * @param boundingBox 検索対象の境界ボックス
      * @return 投稿の参照専用モデルのリスト
      */
-    List<PostSummary> findPostsByBBox(
-            @Param("minLat") Latitude minLat,
-            @Param("maxLat") Latitude maxLat,
-            @Param("minLng") Longitude minLng,
-            @Param("maxLng") Longitude maxLng
-    );
+    List<PostSummary> findPostsByBBox(@Param("boundingBox") BoundingBox boundingBox);
 }

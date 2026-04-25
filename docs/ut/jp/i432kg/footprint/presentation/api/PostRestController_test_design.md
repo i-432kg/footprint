@@ -19,7 +19,7 @@
 |---|---|---|---|
 | 1 | 正常系 | 最新一覧取得 | `lastId` の有無に応じて `PostQueryService.listRecentPosts(...)` を呼び、mapper 結果を 200 で返すこと |
 | 2 | 正常系 | キーワード検索 | `SearchKeyword`, `PostId` 変換後に `searchPosts(...)` を呼ぶこと |
-| 3 | 正常系 | 地図検索 | `Latitude` / `Longitude` へ変換して `searchPostsByBBox(...)` を呼ぶこと |
+| 3 | 正常系 | 地図検索 | 4 つの座標値を `BoundingBox` ドメインモデルへ変換して `searchPostsByBBox(...)` を呼ぶこと |
 | 4 | 正常系 | 投稿詳細取得 | `postId` を `PostId` へ変換して `getPost(...)` を呼ぶこと |
 | 5 | 正常系 | 投稿配下返信取得 | `postId` を `PostId` へ変換して `listTopLevelReplies(...)` を呼ぶこと |
 | 6 | 正常系 | 投稿作成 | `PostRequest` と認証ユーザーから `CreatePostCommand` を生成し `createPost(...)` を呼ぶこと |
@@ -31,7 +31,7 @@
 |---|---|---|---|---|
 | 1 | 正常系 | 最新一覧を取得する | `lastId` あり、`size=10` | status=200、mapper 結果を body に返す |
 | 2 | 正常系 | キーワード検索を行う | `keyword`, `lastId` あり | `SearchKeyword` / `PostId` 変換後に service を呼ぶ |
-| 3 | 正常系 | 地図検索を行う | 緯度経度の範囲指定 | `Latitude` / `Longitude` 変換後に service を呼ぶ |
+| 3 | 正常系 | 地図検索を行う | 緯度経度の範囲指定 | `BoundingBox` 変換後に service を呼ぶ |
 | 4 | 正常系 | 投稿詳細を取得する | `postId` 指定 | status=200、mapper 結果を body に返す |
 | 5 | 正常系 | トップレベル返信一覧を取得する | `postId` 指定 | status=200、mapper 結果を body に返す |
 | 6 | 正常系 | 投稿を作成する | 非空画像、コメントあり | status=201、`CreatePostCommand` を生成して command service を呼ぶ |

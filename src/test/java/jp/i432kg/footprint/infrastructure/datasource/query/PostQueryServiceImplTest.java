@@ -5,8 +5,7 @@ import jp.i432kg.footprint.application.query.model.ImageSummary;
 import jp.i432kg.footprint.application.query.model.LocationSummary;
 import jp.i432kg.footprint.application.query.model.PostSummary;
 import jp.i432kg.footprint.domain.DomainTestFixtures;
-import jp.i432kg.footprint.domain.value.Latitude;
-import jp.i432kg.footprint.domain.value.Longitude;
+import jp.i432kg.footprint.domain.model.BoundingBox;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.SearchKeyword;
 import jp.i432kg.footprint.domain.value.StorageType;
@@ -17,8 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -123,17 +120,14 @@ class PostQueryServiceImplTest {
     @Test
     @DisplayName("PostQueryServiceImpl.searchPostsByBBox は境界ボックス検索結果を返す")
     void should_returnPostsInBoundingBox_when_searchPostsByBBoxCalled() {
-        final Latitude minLat = DomainTestFixtures.latitude();
-        final Latitude maxLat = Latitude.of(new BigDecimal("35.700000"));
-        final Longitude minLng = DomainTestFixtures.longitude();
-        final Longitude maxLng = Longitude.of(new BigDecimal("139.800000"));
+        final BoundingBox boundingBox = DomainTestFixtures.boundingBox();
         final List<PostSummary> expected = List.of(postSummary());
-        when(postQueryMapper.findPostsByBBox(minLat, maxLat, minLng, maxLng)).thenReturn(expected);
+        when(postQueryMapper.findPostsByBBox(boundingBox)).thenReturn(expected);
 
-        final List<PostSummary> actual = newService().searchPostsByBBox(minLat, maxLat, minLng, maxLng);
+        final List<PostSummary> actual = newService().searchPostsByBBox(boundingBox);
 
         assertThat(actual).isEqualTo(expected);
-        verify(postQueryMapper).findPostsByBBox(minLat, maxLat, minLng, maxLng);
+        verify(postQueryMapper).findPostsByBBox(boundingBox);
         verifyNoMoreInteractions(postQueryMapper);
     }
 

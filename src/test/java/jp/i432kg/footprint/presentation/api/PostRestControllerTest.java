@@ -7,6 +7,7 @@ import jp.i432kg.footprint.application.query.model.ReplySummary;
 import jp.i432kg.footprint.application.query.service.PostQueryService;
 import jp.i432kg.footprint.application.query.service.ReplyQueryService;
 import jp.i432kg.footprint.domain.DomainTestFixtures;
+import jp.i432kg.footprint.domain.model.BoundingBox;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
 import jp.i432kg.footprint.infrastructure.security.mapper.AuthMapper;
@@ -87,10 +88,12 @@ class PostRestControllerTest {
         final List<PostSummary> summaries = List.of(new PostSummary());
         final List<PostItemResponse> responses = List.of(dummyPostResponse());
         when(postQueryService.searchPostsByBBox(
-                org.mockito.ArgumentMatchers.eq(DomainTestFixtures.latitude()),
-                org.mockito.ArgumentMatchers.eq(jp.i432kg.footprint.domain.value.Latitude.of(new java.math.BigDecimal("35.700000"))),
-                org.mockito.ArgumentMatchers.eq(DomainTestFixtures.longitude()),
-                org.mockito.ArgumentMatchers.eq(jp.i432kg.footprint.domain.value.Longitude.of(new java.math.BigDecimal("139.800000")))
+                org.mockito.ArgumentMatchers.eq(BoundingBox.of(
+                        new java.math.BigDecimal("35.681236"),
+                        new java.math.BigDecimal("35.700000"),
+                        new java.math.BigDecimal("139.767125"),
+                        new java.math.BigDecimal("139.800000")
+                ))
         )).thenReturn(summaries);
         when(postResponseMapper.fromList(summaries)).thenReturn(responses);
 
