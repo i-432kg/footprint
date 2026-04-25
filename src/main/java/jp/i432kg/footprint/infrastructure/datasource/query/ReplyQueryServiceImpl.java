@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * {@link ReplyQueryService} のデータソース参照実装。
@@ -35,6 +36,8 @@ public class ReplyQueryServiceImpl implements ReplyQueryService {
 
     @Override
     public List<ReplySummary> listMyReplies(final UserId userId, final @Nullable ReplyId lastId, final int size) {
-        return replyQueryMapper.findMyReplies(userId, lastId, size);
+        return Objects.isNull(lastId)
+                ? replyQueryMapper.findMyRepliesFirstPage(userId, size)
+                : replyQueryMapper.findMyRepliesAfterCursor(userId, lastId, size);
     }
 }

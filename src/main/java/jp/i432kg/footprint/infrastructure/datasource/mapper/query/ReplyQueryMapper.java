@@ -6,8 +6,6 @@ import jp.i432kg.footprint.domain.value.ReplyId;
 import jp.i432kg.footprint.domain.value.UserId;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.jspecify.annotations.Nullable;
-
 import java.util.List;
 
 /**
@@ -33,16 +31,28 @@ public interface ReplyQueryMapper {
     List<ReplySummary> findNestedRepliesByParentId(@Param("parentReplyId") ReplyId parentReplyId);
 
     /**
-     * ユーザーが投稿した返信一覧を検索する。
+     * ユーザーが投稿した返信一覧の先頭ページを検索する。
+     *
+     * @param userId ユーザー ID
+     * @param size 取得件数
+     * @return 返信の参照専用モデルのリスト
+     */
+    List<ReplySummary> findMyRepliesFirstPage(
+            @Param("userId") UserId userId,
+            @Param("size") int size
+    );
+
+    /**
+     * ユーザーが投稿した返信一覧をシーク継続取得する。
      *
      * @param userId ユーザー ID
      * @param lastId 最後に取得した返信 ID
      * @param size 取得件数
      * @return 返信の参照専用モデルのリスト
      */
-    List<ReplySummary> findMyReplies(
+    List<ReplySummary> findMyRepliesAfterCursor(
             @Param("userId") UserId userId,
-            @Param("lastId") @Nullable ReplyId lastId,
+            @Param("lastId") ReplyId lastId,
             @Param("size") int size
     );
 }

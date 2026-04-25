@@ -60,12 +60,12 @@ class ReplyQueryServiceImplTest {
         final UserId userId = DomainTestFixtures.userId();
         final ReplyId lastId = DomainTestFixtures.replyId();
         final List<ReplySummary> expected = List.of(replySummary("reply-01", null));
-        when(replyQueryMapper.findMyReplies(userId, lastId, 10)).thenReturn(expected);
+        when(replyQueryMapper.findMyRepliesAfterCursor(userId, lastId, 10)).thenReturn(expected);
 
         final List<ReplySummary> actual = newService().listMyReplies(userId, lastId, 10);
 
         assertThat(actual).isEqualTo(expected);
-        verify(replyQueryMapper).findMyReplies(userId, lastId, 10);
+        verify(replyQueryMapper).findMyRepliesAfterCursor(userId, lastId, 10);
         verifyNoMoreInteractions(replyQueryMapper);
     }
 
@@ -74,12 +74,12 @@ class ReplyQueryServiceImplTest {
     void should_delegateNullLastId_when_listMyRepliesCalledWithoutPagingCursor() {
         final UserId userId = DomainTestFixtures.userId();
         final List<ReplySummary> expected = List.of();
-        when(replyQueryMapper.findMyReplies(userId, null, 10)).thenReturn(expected);
+        when(replyQueryMapper.findMyRepliesFirstPage(userId, 10)).thenReturn(expected);
 
         final List<ReplySummary> actual = newService().listMyReplies(userId, null, 10);
 
         assertThat(actual).isEqualTo(expected);
-        verify(replyQueryMapper).findMyReplies(userId, null, 10);
+        verify(replyQueryMapper).findMyRepliesFirstPage(userId, 10);
         verifyNoMoreInteractions(replyQueryMapper);
     }
 

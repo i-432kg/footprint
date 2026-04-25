@@ -40,12 +40,12 @@ class PostQueryServiceImplTest {
     void should_returnRecentPosts_when_listRecentPostsCalled() {
         final PostId lastId = DomainTestFixtures.postId();
         final List<PostSummary> expected = List.of(postSummary());
-        when(postQueryMapper.findRecentPosts(lastId, 10)).thenReturn(expected);
+        when(postQueryMapper.findRecentPostsAfterCursor(lastId, 10)).thenReturn(expected);
 
         final List<PostSummary> actual = newService().listRecentPosts(lastId, 10);
 
         assertThat(actual).isEqualTo(expected);
-        verify(postQueryMapper).findRecentPosts(lastId, 10);
+        verify(postQueryMapper).findRecentPostsAfterCursor(lastId, 10);
         verifyNoMoreInteractions(postQueryMapper);
     }
 
@@ -53,12 +53,12 @@ class PostQueryServiceImplTest {
     @DisplayName("PostQueryServiceImpl.listRecentPosts は lastId が null の場合もそのまま mapper へ委譲する")
     void should_delegateNullLastId_when_listRecentPostsCalledWithoutPagingCursor() {
         final List<PostSummary> expected = List.of(postSummary());
-        when(postQueryMapper.findRecentPosts(null, 10)).thenReturn(expected);
+        when(postQueryMapper.findRecentPostsFirstPage(10)).thenReturn(expected);
 
         final List<PostSummary> actual = newService().listRecentPosts(null, 10);
 
         assertThat(actual).isEqualTo(expected);
-        verify(postQueryMapper).findRecentPosts(null, 10);
+        verify(postQueryMapper).findRecentPostsFirstPage(10);
         verifyNoMoreInteractions(postQueryMapper);
     }
 
@@ -68,12 +68,12 @@ class PostQueryServiceImplTest {
         final UserId userId = DomainTestFixtures.userId();
         final PostId lastId = DomainTestFixtures.postId();
         final List<PostSummary> expected = List.of(postSummary());
-        when(postQueryMapper.findMyPosts(userId, lastId, 10)).thenReturn(expected);
+        when(postQueryMapper.findMyPostsAfterCursor(userId, lastId, 10)).thenReturn(expected);
 
         final List<PostSummary> actual = newService().listMyPosts(userId, lastId, 10);
 
         assertThat(actual).isEqualTo(expected);
-        verify(postQueryMapper).findMyPosts(userId, lastId, 10);
+        verify(postQueryMapper).findMyPostsAfterCursor(userId, lastId, 10);
         verifyNoMoreInteractions(postQueryMapper);
     }
 
@@ -83,12 +83,40 @@ class PostQueryServiceImplTest {
         final SearchKeyword keyword = SearchKeyword.of("hello");
         final PostId lastId = DomainTestFixtures.postId();
         final List<PostSummary> expected = List.of(postSummary());
-        when(postQueryMapper.findPostsByKeyword(keyword, lastId, 10)).thenReturn(expected);
+        when(postQueryMapper.findPostsByKeywordAfterCursor(keyword, lastId, 10)).thenReturn(expected);
 
         final List<PostSummary> actual = newService().searchPosts(keyword, lastId, 10);
 
         assertThat(actual).isEqualTo(expected);
-        verify(postQueryMapper).findPostsByKeyword(keyword, lastId, 10);
+        verify(postQueryMapper).findPostsByKeywordAfterCursor(keyword, lastId, 10);
+        verifyNoMoreInteractions(postQueryMapper);
+    }
+
+    @Test
+    @DisplayName("PostQueryServiceImpl.listMyPosts は lastId が null の場合に初回表示用 mapper を呼ぶ")
+    void should_callFirstPageMapper_when_listMyPostsCalledWithoutPagingCursor() {
+        final UserId userId = DomainTestFixtures.userId();
+        final List<PostSummary> expected = List.of(postSummary());
+        when(postQueryMapper.findMyPostsFirstPage(userId, 10)).thenReturn(expected);
+
+        final List<PostSummary> actual = newService().listMyPosts(userId, null, 10);
+
+        assertThat(actual).isEqualTo(expected);
+        verify(postQueryMapper).findMyPostsFirstPage(userId, 10);
+        verifyNoMoreInteractions(postQueryMapper);
+    }
+
+    @Test
+    @DisplayName("PostQueryServiceImpl.searchPosts は lastId が null の場合に初回表示用 mapper を呼ぶ")
+    void should_callFirstPageMapper_when_searchPostsCalledWithoutPagingCursor() {
+        final SearchKeyword keyword = SearchKeyword.of("hello");
+        final List<PostSummary> expected = List.of(postSummary());
+        when(postQueryMapper.findPostsByKeywordFirstPage(keyword, 10)).thenReturn(expected);
+
+        final List<PostSummary> actual = newService().searchPosts(keyword, null, 10);
+
+        assertThat(actual).isEqualTo(expected);
+        verify(postQueryMapper).findPostsByKeywordFirstPage(keyword, 10);
         verifyNoMoreInteractions(postQueryMapper);
     }
 

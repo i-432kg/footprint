@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -25,17 +26,23 @@ public class PostQueryServiceImpl implements PostQueryService {
 
     @Override
     public List<PostSummary> listRecentPosts(final @Nullable PostId lastId, final int size) {
-        return postQueryMapper.findRecentPosts(lastId, size);
+        return Objects.isNull(lastId)
+                ? postQueryMapper.findRecentPostsFirstPage(size)
+                : postQueryMapper.findRecentPostsAfterCursor(lastId, size);
     }
 
     @Override
     public List<PostSummary> listMyPosts(final UserId userId, final @Nullable PostId lastId, final int size) {
-        return postQueryMapper.findMyPosts(userId, lastId, size);
+        return Objects.isNull(lastId)
+                ? postQueryMapper.findMyPostsFirstPage(userId, size)
+                : postQueryMapper.findMyPostsAfterCursor(userId, lastId, size);
     }
 
     @Override
     public List<PostSummary> searchPosts(final SearchKeyword keyword, final @Nullable PostId lastId, final int size) {
-        return postQueryMapper.findPostsByKeyword(keyword, lastId, size);
+        return Objects.isNull(lastId)
+                ? postQueryMapper.findPostsByKeywordFirstPage(keyword, size)
+                : postQueryMapper.findPostsByKeywordAfterCursor(keyword, lastId, size);
     }
 
     @Override

@@ -4,7 +4,6 @@ import jp.i432kg.footprint.application.query.model.PostSummary;
 import jp.i432kg.footprint.domain.value.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,42 +23,74 @@ public interface PostQueryMapper {
     Optional<PostSummary> findPostById(@Param("postId") PostId postId);
 
     /**
-     * 最新の投稿一覧を検索する。
+     * 最新の投稿一覧の先頭ページを検索する。
+     *
+     * @param size 取得件数
+     * @return 投稿の参照専用モデルのリスト
+     */
+    List<PostSummary> findRecentPostsFirstPage(@Param("size") int size);
+
+    /**
+     * 最新の投稿一覧をシーク継続取得する。
      *
      * @param lastId 最後に取得した投稿 ID
      * @param size 取得件数
      * @return 投稿の参照専用モデルのリスト
      */
-    List<PostSummary> findRecentPosts(
-            @Param("lastId") @Nullable PostId lastId,
+    List<PostSummary> findRecentPostsAfterCursor(
+            @Param("lastId") PostId lastId,
             @Param("size") int size
     );
 
     /**
-     * 自分の投稿一覧を検索する。
+     * 自分の投稿一覧の先頭ページを検索する。
+     *
+     * @param userId ユーザー ID
+     * @param size 取得件数
+     * @return 投稿の参照専用モデルのリスト
+     */
+    List<PostSummary> findMyPostsFirstPage(
+            @Param("userId") UserId userId,
+            @Param("size") int size
+    );
+
+    /**
+     * 自分の投稿一覧をシーク継続取得する。
      *
      * @param userId ユーザー ID
      * @param lastId 最後に取得した投稿 ID
      * @param size 取得件数
      * @return 投稿の参照専用モデルのリスト
      */
-    List<PostSummary> findMyPosts(
+    List<PostSummary> findMyPostsAfterCursor(
             @Param("userId") UserId userId,
-            @Param("lastId") @Nullable PostId lastId,
+            @Param("lastId") PostId lastId,
             @Param("size") int size
     );
 
     /**
-     * キーワードに基づいて投稿一覧を検索する。
+     * キーワードに基づく投稿一覧の先頭ページを検索する。
+     *
+     * @param keyword 検索キーワード
+     * @param size 取得件数
+     * @return 投稿の参照専用モデルのリスト
+     */
+    List<PostSummary> findPostsByKeywordFirstPage(
+            @Param("keyword") SearchKeyword keyword,
+            @Param("size") int size
+    );
+
+    /**
+     * キーワードに基づく投稿一覧をシーク継続取得する。
      *
      * @param keyword 検索キーワード
      * @param lastId 最後に取得した投稿 ID
      * @param size 取得件数
      * @return 投稿の参照専用モデルのリスト
      */
-    List<PostSummary> findPostsByKeyword(
+    List<PostSummary> findPostsByKeywordAfterCursor(
             @Param("keyword") SearchKeyword keyword,
-            @Param("lastId") @Nullable PostId lastId,
+            @Param("lastId") PostId lastId,
             @Param("size") int size
     );
 

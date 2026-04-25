@@ -44,103 +44,179 @@
         WHERE p.public_id = #{postId}
     </select>
 
-    <select id="findRecentPosts" resultMap="PostSummaryResultMap">
-        SELECT
-        p.public_id AS post_id,
-        p.caption,
-        p.has_location,
-        p.latitude,
-        p.longitude,
-        p.created_at,
-        i.id AS image_id,
-        i.sort_order,
-        i.storage_type AS image_storage_type,
-        i.object_key AS image_object_key,
-        i.file_extension,
-        i.size_bytes,
-        i.width,
-        i.height
+    <select id="findRecentPostsFirstPage" resultMap="PostSummaryResultMap">
+        SELECT p.public_id AS post_id,
+               p.caption,
+               p.has_location,
+               p.latitude,
+               p.longitude,
+               p.created_at,
+               i.id AS image_id,
+               i.sort_order,
+               i.storage_type AS image_storage_type,
+               i.object_key AS image_object_key,
+               i.file_extension,
+               i.size_bytes,
+               i.width,
+               i.height
         FROM posts p
-        LEFT JOIN post_images i ON p.public_id = i.post_id
-        <where>
-            <if test="lastId != null">
-                AND p.created_at &lt; (SELECT created_at FROM posts WHERE public_id = #{lastId.value})
-            </if>
-        </where>
+                 LEFT JOIN post_images i ON p.public_id = i.post_id
         ORDER BY p.created_at DESC, p.id DESC
         LIMIT #{size}
     </select>
 
-    <select id="findMyPosts" resultMap="PostSummaryResultMap">
-        SELECT
-        p.public_id AS post_id,
-        p.caption,
-        p.has_location,
-        p.latitude,
-        p.longitude,
-        p.created_at,
-        i.id AS image_id,
-        i.sort_order,
-        i.storage_type AS image_storage_type,
-        i.object_key AS image_object_key,
-        i.file_extension,
-        i.size_bytes,
-        i.width,
-        i.height
+    <select id="findRecentPostsAfterCursor" resultMap="PostSummaryResultMap">
+        WITH cursor_post AS (
+            SELECT created_at, id
+            FROM posts
+            WHERE public_id = #{lastId.value}
+        )
+        SELECT p.public_id AS post_id,
+               p.caption,
+               p.has_location,
+               p.latitude,
+               p.longitude,
+               p.created_at,
+               i.id AS image_id,
+               i.sort_order,
+               i.storage_type AS image_storage_type,
+               i.object_key AS image_object_key,
+               i.file_extension,
+               i.size_bytes,
+               i.width,
+               i.height
         FROM posts p
-        LEFT JOIN post_images i ON p.public_id = i.post_id
-        <where>
-            AND p.user_id = #{userId}
-            <if test="lastId != null">
-                AND p.created_at &lt; (SELECT created_at FROM posts WHERE public_id = #{lastId.value})
-            </if>
-        </where>
+                 CROSS JOIN cursor_post c
+                 LEFT JOIN post_images i ON p.public_id = i.post_id
+        WHERE p.created_at &lt; c.created_at
+           OR (p.created_at = c.created_at AND p.id &lt; c.id)
         ORDER BY p.created_at DESC, p.id DESC
         LIMIT #{size}
     </select>
 
-    <select id="findPostsByKeyword" resultMap="PostSummaryResultMap">
-        SELECT
-        p.public_id AS post_id,
-        p.caption,
-        p.has_location,
-        p.latitude,
-        p.longitude,
-        p.created_at,
-        i.id AS image_id,
-        i.sort_order,
-        i.storage_type AS image_storage_type,
-        i.object_key AS image_object_key,
-        i.file_extension,
-        i.size_bytes,
-        i.width,
-        i.height
+    <select id="findMyPostsFirstPage" resultMap="PostSummaryResultMap">
+        SELECT p.public_id AS post_id,
+               p.caption,
+               p.has_location,
+               p.latitude,
+               p.longitude,
+               p.created_at,
+               i.id AS image_id,
+               i.sort_order,
+               i.storage_type AS image_storage_type,
+               i.object_key AS image_object_key,
+               i.file_extension,
+               i.size_bytes,
+               i.width,
+               i.height
         FROM posts p
-        LEFT JOIN post_images i ON p.public_id = i.post_id
+                 LEFT JOIN post_images i ON p.public_id = i.post_id
+        WHERE p.user_id = #{userId}
+        ORDER BY p.created_at DESC, p.id DESC
+        LIMIT #{size}
+    </select>
+
+    <select id="findMyPostsAfterCursor" resultMap="PostSummaryResultMap">
+        WITH cursor_post AS (
+            SELECT created_at, id
+            FROM posts
+            WHERE public_id = #{lastId.value}
+        )
+        SELECT p.public_id AS post_id,
+               p.caption,
+               p.has_location,
+               p.latitude,
+               p.longitude,
+               p.created_at,
+               i.id AS image_id,
+               i.sort_order,
+               i.storage_type AS image_storage_type,
+               i.object_key AS image_object_key,
+               i.file_extension,
+               i.size_bytes,
+               i.width,
+               i.height
+        FROM posts p
+                 CROSS JOIN cursor_post c
+                 LEFT JOIN post_images i ON p.public_id = i.post_id
+        WHERE p.user_id = #{userId}
+          AND (
+              p.created_at &lt; c.created_at
+              OR (p.created_at = c.created_at AND p.id &lt; c.id)
+          )
+        ORDER BY p.created_at DESC, p.id DESC
+        LIMIT #{size}
+    </select>
+
+    <select id="findPostsByKeywordFirstPage" resultMap="PostSummaryResultMap">
+        SELECT p.public_id AS post_id,
+               p.caption,
+               p.has_location,
+               p.latitude,
+               p.longitude,
+               p.created_at,
+               i.id AS image_id,
+               i.sort_order,
+               i.storage_type AS image_storage_type,
+               i.object_key AS image_object_key,
+               i.file_extension,
+               i.size_bytes,
+               i.width,
+               i.height
+        FROM posts p
+                 LEFT JOIN post_images i ON p.public_id = i.post_id
         WHERE p.caption LIKE CONCAT('%', #{keyword}, '%')
-        <if test="lastId != null">
-            AND p.created_at &lt; (SELECT created_at FROM posts WHERE public_id = #{lastId.value})
-        </if>
+        ORDER BY p.created_at DESC, p.id DESC
+        LIMIT #{size}
+    </select>
+
+    <select id="findPostsByKeywordAfterCursor" resultMap="PostSummaryResultMap">
+        WITH cursor_post AS (
+            SELECT created_at, id
+            FROM posts
+            WHERE public_id = #{lastId.value}
+        )
+        SELECT p.public_id AS post_id,
+               p.caption,
+               p.has_location,
+               p.latitude,
+               p.longitude,
+               p.created_at,
+               i.id AS image_id,
+               i.sort_order,
+               i.storage_type AS image_storage_type,
+               i.object_key AS image_object_key,
+               i.file_extension,
+               i.size_bytes,
+               i.width,
+               i.height
+        FROM posts p
+                 CROSS JOIN cursor_post c
+                 LEFT JOIN post_images i ON p.public_id = i.post_id
+        WHERE p.caption LIKE CONCAT('%', #{keyword}, '%')
+          AND (
+              p.created_at &lt; c.created_at
+              OR (p.created_at = c.created_at AND p.id &lt; c.id)
+          )
         ORDER BY p.created_at DESC, p.id DESC
         LIMIT #{size}
     </select>
 
     <select id="findPostsByBBox" resultMap="PostSummaryResultMap">
-        SELECT
-            p.public_id AS post_id,
-            p.caption,
-            p.has_location,
-            p.latitude,
-            p.longitude,
-            p.created_at,
-            i.id AS image_id,
-            i.sort_order,
-            i.storage_type AS image_storage_type,
-            i.object_key AS image_object_key,
-            i.file_extension,
-            i.size_bytes,
-            i.width,
-            i.height
+        SELECT p.public_id AS post_id,
+               p.caption,
+               p.has_location,
+               p.latitude,
+               p.longitude,
+               p.created_at,
+               i.id AS image_id,
+               i.sort_order,
+               i.storage_type AS image_storage_type,
+               i.object_key AS image_object_key,
+               i.file_extension,
+               i.size_bytes,
+               i.width,
+               i.height
         FROM posts p
                  LEFT JOIN post_images i ON p.public_id = i.post_id
         WHERE p.has_location = true
