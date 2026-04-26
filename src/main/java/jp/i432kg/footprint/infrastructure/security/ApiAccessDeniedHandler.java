@@ -2,8 +2,10 @@ package jp.i432kg.footprint.infrastructure.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+import jp.i432kg.footprint.logging.LoggingCategories;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.csrf.CsrfException;
@@ -16,12 +18,12 @@ import java.io.IOException;
  *
  * <p>認可エラーや CSRF 拒否を API 向けの拒否応答へ変換し、関連イベントを記録します。
  */
-@Slf4j
 @Component
 public class ApiAccessDeniedHandler implements AccessDeniedHandler {
 
     private static final String EVENT_FORBIDDEN = "AUTH_FORBIDDEN";
     private static final String EVENT_CSRF_REJECTED = "AUTH_CSRF_REJECTED";
+    private static final Logger AUTH_LOGGER = LoggerFactory.getLogger(LoggingCategories.AUTH);
 
     @Override
     public void handle(
@@ -33,7 +35,7 @@ public class ApiAccessDeniedHandler implements AccessDeniedHandler {
         final String event = isCsrfException(accessDeniedException) ?
                 EVENT_CSRF_REJECTED :
                 EVENT_FORBIDDEN;
-        log.warn("event={}, method={}, path={}", event, request.getMethod(), request.getRequestURI());
+        AUTH_LOGGER.warn("event={}, method={}, path={}", event, request.getMethod(), request.getRequestURI());
 
         response.sendError(HttpServletResponse.SC_FORBIDDEN);
     }

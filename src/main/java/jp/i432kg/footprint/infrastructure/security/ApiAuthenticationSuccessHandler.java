@@ -2,9 +2,11 @@ package jp.i432kg.footprint.infrastructure.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jp.i432kg.footprint.logging.LoggingCategories;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -14,12 +16,12 @@ import org.springframework.stereotype.Component;
  *
  * <p>認証成功時の副作用実行を入口として受け持ち、必要に応じて専用サービスへ委譲します。
  */
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ApiAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private static final String EVENT = "AUTH_LOGIN_SUCCESS";
+    private static final Logger AUTH_LOGGER = LoggerFactory.getLogger(LoggingCategories.AUTH);
 
     private final LastLoginRecorder lastLoginRecorder;
 
@@ -34,7 +36,7 @@ public class ApiAuthenticationSuccessHandler implements AuthenticationSuccessHan
             // ログイン日時を更新する
             lastLoginRecorder.recordSuccessfulLogin(userDetails.getUserId());
 
-            log.info("event={}, userId={}, username={}",
+            AUTH_LOGGER.info("event={}, userId={}, username={}",
                     EVENT, userDetails.getUserId().getValue(), userDetails.getDisplayUsername());
         }
 
