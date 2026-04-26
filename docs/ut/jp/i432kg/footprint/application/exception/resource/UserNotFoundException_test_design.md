@@ -12,13 +12,13 @@
 
 | No. | 区分 | 観点 | 確認内容 |
 |---|---|---|---|
-| 1 | 正常系 | not found 組み立て | `USER_NOT_FOUND`, message, `userId` details を組み立てること |
+| 1 | 正常系 | not found 組み立て | `USER_NOT_FOUND`, message, `target=user`, `reason=not_found`, `resourceId` details を組み立てること |
 
 ## 3. テストケース一覧
 
 | No. | 区分 | テストケース | 入力値 / 事前条件 | 期待結果 |
 |---|---|---|---|---|
-| 1 | 正常系 | ユーザー not found を表現する | `UserId` を渡して生成 | `errorCode`, message, `details.userId` が一致する |
+| 1 | 正常系 | ユーザー not found を表現する | `UserId` を渡して生成 | `errorCode`, message, `details.target=user`, `details.reason=not_found`, `details.resourceId` が一致する |
 
 ## 4. 対応するテストメソッド
 

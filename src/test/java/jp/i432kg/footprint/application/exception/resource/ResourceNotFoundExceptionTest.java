@@ -16,12 +16,19 @@ class ResourceNotFoundExceptionTest {
         final TestResourceNotFoundException exception = new TestResourceNotFoundException(
                 ErrorCode.POST_NOT_FOUND,
                 "resource not found",
-                Map.of("resourceId", "01ARZ3NDEKTSV4RRFFQ69G5FAV")
+                Map.of(
+                        "target", "post",
+                        "reason", "not_found",
+                        "resourceId", "01ARZ3NDEKTSV4RRFFQ69G5FAV"
+                )
         );
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.POST_NOT_FOUND);
         assertThat(exception.getMessage()).isEqualTo("resource not found");
-        assertThat(exception.getDetails()).containsEntry("resourceId", "01ARZ3NDEKTSV4RRFFQ69G5FAV");
+        assertThat(exception.getDetails())
+                .containsEntry("target", "post")
+                .containsEntry("reason", "not_found")
+                .containsEntry("resourceId", "01ARZ3NDEKTSV4RRFFQ69G5FAV");
     }
 
     private static final class TestResourceNotFoundException extends ResourceNotFoundException {

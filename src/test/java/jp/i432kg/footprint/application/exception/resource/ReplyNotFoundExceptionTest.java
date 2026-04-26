@@ -17,6 +17,9 @@ class ReplyNotFoundExceptionTest {
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.REPLY_NOT_FOUND);
         assertThat(exception.getMessage()).isEqualTo("Reply not found. replyId=01ARZ3NDEKTSV4RRFFQ69G5FAZ");
-        assertThat(exception.getDetails()).containsEntry("replyId", "01ARZ3NDEKTSV4RRFFQ69G5FAZ");
+        assertThat(exception.getDetails())
+                .containsEntry("target", "reply")
+                .containsEntry("reason", "not_found")
+                .containsEntry("resourceId", "01ARZ3NDEKTSV4RRFFQ69G5FAZ");
     }
 }

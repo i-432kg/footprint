@@ -17,6 +17,9 @@ class UserNotFoundExceptionTest {
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
         assertThat(exception.getMessage()).isEqualTo("User not found. userId=01ARZ3NDEKTSV4RRFFQ69G5FAV");
-        assertThat(exception.getDetails()).containsEntry("userId", "01ARZ3NDEKTSV4RRFFQ69G5FAV");
+        assertThat(exception.getDetails())
+                .containsEntry("target", "user")
+                .containsEntry("reason", "not_found")
+                .containsEntry("resourceId", "01ARZ3NDEKTSV4RRFFQ69G5FAV");
     }
 }

@@ -17,6 +17,9 @@ class PostNotFoundExceptionTest {
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.POST_NOT_FOUND);
         assertThat(exception.getMessage()).isEqualTo("Post not found. postId=01ARZ3NDEKTSV4RRFFQ69G5FAX");
-        assertThat(exception.getDetails()).containsEntry("postId", "01ARZ3NDEKTSV4RRFFQ69G5FAX");
+        assertThat(exception.getDetails())
+                .containsEntry("target", "post")
+                .containsEntry("reason", "not_found")
+                .containsEntry("resourceId", "01ARZ3NDEKTSV4RRFFQ69G5FAX");
     }
 }
