@@ -37,7 +37,7 @@ public class UserRepositoryImpl implements UserRepository {
         try {
             return userMapper.countByEmail(email) > 0;
         } catch (RuntimeException e) {
-            log.error("Failed to check user existence by email. email={}", email.getValue(), e);
+            log.error("Failed to check user existence by email.", e);
             throw e;
         }
     }
@@ -50,9 +50,8 @@ public class UserRepositoryImpl implements UserRepository {
             userMapper.insert(entity);
         } catch (RuntimeException e) {
             log.error(
-                    "Failed to save user. userId={}, email={}",
+                    "Failed to save user. userId={}",
                     user.getUserId().getValue(),
-                    user.getEmail().getValue(),
                     e
             );
             throw e;

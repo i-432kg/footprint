@@ -220,7 +220,7 @@ public class GlobalExceptionHandler {
                 validationError(ex.getName(), "type_mismatch", ex.getValue(), "query")
         );
 
-        log.warn("Type mismatch. parameter={}, value={}", ex.getName(), ex.getValue());
+        log.warn("Type mismatch. errors={}", errors);
         return createValidationProblemDetail(
                 "リクエストパラメータの型が不正です。",
                 errors

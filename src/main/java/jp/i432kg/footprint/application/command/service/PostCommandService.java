@@ -118,11 +118,7 @@ public class PostCommandService {
         } catch (IOException e) {
             // ここで cleanup 失敗を再送出すると一次障害の原因が隠れるため、
             // 元例外を優先しつつ補償処理失敗はログに残す。
-            log.warn(
-                    "Failed to cleanup stored image after post processing failure. storageObjectKey={}",
-                    storageObject.getObjectKey().getValue(),
-                    e
-            );
+            log.warn("Failed to cleanup stored image after post processing failure.", e);
         }
     }
 

@@ -117,8 +117,7 @@ public class LocalImageRepositoryImpl implements ImageStorage, ImageMetadataExtr
 
         } catch (IllegalArgumentException | DomainException e) {
             log.error(
-                    "Failed to extract image metadata. storageObjectKey={}",
-                    storageObject.getObjectKey().getValue(),
+                    "Failed to extract image metadata.",
                     e
             );
             throw new ImageProcessingException(
@@ -173,19 +172,17 @@ public class LocalImageRepositoryImpl implements ImageStorage, ImageMetadataExtr
             return storageObject;
         } catch (IllegalArgumentException | DomainException e) {
             log.error(
-                    "Failed to save image. userId={}, postId={}, originalFilename={}",
+                    "Failed to save image. userId={}, postId={}",
                     userId.getValue(),
                     postId.getValue(),
-                    originalFilename.getValue(),
                     e
             );
             throw new IOException("サポートされていない画像形式です。", e);
         } catch (IOException e) {
             log.error(
-                    "Failed to save image. userId={}, postId={}, originalFilename={}",
+                    "Failed to save image. userId={}, postId={}",
                     userId.getValue(),
                     postId.getValue(),
-                    originalFilename.getValue(),
                     e
             );
             throw e;

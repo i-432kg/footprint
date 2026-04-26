@@ -137,25 +137,13 @@ public class S3ImageRepositoryImpl implements ImageStorage, ImageMetadataExtract
             }
 
         } catch (NoSuchKeyException e) {
-            log.error(
-                    "S3 object not found. storageObjectKey={}",
-                    storageObject.getObjectKey().getValue(),
-                    e
-            );
+            log.error("S3 object not found.", e);
             throw new IOException("S3上の画像ファイルが見つかりません: " + storageObject.getObjectKey().getValue(), e);
         } catch (S3Exception e) {
-            log.error(
-                    "Failed to access S3 object. storageObjectKey={}",
-                    storageObject.getObjectKey().getValue(),
-                    e
-            );
+            log.error("Failed to access S3 object.", e);
             throw new IOException("S3上の画像ファイルへのアクセスに失敗しました: " + storageObject.getObjectKey().getValue(), e);
         } catch (IllegalArgumentException | DomainException e) {
-            log.error(
-                    "Failed to extract image metadata from S3. storageObjectKey={}",
-                    storageObject.getObjectKey().getValue(),
-                    e
-            );
+            log.error("Failed to extract image metadata from S3.", e);
             throw new ImageProcessingException(
                     "画像メタデータの解析に失敗しました: " + storageObject.getObjectKey().getValue(),
                     e
@@ -202,19 +190,17 @@ public class S3ImageRepositoryImpl implements ImageStorage, ImageMetadataExtract
             return storageObject;
         } catch (IllegalArgumentException | DomainException e) {
             log.error(
-                    "Failed to save image to S3. userId={}, postId={}, originalFilename={}",
+                    "Failed to save image to S3. userId={}, postId={}",
                     userId.getValue(),
                     postId.getValue(),
-                    originalFilename.getValue(),
                     e
             );
             throw new IOException("サポートされていない画像形式です。", e);
         } catch (S3Exception e) {
             log.error(
-                    "Failed to upload image to S3. userId={}, postId={}, originalFilename={}",
+                    "Failed to upload image to S3. userId={}, postId={}",
                     userId.getValue(),
                     postId.getValue(),
-                    originalFilename.getValue(),
                     e
             );
             throw new IOException("S3への画像アップロードに失敗しました。", e);
@@ -233,11 +219,7 @@ public class S3ImageRepositoryImpl implements ImageStorage, ImageMetadataExtract
                             .build()
             );
         } catch (S3Exception e) {
-            log.error(
-                    "Failed to delete image from S3. storageObjectKey={}",
-                    storageObject.getObjectKey().getValue(),
-                    e
-            );
+            log.error("Failed to delete image from S3.", e);
             throw new IOException("S3上の画像削除に失敗しました。", e);
         }
     }
