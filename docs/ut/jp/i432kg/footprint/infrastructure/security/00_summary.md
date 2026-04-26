@@ -3,7 +3,7 @@
 ## 1. 対象概要
 
 - 対象パッケージ: `jp.i432kg.footprint.infrastructure.security`
-- 対象クラス: `LastLoginRecorder`, `LastLoginUpdatingAuthenticationSuccessHandler`, `UserDetailsImpl`, `UserDetailsServiceImpl`
+- 対象クラス: `LastLoginRecorder`, `ApiAuthenticationSuccessHandler`, `ApiAuthenticationFailureHandler`, `ApiAuthenticationEntryPoint`, `ApiAccessDeniedHandler`, `UserDetailsImpl`, `UserDetailsServiceImpl`
 - 個別仕様書: 各クラスごとに `ファイル名_test_design.md` を作成
 
 ## 2. 横断観点
@@ -14,7 +14,8 @@
 | 2 | 認証成功後処理 | 認証成功時に最終ログイン更新が適切に委譲されること |
 | 3 | 例外時継続 | 監査目的の更新失敗が認証成功フローを妨げないこと |
 | 4 | 認証ユーザー取得 | `UserDetailsServiceImpl` が login ID から認証ユーザーを取得し、不在時は `UsernameNotFoundException` に変換すること |
-| 5 | Spring Security 契約 | `UserDetails` / `AuthenticationSuccessHandler` / `UserDetailsService` の契約に従うこと |
+| 5 | auth イベント | 認証成功/失敗、401、403、CSRF 拒否で適切な HTTP ステータスを返すこと |
+| 6 | Spring Security 契約 | `UserDetails` / `AuthenticationSuccessHandler` / `AuthenticationFailureHandler` / `AuthenticationEntryPoint` / `AccessDeniedHandler` / `UserDetailsService` の契約に従うこと |
 
 ## 3. グルーピング方針
 
@@ -24,8 +25,14 @@
   - `AuthMapper` への委譲と `UsernameNotFoundException` 変換を確認する
 - 認証成功監査: `LastLoginRecorder`
   - 固定 `Clock` を使った更新時刻と例外握りつぶしを確認する
-- 認証成功ハンドラ: `LastLoginUpdatingAuthenticationSuccessHandler`
+- 認証成功ハンドラ: `ApiAuthenticationSuccessHandler`
   - principal 型判定、recorder 委譲、HTTP 200 設定を確認する
+- 認証失敗ハンドラ: `ApiAuthenticationFailureHandler`
+  - 認証失敗時の 401 応答を確認する
+- 未認証ハンドラ: `ApiAuthenticationEntryPoint`
+  - 未認証アクセス時の 401 応答を確認する
+- 認可失敗ハンドラ: `ApiAccessDeniedHandler`
+  - 403 応答と CSRF 例外時の分岐を確認する
 
 ## 4. テスト実装メモ
 
@@ -37,5 +44,6 @@
   - `Clock.fixed(...)` による最終ログイン更新時刻
   - `AuthMapper.AuthUserEntity` の `UserId`, email, displayUsername, password
 - `UserDetailsImpl` は Spring Security デフォルト実装に委譲している `isAccountNonExpired` なども必要に応じて確認する
-- `LastLoginUpdatingAuthenticationSuccessHandler` は principal が `UserDetailsImpl` でないケースも確認する
+- `ApiAuthenticationSuccessHandler` は principal が `UserDetailsImpl` でないケースも確認する
+- auth ログ系ハンドラは HTTP ステータスとエラーメッセージを中心に確認する
 - `UserDetailsServiceImpl` は `EmailAddress.of(username)` への変換と mapper 呼び出し引数を確認する

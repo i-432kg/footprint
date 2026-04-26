@@ -17,15 +17,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
-class LastLoginUpdatingAuthenticationSuccessHandlerTest {
+class ApiAuthenticationSuccessHandlerTest {
 
     @Mock
     private LastLoginRecorder lastLoginRecorder;
 
     @Test
-    @DisplayName("LastLoginUpdatingAuthenticationSuccessHandler.onAuthenticationSuccess は UserDetailsImpl の principal を recorder へ委譲して 200 を返す")
+    @DisplayName("ApiAuthenticationSuccessHandler.onAuthenticationSuccess は UserDetailsImpl の principal を recorder へ委譲して 200 を返す")
     void should_delegateToRecorderAndReturnOk_when_principalIsUserDetailsImpl() {
-        final var handler = new LastLoginUpdatingAuthenticationSuccessHandler(lastLoginRecorder);
+        final var handler = new ApiAuthenticationSuccessHandler(lastLoginRecorder);
         final var principal = UserDetailsImpl.fromEntity(
                 new AuthMapper.AuthUserEntity(
                         jp.i432kg.footprint.domain.value.UserId.of("01JQW8D4Q3G9Y2X6N7M8P9R0ST"),
@@ -46,9 +46,9 @@ class LastLoginUpdatingAuthenticationSuccessHandlerTest {
     }
 
     @Test
-    @DisplayName("LastLoginUpdatingAuthenticationSuccessHandler.onAuthenticationSuccess は principal が UserDetailsImpl でない場合も 200 を返す")
+    @DisplayName("ApiAuthenticationSuccessHandler.onAuthenticationSuccess は principal が UserDetailsImpl でない場合も 200 を返す")
     void should_returnOkWithoutDelegation_when_principalIsNotUserDetailsImpl() {
-        final var handler = new LastLoginUpdatingAuthenticationSuccessHandler(lastLoginRecorder);
+        final var handler = new ApiAuthenticationSuccessHandler(lastLoginRecorder);
         final Authentication authentication =
                 UsernamePasswordAuthenticationToken.authenticated("anonymousUser", null, java.util.List.of());
         final MockHttpServletRequest request = new MockHttpServletRequest();

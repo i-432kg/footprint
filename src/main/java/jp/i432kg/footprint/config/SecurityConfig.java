@@ -1,20 +1,21 @@
 package jp.i432kg.footprint.config;
 
 import jakarta.servlet.http.HttpServletResponse;
-import jp.i432kg.footprint.infrastructure.security.LastLoginUpdatingAuthenticationSuccessHandler;
+import jp.i432kg.footprint.infrastructure.security.ApiAccessDeniedHandler;
+import jp.i432kg.footprint.infrastructure.security.ApiAuthenticationEntryPoint;
+import jp.i432kg.footprint.infrastructure.security.ApiAuthenticationFailureHandler;
+import jp.i432kg.footprint.infrastructure.security.ApiAuthenticationSuccessHandler;
 import jp.i432kg.footprint.logging.trace.TraceIdFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.HttpStatusAccessDeniedHandler;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
@@ -28,18 +29,27 @@ public class SecurityConfig {
 
     private final Environment environment;
     private final StorageSecurityProperties storageSecurityProperties;
-    private final LastLoginUpdatingAuthenticationSuccessHandler authenticationSuccessHandler;
+    private final ApiAuthenticationSuccessHandler authenticationSuccessHandler;
+    private final ApiAuthenticationFailureHandler authenticationFailureHandler;
+    private final ApiAuthenticationEntryPoint authenticationEntryPoint;
+    private final ApiAccessDeniedHandler accessDeniedHandler;
     private final TraceIdFilter traceIdFilter;
 
     public SecurityConfig(
             final Environment environment,
             final StorageSecurityProperties storageSecurityProperties,
-            final LastLoginUpdatingAuthenticationSuccessHandler authenticationSuccessHandler,
+            final ApiAuthenticationSuccessHandler authenticationSuccessHandler,
+            final ApiAuthenticationFailureHandler authenticationFailureHandler,
+            final ApiAuthenticationEntryPoint authenticationEntryPoint,
+            final ApiAccessDeniedHandler accessDeniedHandler,
             final TraceIdFilter traceIdFilter
     ) {
         this.environment = environment;
         this.storageSecurityProperties = storageSecurityProperties;
         this.authenticationSuccessHandler = authenticationSuccessHandler;
+        this.authenticationFailureHandler = authenticationFailureHandler;
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        this.accessDeniedHandler = accessDeniedHandler;
         this.traceIdFilter = traceIdFilter;
     }
 
@@ -107,10 +117,7 @@ public class SecurityConfig {
                         .loginProcessingUrl("/api/login")
                         .usernameParameter("loginId")
                         .successHandler(authenticationSuccessHandler)
-                        .failureHandler(
-                                (request, response, exception) ->
-                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication Failed")
-                        )
+                        .failureHandler(authenticationFailureHandler)
                         .permitAll()
                 )
 
@@ -127,12 +134,11 @@ public class SecurityConfig {
 
                 .exceptionHandling(ex -> ex
                         .defaultAuthenticationEntryPointFor(
-                                (request, response, authException) ->
-                                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED),
+                                authenticationEntryPoint,
                                 PathPatternRequestMatcher.withDefaults().matcher("/api/**")
                         )
                         .defaultAccessDeniedHandlerFor(
-                                new HttpStatusAccessDeniedHandler(HttpStatus.FORBIDDEN),
+                                accessDeniedHandler,
                                 PathPatternRequestMatcher.withDefaults().matcher("/api/**")
                         )
                 )

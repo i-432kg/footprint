@@ -1,17 +1,17 @@
-# `LastLoginUpdatingAuthenticationSuccessHandler` テスト仕様書
+# `ApiAuthenticationSuccessHandler` テスト仕様書
 
 ## 1. 基本情報
 
-- 対象クラス: `LastLoginUpdatingAuthenticationSuccessHandler`
+- 対象クラス: `ApiAuthenticationSuccessHandler`
 - 対象メソッド: `onAuthenticationSuccess(HttpServletRequest, HttpServletResponse, Authentication)`
 - 対象パッケージ: `jp.i432kg.footprint.infrastructure.security`
-- 対応するテストクラス: `LastLoginUpdatingAuthenticationSuccessHandlerTest`
+- 対応するテストクラス: `ApiAuthenticationSuccessHandlerTest`
 - 作成者: Codex
 - 作成日: 2026-04-19
 
 ## 2. 対象概要
 
-- 何をする処理か: 認証成功時、principal が `UserDetailsImpl` であれば `LastLoginRecorder` に委譲し、レスポンスステータスを `200 OK` に設定する
+- 何をする処理か: API の認証成功時、principal が `UserDetailsImpl` であれば `LastLoginRecorder` に委譲し、レスポンスステータスを `200 OK` に設定する
 - 入力: `HttpServletRequest`, `HttpServletResponse`, `Authentication`
 - 出力: `void`
 - 主な副作用: `LastLoginRecorder.recordSuccessfulLogin(...)` 呼び出し、HTTP ステータス設定
@@ -41,5 +41,5 @@
 
 | No. | テストメソッド名 | `@DisplayName` |
 |---|---|---|
-| 1 | `should_delegateToRecorderAndReturnOk_when_principalIsUserDetailsImpl` | `LastLoginUpdatingAuthenticationSuccessHandler.onAuthenticationSuccess は UserDetailsImpl の principal を recorder へ委譲して 200 を返す` |
-| 2 | `should_returnOkWithoutDelegation_when_principalIsNotUserDetailsImpl` | `LastLoginUpdatingAuthenticationSuccessHandler.onAuthenticationSuccess は principal が UserDetailsImpl でない場合も 200 を返す` |
+| 1 | `should_delegateToRecorderAndReturnOk_when_principalIsUserDetailsImpl` | `ApiAuthenticationSuccessHandler.onAuthenticationSuccess は UserDetailsImpl の principal を recorder へ委譲して 200 を返す` |
+| 2 | `should_returnOkWithoutDelegation_when_principalIsNotUserDetailsImpl` | `ApiAuthenticationSuccessHandler.onAuthenticationSuccess は principal が UserDetailsImpl でない場合も 200 を返す` |

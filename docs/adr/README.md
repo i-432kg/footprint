@@ -122,3 +122,4 @@ Accepted
 | 026 | `adr_026_bbox_business_constraints.md` | bbox 検索の最小成立条件を `BoundingBox` ドメインモデルで検証する方針 |
 | 027 | `adr_027_problem_detail_details_structure.md` | `ProblemDetail.details` の正規構造を object + 正規項目へ固定する方針 |
 | 028 | `adr_028_typed_exception_details_dto_direction.md` | 例外詳細の本命設計を typed details DTO とし、リリース後に段階移行する方針 |
+| 029 | `adr_029_api_security_handler_naming.md` | API 向け Security Handler は入口の役割で命名し、具体的な副作用は委譲先へ分離する方針 |
