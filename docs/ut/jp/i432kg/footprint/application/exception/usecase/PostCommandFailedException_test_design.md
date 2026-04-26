@@ -12,17 +12,17 @@
 
 | No. | 区分 | 観点 | 確認内容 |
 |---|---|---|---|
-| 1 | 正常系 | imageSaveFailed | `target=image.fileName`, `reason=image_save_failed`, `rejectedValue`, `cause` を設定すること |
-| 2 | 正常系 | imageMetadataExtractFailed | `target=image.objectKey`, `reason=image_metadata_extract_failed`, `rejectedValue`, `cause` を設定すること |
-| 3 | 正常系 | persistenceFailed | `target=post`, `reason=persistence_error`, `rejectedValue`, `cause` を設定すること |
+| 1 | 正常系 | imageSaveFailed | `target=image.fileName`, `reason=image_save_failed`, `cause` を設定し、`rejectedValue` を持たないこと |
+| 2 | 正常系 | imageMetadataExtractFailed | `target=image.objectKey`, `reason=image_metadata_extract_failed`, `cause` を設定し、`rejectedValue` を持たないこと |
+| 3 | 正常系 | persistenceFailed | `target=post`, `reason=persistence_error`, `cause` を設定し、`rejectedValue` を持たないこと |
 
 ## 3. テストケース一覧
 
 | No. | 区分 | テストケース | 入力値 / 事前条件 | 期待結果 |
 |---|---|---|---|---|
-| 1 | 正常系 | 画像保存失敗を表現する | `rejectedValue`, `cause` を指定 | `details` と `cause` が一致する |
-| 2 | 正常系 | メタデータ抽出失敗を表現する | `rejectedValue`, `cause` を指定 | `details` と `cause` が一致する |
-| 3 | 正常系 | 永続化失敗を表現する | `rejectedValue`, `cause` を指定 | `details` と `cause` が一致する |
+| 1 | 正常系 | 画像保存失敗を表現する | `cause` を指定 | `details` は `target` / `reason` のみで `cause` が一致する |
+| 2 | 正常系 | メタデータ抽出失敗を表現する | `cause` を指定 | `details` は `target` / `reason` のみで `cause` が一致する |
+| 3 | 正常系 | 永続化失敗を表現する | `cause` を指定 | `details` は `target` / `reason` のみで `cause` が一致する |
 
 ## 4. 対応するテストメソッド
 

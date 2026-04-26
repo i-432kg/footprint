@@ -52,7 +52,7 @@ public class UserCommandService {
         try {
             userRepository.saveUser(user);
         } catch (DataAccessException e) {
-            throw UserCommandFailedException.saveFailed(userId.getValue(), e);
+            throw UserCommandFailedException.saveFailed(e);
         }
     }
 

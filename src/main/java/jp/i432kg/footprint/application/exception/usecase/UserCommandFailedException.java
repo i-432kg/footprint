@@ -20,17 +20,13 @@ public class UserCommandFailedException extends UseCaseExecutionException {
     /**
      * ユーザー保存失敗を表す例外を生成します。
      *
-     * @param rejectedValue 問題となった値
      * @param cause 元になった例外
      * @return 生成した例外
      */
-    public static UserCommandFailedException saveFailed(
-            final Object rejectedValue,
-            final Throwable cause
-    ) {
+    public static UserCommandFailedException saveFailed(final Throwable cause) {
         return new UserCommandFailedException(
                 message("user", "save_failed"),
-                details("user", "save_failed", rejectedValue),
+                details("user", "save_failed"),
                 cause
         );
     }

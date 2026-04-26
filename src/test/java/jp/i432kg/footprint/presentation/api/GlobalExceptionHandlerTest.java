@@ -310,7 +310,7 @@ class GlobalExceptionHandlerTest {
     @DisplayName("GlobalExceptionHandler は UseCaseExecutionException を対応ステータスの ProblemDetail へ変換する")
     void should_createUseCaseProblemDetail_when_useCaseExecutionExceptionIsHandled() {
         final PostCommandFailedException exception =
-                PostCommandFailedException.persistenceFailed("post-01", new IOException("db down"));
+                PostCommandFailedException.persistenceFailed(new IOException("db down"));
         when(sensitiveDataMasker.maskMap(exception.getDetails())).thenReturn(exception.getDetails());
 
         final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker)
@@ -319,6 +319,10 @@ class GlobalExceptionHandlerTest {
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         assertThat(actual.getTitle()).isEqualTo("Use Case Error");
         assertThat(actual.getProperties()).containsEntry("errorCode", ErrorCode.POST_COMMAND_FAILED);
+        assertThat(castMap(property(actual)))
+                .containsEntry("target", "post")
+                .containsEntry("reason", "persistence_error")
+                .doesNotContainKey("rejectedValue");
     }
 
     @Test

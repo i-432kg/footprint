@@ -12,14 +12,14 @@ class UserCommandFailedExceptionTest {
     @DisplayName("UserCommandFailedException.saveFailed は保存失敗情報を組み立てる")
     void should_buildSaveFailedDetails_when_factoryIsUsed() {
         final IllegalStateException cause = new IllegalStateException("db down");
-        final UserCommandFailedException exception = UserCommandFailedException.saveFailed("01ARZ3NDEKTSV4RRFFQ69G5FAV", cause);
+        final UserCommandFailedException exception = UserCommandFailedException.saveFailed(cause);
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_COMMAND_FAILED);
         assertThat(exception.getMessage()).isEqualTo("user is invalid. reason=save_failed");
         assertThat(exception.getDetails())
                 .containsEntry("target", "user")
                 .containsEntry("reason", "save_failed")
-                .containsEntry("rejectedValue", "01ARZ3NDEKTSV4RRFFQ69G5FAV");
+                .doesNotContainKey("rejectedValue");
         assertThat(exception.getCause()).isSameAs(cause);
     }
 }

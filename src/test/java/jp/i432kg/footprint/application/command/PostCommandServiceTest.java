@@ -143,7 +143,7 @@ class PostCommandServiceTest {
                     assertThat(exception.getDetails())
                             .containsEntry("target", "image.fileName")
                             .containsEntry("reason", "image_save_failed")
-                            .containsEntry("rejectedValue", command.getOriginalFilename().getValue());
+                            .doesNotContainKey("rejectedValue");
                 });
 
         verify(postRepository, never()).savePost(any());
@@ -166,7 +166,7 @@ class PostCommandServiceTest {
                     assertThat(exception.getDetails())
                             .containsEntry("target", "image.objectKey")
                             .containsEntry("reason", "image_metadata_extract_failed")
-                            .containsEntry("rejectedValue", storageObject.getObjectKey().getValue());
+                            .doesNotContainKey("rejectedValue");
                 });
 
         verify(imageStorage).delete(storageObject);

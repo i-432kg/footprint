@@ -14,14 +14,14 @@ class PostCommandFailedExceptionTest {
     @DisplayName("PostCommandFailedException.imageSaveFailed は画像保存失敗情報を組み立てる")
     void should_buildImageSaveFailedDetails_when_factoryIsUsed() {
         final IOException cause = new IOException("save failed");
-        final PostCommandFailedException exception = PostCommandFailedException.imageSaveFailed("image.jpg", cause);
+        final PostCommandFailedException exception = PostCommandFailedException.imageSaveFailed(cause);
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.POST_COMMAND_FAILED);
         assertThat(exception.getMessage()).isEqualTo("image.fileName is invalid. reason=image_save_failed");
         assertThat(exception.getDetails())
                 .containsEntry("target", "image.fileName")
                 .containsEntry("reason", "image_save_failed")
-                .containsEntry("rejectedValue", "image.jpg");
+                .doesNotContainKey("rejectedValue");
         assertThat(exception.getCause()).isSameAs(cause);
     }
 
@@ -30,14 +30,14 @@ class PostCommandFailedExceptionTest {
     void should_buildImageMetadataExtractFailedDetails_when_factoryIsUsed() {
         final IOException cause = new IOException("extract failed");
         final PostCommandFailedException exception =
-                PostCommandFailedException.imageMetadataExtractFailed("users/u/posts/p/images/i.jpg", cause);
+                PostCommandFailedException.imageMetadataExtractFailed(cause);
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.POST_COMMAND_FAILED);
         assertThat(exception.getMessage()).isEqualTo("image.objectKey is invalid. reason=image_metadata_extract_failed");
         assertThat(exception.getDetails())
                 .containsEntry("target", "image.objectKey")
                 .containsEntry("reason", "image_metadata_extract_failed")
-                .containsEntry("rejectedValue", "users/u/posts/p/images/i.jpg");
+                .doesNotContainKey("rejectedValue");
         assertThat(exception.getCause()).isSameAs(cause);
     }
 
@@ -45,14 +45,14 @@ class PostCommandFailedExceptionTest {
     @DisplayName("PostCommandFailedException.persistenceFailed は永続化失敗情報を組み立てる")
     void should_buildPersistenceFailedDetails_when_factoryIsUsed() {
         final IllegalStateException cause = new IllegalStateException("db down");
-        final PostCommandFailedException exception = PostCommandFailedException.persistenceFailed("01ARZ3NDEKTSV4RRFFQ69G5FAX", cause);
+        final PostCommandFailedException exception = PostCommandFailedException.persistenceFailed(cause);
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.POST_COMMAND_FAILED);
         assertThat(exception.getMessage()).isEqualTo("post is invalid. reason=persistence_error");
         assertThat(exception.getDetails())
                 .containsEntry("target", "post")
                 .containsEntry("reason", "persistence_error")
-                .containsEntry("rejectedValue", "01ARZ3NDEKTSV4RRFFQ69G5FAX");
+                .doesNotContainKey("rejectedValue");
         assertThat(exception.getCause()).isSameAs(cause);
     }
 }

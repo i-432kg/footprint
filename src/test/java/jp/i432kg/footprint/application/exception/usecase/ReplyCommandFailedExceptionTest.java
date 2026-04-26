@@ -12,14 +12,14 @@ class ReplyCommandFailedExceptionTest {
     @DisplayName("ReplyCommandFailedException.saveFailed は保存失敗情報を組み立てる")
     void should_buildSaveFailedDetails_when_factoryIsUsed() {
         final IllegalStateException cause = new IllegalStateException("db down");
-        final ReplyCommandFailedException exception = ReplyCommandFailedException.saveFailed("01ARZ3NDEKTSV4RRFFQ69G5FAZ", cause);
+        final ReplyCommandFailedException exception = ReplyCommandFailedException.saveFailed(cause);
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.REPLY_COMMAND_FAILED);
         assertThat(exception.getMessage()).isEqualTo("reply is invalid. reason=save_failed");
         assertThat(exception.getDetails())
                 .containsEntry("target", "reply")
                 .containsEntry("reason", "save_failed")
-                .containsEntry("rejectedValue", "01ARZ3NDEKTSV4RRFFQ69G5FAZ");
+                .doesNotContainKey("rejectedValue");
         assertThat(exception.getCause()).isSameAs(cause);
     }
 
@@ -28,14 +28,14 @@ class ReplyCommandFailedExceptionTest {
     void should_buildIncreaseReplyCountFailedDetails_when_factoryIsUsed() {
         final IllegalStateException cause = new IllegalStateException("db down");
         final ReplyCommandFailedException exception =
-                ReplyCommandFailedException.increaseReplyCountFailed("01ARZ3NDEKTSV4RRFFQ69G5FAZ", cause);
+                ReplyCommandFailedException.increaseReplyCountFailed(cause);
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.REPLY_COMMAND_FAILED);
         assertThat(exception.getMessage()).isEqualTo("reply is invalid. reason=increase_reply_count_failed");
         assertThat(exception.getDetails())
                 .containsEntry("target", "reply")
                 .containsEntry("reason", "increase_reply_count_failed")
-                .containsEntry("rejectedValue", "01ARZ3NDEKTSV4RRFFQ69G5FAZ");
+                .doesNotContainKey("rejectedValue");
         assertThat(exception.getCause()).isSameAs(cause);
     }
 }

@@ -71,10 +71,7 @@ public class PostCommandService {
                             postId
                     );
         } catch (IOException e) {
-            throw PostCommandFailedException.imageSaveFailed(
-                    command.getOriginalFilename().getValue(),
-                    e
-            );
+            throw PostCommandFailedException.imageSaveFailed(e);
         }
 
         final ImageMetadata imageMetadata;
@@ -83,10 +80,7 @@ public class PostCommandService {
             imageMetadata = imageMetadataExtractor.extract(storageObject);
         } catch (ImageProcessingException | IOException e) {
             cleanupStoredImage(storageObject);
-            throw PostCommandFailedException.imageMetadataExtractFailed(
-                    storageObject.getObjectKey().getValue(),
-                    e
-            );
+            throw PostCommandFailedException.imageMetadataExtractFailed(e);
         }
 
         // 抽出したメタデータと保存先情報から Image ドメインモデルを生成する
@@ -114,10 +108,7 @@ public class PostCommandService {
             postRepository.savePost(post);
         } catch (DataAccessException e) {
             cleanupStoredImage(storageObject);
-            throw PostCommandFailedException.persistenceFailed(
-                    postId.getValue(),
-                    e
-            );
+            throw PostCommandFailedException.persistenceFailed(e);
         }
     }
 

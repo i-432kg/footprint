@@ -20,17 +20,13 @@ public class ReplyCommandFailedException extends UseCaseExecutionException {
     /**
      * 返信保存失敗を表す例外を生成します。
      *
-     * @param rejectedValue 問題となった値
      * @param cause 元になった例外
      * @return 生成した例外
      */
-    public static ReplyCommandFailedException saveFailed(
-            final Object rejectedValue,
-            final Throwable cause
-    ) {
+    public static ReplyCommandFailedException saveFailed(final Throwable cause) {
         return new ReplyCommandFailedException(
                 message("reply", "save_failed"),
-                details("reply", "save_failed", rejectedValue),
+                details("reply", "save_failed"),
                 cause
         );
     }
@@ -38,17 +34,13 @@ public class ReplyCommandFailedException extends UseCaseExecutionException {
     /**
      * 親返信の childCount 加算失敗を表す例外を生成します。
      *
-     * @param rejectedValue 問題となった値
      * @param cause 元になった例外
      * @return 生成した例外
      */
-    public static ReplyCommandFailedException increaseReplyCountFailed(
-            final Object rejectedValue,
-            final Throwable cause
-    ) {
+    public static ReplyCommandFailedException increaseReplyCountFailed(final Throwable cause) {
         return new ReplyCommandFailedException(
                 message("reply", "increase_reply_count_failed"),
-                details("reply", "increase_reply_count_failed", rejectedValue),
+                details("reply", "increase_reply_count_failed"),
                 cause
         );
     }

@@ -43,7 +43,7 @@
 | 11 | 正常系 | 必須 multipart パート欠落を変換する | `MissingServletRequestPartException` | status=400, `details.errors[0].target=<partName>`, `source=multipart` |
 | 12 | 正常系 | request body 解析失敗を変換する | `HttpMessageNotReadableException` | status=400, title=`Validation Error`, `details.errors[0].target=requestBody`, `source=body` |
 | 13 | 正常系 | 型変換失敗を変換する | `MethodArgumentTypeMismatchException` | status=400, `details.errors[0].target=<name>`, `source=query` |
-| 14 | 正常系 | use case 実行失敗を変換する | `PostCommandFailedException.persistenceFailed(...)` | status=500, title=`Use Case Error` |
+| 14 | 正常系 | use case 実行失敗を変換する | `PostCommandFailedException.persistenceFailed(...)` | status=500, title=`Use Case Error`, `details` は `target` / `reason` のみで `rejectedValue` を含まない |
 | 15 | 正常系 | generic domain 例外を変換する | `InvalidModelException.invalid(...)` | status=400, title=`Domain Error` |
 | 16 | 正常系 | generic application 例外を変換する | `ApplicationException` test double | status=500, title=`Application Error` |
 | 17 | 正常系 | 想定外例外を変換する | `RuntimeException` | status=500, title=`Internal Server Error`, `errorCode=UNEXPECTED_ERROR` |

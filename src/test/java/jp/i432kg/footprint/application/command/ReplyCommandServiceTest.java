@@ -228,7 +228,7 @@ class ReplyCommandServiceTest {
                     assertThat(exception.getDetails())
                             .containsEntry("target", "reply")
                             .containsEntry("reason", "increase_reply_count_failed")
-                            .containsEntry("rejectedValue", DomainTestFixtures.replyId().getValue());
+                            .doesNotContainKey("rejectedValue");
                 });
     }
 
