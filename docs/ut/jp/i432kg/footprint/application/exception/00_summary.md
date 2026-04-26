@@ -33,7 +33,7 @@
   - 保持責務と継承関係を確認する
 - resource 系:
   - `PostNotFoundException`, `ReplyNotFoundException`, `UserNotFoundException`
-  - `ErrorCode`, message, details の ID 格納を確認する
+  - `ErrorCode`, message, `target`, `reason=not_found`, `resourceId` 格納を確認する
 - usecase 系:
   - `PostCommandFailedException`, `ReplyCommandFailedException`, `UserCommandFailedException`
   - 各 factory の `target`, `reason`, `rejectedValue`, `cause` を確認する

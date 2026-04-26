@@ -30,5 +30,5 @@
 - モック化する依存: なし
 - `DomainException` はテスト用の具象サブクラスを作って protected コンストラクタを確認する
 - `InvalidValueException` は `required`, `blank`, `tooLong`, `tooShort`, `outOfRange`, `invalidFormat`, `invalid` を個別に確認する
-- `ReplyPostMismatchException` は `details(...)` により `target=reply`, `reason=post_mismatch` が入る点を確認する
+- `ReplyPostMismatchException` は `details(...)` により `target=reply.postId`, `reason=post_mismatch` が入る点を確認する
 - 各テストメソッドには `@DisplayName` を付与し、日本語の見出しで観点を明示する
