@@ -12,7 +12,10 @@ import jp.i432kg.footprint.domain.service.PostDomainService;
 import jp.i432kg.footprint.domain.service.ReplyDomainService;
 import jp.i432kg.footprint.domain.service.UserDomainService;
 import jp.i432kg.footprint.domain.value.ReplyId;
+import jp.i432kg.footprint.logging.LoggingCategories;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +29,9 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class ReplyCommandService {
+
+    private static final String EVENT_REPLY_CREATE_SUCCESS = "REPLY_CREATE_SUCCESS";
+    private static final Logger AUDIT_LOGGER = LoggerFactory.getLogger(LoggingCategories.AUDIT);
 
     private final ReplyRepository replyRepository;
 
@@ -94,6 +100,16 @@ public class ReplyCommandService {
                 throw ReplyCommandFailedException.increaseReplyCountFailed(e);
             }
         }
+
+        final ReplyId parentReplyId = reply.getParentReplyId();
+        AUDIT_LOGGER.info(
+                "event={}, replyId={}, postId={}, parentReplyId={}, userId={}",
+                EVENT_REPLY_CREATE_SUCCESS,
+                reply.getReplyId().getValue(),
+                reply.getPostId().getValue(),
+                parentReplyId == null ? null : parentReplyId.getValue(),
+                reply.getUserId().getValue()
+        );
     }
 
 }

@@ -12,9 +12,11 @@ import jp.i432kg.footprint.domain.exception.InvalidValueException;
 import jp.i432kg.footprint.domain.exception.ReplyPostMismatchException;
 import jp.i432kg.footprint.exception.BaseException;
 import jp.i432kg.footprint.exception.ErrorCode;
+import jp.i432kg.footprint.logging.LoggingCategories;
 import jp.i432kg.footprint.logging.masking.SensitiveDataMasker;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -38,7 +40,6 @@ import java.util.Map;
  * application/domain の独自例外と validation 例外を一貫したレスポンス形式へ変換し、
  * `errorCode` と `details` を含むエラー応答を返します。
  */
-@Slf4j
 @RestControllerAdvice
 @RequestMapping(produces = MediaType.APPLICATION_PROBLEM_JSON_VALUE)
 @RequiredArgsConstructor
@@ -46,6 +47,7 @@ public class GlobalExceptionHandler {
 
     private static final String ERROR_CODE_DOMAIN_INVALID_VALUE = "DOMAIN_INVALID_VALUE";
     private static final String ERROR_CODE_UNEXPECTED_ERROR = "UNEXPECTED_ERROR";
+    private static final Logger APP_LOGGER = LoggerFactory.getLogger(LoggingCategories.APP);
 
     private final SensitiveDataMasker sensitiveDataMasker;
 
@@ -54,7 +56,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(PostNotFoundException.class)
     public ProblemDetail handlePostNotFound(final PostNotFoundException ex) {
-        log.warn("Post not found. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
+        APP_LOGGER.warn("Post not found. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
         return createApplicationProblemDetail(HttpStatus.NOT_FOUND, "Post Not Found", ex);
     }
 
@@ -63,7 +65,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ReplyNotFoundException.class)
     public ProblemDetail handleReplyNotFound(final ReplyNotFoundException ex) {
-        log.warn("Reply not found. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
+        APP_LOGGER.warn("Reply not found. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
         return createApplicationProblemDetail(HttpStatus.NOT_FOUND, "Reply Not Found", ex);
     }
 
@@ -72,7 +74,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(UserNotFoundException.class)
     public ProblemDetail handleUserNotFound(final UserNotFoundException ex) {
-        log.warn("User not found. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
+        APP_LOGGER.warn("User not found. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
         return createApplicationProblemDetail(HttpStatus.NOT_FOUND, "User Not Found", ex);
     }
 
@@ -81,7 +83,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(EmailAlreadyUsedException.class)
     public ProblemDetail handleEmailAlreadyUsed(final EmailAlreadyUsedException ex) {
-        log.warn("Email already used. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
+        APP_LOGGER.warn("Email already used. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
         return createApplicationProblemDetail(HttpStatus.CONFLICT, "Email Already Used", ex);
     }
 
@@ -90,7 +92,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(InvalidValueException.class)
     public ProblemDetail handleInvalidValue(final InvalidValueException ex) {
-        log.warn("Invalid value. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
+        APP_LOGGER.warn("Invalid value. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
         return createApplicationProblemDetail(HttpStatus.BAD_REQUEST, "Invalid Value", ex);
     }
 
@@ -99,7 +101,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ReplyPostMismatchException.class)
     public ProblemDetail handleReplyPostMismatch(final ReplyPostMismatchException ex) {
-        log.warn("Reply post mismatch. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
+        APP_LOGGER.warn("Reply post mismatch. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
         return createApplicationProblemDetail(HttpStatus.BAD_REQUEST, "Reply Post Mismatch", ex);
     }
 
@@ -116,7 +118,7 @@ public class GlobalExceptionHandler {
                 ))
                 .toList();
 
-        log.warn("Validation failed. errors={}", errors);
+        APP_LOGGER.warn("Validation failed. errors={}", errors);
         return createValidationProblemDetail(
                 "リクエストの形式が不正です。",
                 errors
@@ -136,7 +138,7 @@ public class GlobalExceptionHandler {
                 ))
                 .toList();
 
-        log.warn("Binding failed. errors={}", errors);
+        APP_LOGGER.warn("Binding failed. errors={}", errors);
         return createValidationProblemDetail(
                 "リクエストの形式が不正です。",
                 errors
@@ -156,7 +158,7 @@ public class GlobalExceptionHandler {
                 ))
                 .toList();
 
-        log.warn("Constraint violation. errors={}", errors);
+        APP_LOGGER.warn("Constraint violation. errors={}", errors);
         return createValidationProblemDetail(
                 "リクエストの形式が不正です。",
                 errors
@@ -172,7 +174,7 @@ public class GlobalExceptionHandler {
                 validationError(ex.getParameterName(), "required", null, "query")
         );
 
-        log.warn("Missing request parameter. parameter={}", ex.getParameterName());
+        APP_LOGGER.warn("Missing request parameter. parameter={}", ex.getParameterName());
         return createValidationProblemDetail(
                 "必須パラメータが不足しています。",
                 errors
@@ -188,7 +190,7 @@ public class GlobalExceptionHandler {
                 validationError(ex.getRequestPartName(), "required", null, "multipart")
         );
 
-        log.warn("Missing request part. part={}", ex.getRequestPartName());
+        APP_LOGGER.warn("Missing request part. part={}", ex.getRequestPartName());
         return createValidationProblemDetail(
                 "必須ファイルが不足しています。",
                 errors
@@ -204,7 +206,7 @@ public class GlobalExceptionHandler {
                 validationError("requestBody", "not_readable", null, "body")
         );
 
-        log.warn(
+        APP_LOGGER.warn(
                 "Request body is not readable. cause={}",
                 ex.getMostSpecificCause().getClass().getSimpleName()
         );
@@ -223,7 +225,7 @@ public class GlobalExceptionHandler {
                 validationError(ex.getName(), "type_mismatch", ex.getValue(), "query")
         );
 
-        log.warn("Type mismatch. errors={}", errors);
+        APP_LOGGER.warn("Type mismatch. errors={}", errors);
         return createValidationProblemDetail(
                 "リクエストパラメータの型が不正です。",
                 errors
@@ -235,7 +237,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(UseCaseExecutionException.class)
     public ProblemDetail handleUseCaseExecutionException(final UseCaseExecutionException ex) {
-        log.warn("Use case failed. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
+        APP_LOGGER.warn("Use case failed. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
         return createApplicationProblemDetail(resolveStatus(ex), "Use Case Error", ex);
     }
 
@@ -244,7 +246,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(DomainException.class)
     public ProblemDetail handleDomainException(final DomainException ex) {
-        log.warn("Domain error occurred. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
+        APP_LOGGER.warn("Domain error occurred. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
         return createApplicationProblemDetail(resolveStatus(ex), "Domain Error", ex);
     }
 
@@ -253,7 +255,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ApplicationException.class)
     public ProblemDetail handleApplicationException(final ApplicationException ex) {
-        log.warn("Application error occurred. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
+        APP_LOGGER.warn("Application error occurred. errorCode={}, details={}", ex.getErrorCode(), maskedDetails(ex));
         return createApplicationProblemDetail(resolveStatus(ex), "Application Error", ex);
     }
 
@@ -262,7 +264,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleException(final Exception ex) {
-        log.error("Unexpected error occurred.", ex);
+        APP_LOGGER.error("Unexpected error occurred.", ex);
         final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "サーバー内部でエラーが発生しました。"

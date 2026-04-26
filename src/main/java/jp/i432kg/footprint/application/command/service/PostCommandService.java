@@ -13,8 +13,10 @@ import jp.i432kg.footprint.domain.model.Post;
 import jp.i432kg.footprint.domain.repository.PostRepository;
 import jp.i432kg.footprint.domain.service.UserDomainService;
 import jp.i432kg.footprint.domain.value.*;
-import lombok.extern.slf4j.Slf4j;
+import jp.i432kg.footprint.logging.LoggingCategories;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +29,12 @@ import java.time.LocalDateTime;
  * 投稿に関するユースケースを実行するアプリケーションサービス。
  */
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class PostCommandService {
+
+    private static final String EVENT_POST_CREATE_SUCCESS = "POST_CREATE_SUCCESS";
+    private static final Logger APP_LOGGER = LoggerFactory.getLogger(LoggingCategories.APP);
+    private static final Logger AUDIT_LOGGER = LoggerFactory.getLogger(LoggingCategories.AUDIT);
 
     private final PostRepository postRepository;
 
@@ -110,6 +115,15 @@ public class PostCommandService {
             cleanupStoredImage(storageObject);
             throw PostCommandFailedException.persistenceFailed(e);
         }
+
+        AUDIT_LOGGER.info(
+                "event={}, postId={}, userId={}, imageSizeBytes={}, hasLocation={}",
+                EVENT_POST_CREATE_SUCCESS,
+                post.getPostId().getValue(),
+                post.getUserId().getValue(),
+                post.getImage().getFileSize().getValue(),
+                post.getImage().hasLocation()
+        );
     }
 
     private void cleanupStoredImage(final StorageObject storageObject) {
@@ -118,7 +132,7 @@ public class PostCommandService {
         } catch (IOException e) {
             // ここで cleanup 失敗を再送出すると一次障害の原因が隠れるため、
             // 元例外を優先しつつ補償処理失敗はログに残す。
-            log.warn("Failed to cleanup stored image after post processing failure.", e);
+            APP_LOGGER.warn("Failed to cleanup stored image after post processing failure.", e);
         }
     }
 

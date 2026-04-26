@@ -7,7 +7,10 @@ import jp.i432kg.footprint.domain.model.User;
 import jp.i432kg.footprint.domain.repository.UserRepository;
 import jp.i432kg.footprint.domain.service.UserDomainService;
 import jp.i432kg.footprint.domain.value.*;
+import jp.i432kg.footprint.logging.LoggingCategories;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class UserCommandService {
+
+    private static final String EVENT_USER_CREATE_SUCCESS = "USER_CREATE_SUCCESS";
+    private static final Logger APP_LOGGER = LoggerFactory.getLogger(LoggingCategories.APP);
 
     private final UserDomainService userDomainService;
     private final UserRepository userRepository;
@@ -54,6 +60,13 @@ public class UserCommandService {
         } catch (DataAccessException e) {
             throw UserCommandFailedException.saveFailed(e);
         }
+
+        APP_LOGGER.info(
+                "event={}, userId={}, username={}",
+                EVENT_USER_CREATE_SUCCESS,
+                user.getUserId().getValue(),
+                user.getUserName().getValue()
+        );
     }
 
     /**
