@@ -36,3 +36,7 @@ mybatis:
     map-underscore-to-camel-case: true
   type-handlers-package: jp.i432kg.footprint.infrastructure.datasource.typehandler
   mapper-locations: classpath*:jp/i432kg/footprint/infrastructure/datasource/mapper/**/*.xml
+
+logging:
+  pattern:
+    level: "%5p [traceId:%X{traceId}]"

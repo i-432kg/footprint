@@ -2,6 +2,7 @@ package jp.i432kg.footprint.config;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jp.i432kg.footprint.infrastructure.security.LastLoginUpdatingAuthenticationSuccessHandler;
+import jp.i432kg.footprint.logging.trace.TraceIdFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.HttpStatusAccessDeniedHandler;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
@@ -27,15 +29,18 @@ public class SecurityConfig {
     private final Environment environment;
     private final StorageSecurityProperties storageSecurityProperties;
     private final LastLoginUpdatingAuthenticationSuccessHandler authenticationSuccessHandler;
+    private final TraceIdFilter traceIdFilter;
 
     public SecurityConfig(
             final Environment environment,
             final StorageSecurityProperties storageSecurityProperties,
-            final LastLoginUpdatingAuthenticationSuccessHandler authenticationSuccessHandler
+            final LastLoginUpdatingAuthenticationSuccessHandler authenticationSuccessHandler,
+            final TraceIdFilter traceIdFilter
     ) {
         this.environment = environment;
         this.storageSecurityProperties = storageSecurityProperties;
         this.authenticationSuccessHandler = authenticationSuccessHandler;
+        this.traceIdFilter = traceIdFilter;
     }
 
     @Bean
@@ -133,6 +138,8 @@ public class SecurityConfig {
                 )
 
                 .securityContext(Customizer.withDefaults());
+
+        http.addFilterBefore(traceIdFilter, SecurityContextHolderFilter.class);
 
         return http.build();
     }
