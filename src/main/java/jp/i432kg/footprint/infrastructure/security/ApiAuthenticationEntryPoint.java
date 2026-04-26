@@ -3,6 +3,7 @@ package jp.i432kg.footprint.infrastructure.security;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jp.i432kg.footprint.logging.LoggingCategories;
+import jp.i432kg.footprint.logging.LoggingEvents;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,6 @@ import java.io.IOException;
 @Component
 public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    private static final String EVENT = "AUTH_UNAUTHORIZED";
     private static final Logger AUTH_LOGGER = LoggerFactory.getLogger(LoggingCategories.AUTH);
 
     @Override
@@ -29,7 +29,8 @@ public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
             final @NonNull HttpServletResponse response,
             final @NonNull AuthenticationException authException
     ) throws IOException {
-        AUTH_LOGGER.warn("event={}, method={}, path={}", EVENT, request.getMethod(), request.getRequestURI());
+        AUTH_LOGGER.warn("event={}, method={}, path={}",
+                LoggingEvents.AUTH_UNAUTHORIZED, request.getMethod(), request.getRequestURI());
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }

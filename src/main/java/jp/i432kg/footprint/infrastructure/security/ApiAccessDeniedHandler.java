@@ -3,6 +3,7 @@ package jp.i432kg.footprint.infrastructure.security;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jp.i432kg.footprint.logging.LoggingCategories;
+import jp.i432kg.footprint.logging.LoggingEvents;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +22,6 @@ import java.io.IOException;
 @Component
 public class ApiAccessDeniedHandler implements AccessDeniedHandler {
 
-    private static final String EVENT_FORBIDDEN = "AUTH_FORBIDDEN";
-    private static final String EVENT_CSRF_REJECTED = "AUTH_CSRF_REJECTED";
     private static final Logger AUTH_LOGGER = LoggerFactory.getLogger(LoggingCategories.AUTH);
 
     @Override
@@ -33,8 +32,8 @@ public class ApiAccessDeniedHandler implements AccessDeniedHandler {
     ) throws IOException {
 
         final String event = isCsrfException(accessDeniedException) ?
-                EVENT_CSRF_REJECTED :
-                EVENT_FORBIDDEN;
+                LoggingEvents.AUTH_CSRF_REJECTED :
+                LoggingEvents.AUTH_FORBIDDEN;
         AUTH_LOGGER.warn("event={}, method={}, path={}", event, request.getMethod(), request.getRequestURI());
 
         response.sendError(HttpServletResponse.SC_FORBIDDEN);

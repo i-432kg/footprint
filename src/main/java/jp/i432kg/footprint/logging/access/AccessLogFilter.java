@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
 import jp.i432kg.footprint.logging.LoggingCategories;
+import jp.i432kg.footprint.logging.LoggingEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -23,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 public class AccessLogFilter extends OncePerRequestFilter {
 
     private static final Logger ACCESS_LOGGER = LoggerFactory.getLogger(LoggingCategories.ACCESS);
-    private static final String EVENT = "HTTP_ACCESS";
     private static final int INTERNAL_SERVER_ERROR = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
     /**
@@ -73,7 +73,7 @@ public class AccessLogFilter extends OncePerRequestFilter {
         if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl userDetails) {
             ACCESS_LOGGER.info(
                     "event={}, method={}, path={}, status={}, durationMs={}, userId={}, username={}",
-                    EVENT,
+                    LoggingEvents.HTTP_ACCESS,
                     request.getMethod(),
                     request.getRequestURI(),
                     status,
@@ -86,7 +86,7 @@ public class AccessLogFilter extends OncePerRequestFilter {
 
         ACCESS_LOGGER.info(
                 "event={}, method={}, path={}, status={}, durationMs={}",
-                EVENT,
+                LoggingEvents.HTTP_ACCESS,
                 request.getMethod(),
                 request.getRequestURI(),
                 status,

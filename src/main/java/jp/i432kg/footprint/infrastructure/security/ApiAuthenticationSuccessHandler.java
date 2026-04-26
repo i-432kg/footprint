@@ -3,6 +3,7 @@ package jp.i432kg.footprint.infrastructure.security;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jp.i432kg.footprint.logging.LoggingCategories;
+import jp.i432kg.footprint.logging.LoggingEvents;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ApiAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    private static final String EVENT = "AUTH_LOGIN_SUCCESS";
     private static final Logger AUTH_LOGGER = LoggerFactory.getLogger(LoggingCategories.AUTH);
 
     private final LastLoginRecorder lastLoginRecorder;
@@ -37,7 +37,7 @@ public class ApiAuthenticationSuccessHandler implements AuthenticationSuccessHan
             lastLoginRecorder.recordSuccessfulLogin(userDetails.getUserId());
 
             AUTH_LOGGER.info("event={}, userId={}, username={}",
-                    EVENT, userDetails.getUserId().getValue(), userDetails.getDisplayUsername());
+                    LoggingEvents.AUTH_LOGIN_SUCCESS, userDetails.getUserId().getValue(), userDetails.getDisplayUsername());
         }
 
         response.setStatus(HttpServletResponse.SC_OK);

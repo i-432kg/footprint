@@ -11,6 +11,7 @@ import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
 import jp.i432kg.footprint.infrastructure.security.mapper.AuthMapper;
 import jp.i432kg.footprint.logging.LoggingCategories;
+import jp.i432kg.footprint.logging.LoggingEvents;
 import jp.i432kg.footprint.logging.masking.SensitiveDataMasker;
 import jp.i432kg.footprint.logging.trace.TraceIdFilter;
 import jp.i432kg.footprint.presentation.api.GlobalExceptionHandler;
@@ -77,7 +78,7 @@ class AccessLogFilterTest {
         assertThat(event.getLoggerName()).isEqualTo(LoggingCategories.ACCESS);
         assertThat(event.getLevel()).isEqualTo(Level.INFO);
         assertThat(event.getFormattedMessage())
-                .contains("event=HTTP_ACCESS")
+                .contains("event=" + LoggingEvents.HTTP_ACCESS)
                 .contains("method=GET")
                 .contains("path=/api/posts")
                 .contains("status=204")

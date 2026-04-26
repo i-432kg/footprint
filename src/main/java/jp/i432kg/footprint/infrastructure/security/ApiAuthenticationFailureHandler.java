@@ -3,6 +3,7 @@ package jp.i432kg.footprint.infrastructure.security;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jp.i432kg.footprint.logging.LoggingCategories;
+import jp.i432kg.footprint.logging.LoggingEvents;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,6 @@ import java.io.IOException;
 @Component
 public class ApiAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
-    private static final String EVENT = "AUTH_LOGIN_FAILURE";
     private static final String REASON = "INVALID_CREDENTIALS";
     private static final Logger AUTH_LOGGER = LoggerFactory.getLogger(LoggingCategories.AUTH);
 
@@ -31,7 +31,7 @@ public class ApiAuthenticationFailureHandler implements AuthenticationFailureHan
             final @NonNull AuthenticationException exception
     ) throws IOException {
         AUTH_LOGGER.warn("event={}, reason={}, method={}, path={}",
-                EVENT, REASON, request.getMethod(), request.getRequestURI());
+                LoggingEvents.AUTH_LOGIN_FAILURE, REASON, request.getMethod(), request.getRequestURI());
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication Failed");
     }
 }

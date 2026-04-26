@@ -14,6 +14,7 @@ import jp.i432kg.footprint.domain.repository.PostRepository;
 import jp.i432kg.footprint.domain.service.UserDomainService;
 import jp.i432kg.footprint.domain.value.*;
 import jp.i432kg.footprint.logging.LoggingCategories;
+import jp.i432kg.footprint.logging.LoggingEvents;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,6 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class PostCommandService {
 
-    private static final String EVENT_POST_CREATE_SUCCESS = "POST_CREATE_SUCCESS";
     private static final Logger APP_LOGGER = LoggerFactory.getLogger(LoggingCategories.APP);
     private static final Logger AUDIT_LOGGER = LoggerFactory.getLogger(LoggingCategories.AUDIT);
 
@@ -118,7 +118,7 @@ public class PostCommandService {
 
         AUDIT_LOGGER.info(
                 "event={}, postId={}, userId={}, imageSizeBytes={}, hasLocation={}",
-                EVENT_POST_CREATE_SUCCESS,
+                LoggingEvents.POST_CREATE_SUCCESS,
                 post.getPostId().getValue(),
                 post.getUserId().getValue(),
                 post.getImage().getFileSize().getValue(),
