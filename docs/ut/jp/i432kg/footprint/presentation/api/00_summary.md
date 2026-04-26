@@ -22,6 +22,7 @@
 
 - 例外応答: `GlobalExceptionHandler`
   - 代表的な application/domain/validation/汎用例外の変換を確認する
+  - `ProblemDetail` の `Content-Type` は `GlobalExceptionHandlerContentTypeTest` を補足テストとして扱い、個別仕様書は `GlobalExceptionHandler_test_design.md` に統合する
 - 投稿 API: `PostRestController`
   - 一覧・検索・詳細・返信一覧・投稿作成のルーティングと変換を確認する
 - 返信 API: `ReplyRestController`
