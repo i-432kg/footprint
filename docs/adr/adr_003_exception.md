@@ -22,8 +22,6 @@
 | `POST_COMMAND_FAILED`  | 500 Internal Server Error | 投稿作成ユースケース失敗   |
 | `REPLY_COMMAND_FAILED` | 500 Internal Server Error | 返信作成ユースケース失敗   |
 | `USER_COMMAND_FAILED`  | 500 Internal Server Error | ユーザー作成ユースケース失敗 |
-| `FILE_STORAGE_ERROR`   | 500 Internal Server Error | ストレージ操作失敗      |
-| `PERSISTENCE_ERROR`    | 500 Internal Server Error | 永続化失敗          |
 | `UNEXPECTED_ERROR`     | 500 Internal Server Error | 想定外例外          |
 
 ## 補足

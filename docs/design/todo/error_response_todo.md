@@ -18,21 +18,22 @@
 
 | ID | 項目 | ステータス | 対応内容 | 備考 |
 |---|---|---|---|---|
-| ERR-01 | `type` を安定 URI として整備する | Open | 問題種別ごとの URI 命名規約と一覧を決める | `about:blank` からの移行 |
+| ERR-01 | `type` を安定 URI として整備する | On Hold | `errorCode` による機械判定で当面運用し、`type` は外部契約の標準化としてリリース後に整備する | `about:blank` からの移行 |
 | ERR-02 | `details` の構造を安定化する | Closed | ADR-027 に基づき、`details` を object、正規項目を `target`, `reason`, `rejectedValue` とする構造へ実装と OpenAPI を更新した | バリデーションは `details.errors[]` とする |
-| ERR-03 | `application/problem+json` の扱いを明確化する | Open | Content-Type を明示運用するか判断する | 既存クライアント影響を確認 |
+| ERR-03 | `application/problem+json` の扱いを明確化する | Closed | `GlobalExceptionHandler` を `application/problem+json` 明示運用にし、OpenAPI のエラーレスポンス content も統一した | フロントは `Content-Type` 固定前提ではないことを確認済み |
 | ERR-04 | `07_authz_authn.md` を `ProblemDetail` 方針へ追随させる | Closed | `07_authz_authn.md` のエラー応答説明を `ProblemDetail` / `errorCode` / `details` 前提へ更新済み | ADR-024 準拠 |
-| ERR-05 | 機微情報の露出を継続的に抑制する | In Progress | `errorCode` / `details` / `detail` の出力内容を見直す | `SensitiveDataMasker` と連動 |
+| ERR-05 | 機微情報の露出を継続的に抑制する | Closed | `errorCode` / `details` / `detail` の出力内容を見直し、`SensitiveDataMasker` と 500 系 `UseCaseExecutionException` の運用を反映した | seed 専用ログは固定ダミーデータに限って別ルールで許容 |
 
 ## TODO 詳細
 
 ### 1. `type` を安定 URI として整備する
 
-状況:
+保留方針:
 
-- `ProblemDetail` を採用しているが、問題種別の主識別子である `type` の運用は未整備
+- `ProblemDetail` を採用しているが、現時点では `errorCode` で機械判定できているため、`type` 未整備はリリース阻害要因としない
+- `type` はクライアント向け外部契約の標準化として位置づけ、リリース後に順次整備する
 
-TODO:
+再開時 TODO:
 
 - 問題種別 URI の命名規約を決める
 - 主要エラーコードと `type` の対応表を作る
@@ -59,16 +60,11 @@ TODO:
 
 ### 3. `application/problem+json` の扱いを明確化する
 
-状況:
+対応済み:
 
-- 実装は `ProblemDetail` を返している
-- ただし media type の運用を明示できていない
-
-TODO:
-
-- `application/problem+json` を返す方針にするか判断する
-- 既存クライアントへの影響を確認する
-- API 仕様書へ反映する
+- `GlobalExceptionHandler` に `produces = application/problem+json` を付与し、例外レスポンスを明示運用にした
+- OpenAPI の `ProblemDetailError` 応答は `application/problem+json` に統一した
+- フロントエンドは `Content-Type` 固定前提の実装ではなく、`error.response.data` を参照する構成であることを確認した
 
 ### 4. `07_authz_authn.md` を `ProblemDetail` 方針へ追随させる
 
@@ -81,15 +77,17 @@ TODO:
 
 ### 5. 機微情報の露出を継続的に抑制する
 
-状況:
+対応済み:
 
-- `ProblemDetail` は説明力が高い反面、詳細を載せすぎると漏えいリスクがある
+- `GlobalExceptionHandler` の `details` / validation error は `SensitiveDataMasker` を通した値を利用する形へ統一した
+- `MaskingTarget` に email / password / token / objectKey / fileName 系の判定を集約した
+- 500 系 `UseCaseExecutionException` は `details.rejectedValue` を持たず、`target` / `reason` のみ返す運用へ変更した
+- `detail` は内部実装や過剰な識別子を含まないメッセージに抑制した
 
-TODO:
+運用メモ:
 
-- `detail` に内部実装や過剰な説明を入れない
-- `details` に含める値のマスキング方針を継続確認する
-- `SensitiveDataMasker` と整合する運用を維持する
+- seed 専用ログは local / stg の fixed seed scenario に限り、固定ダミーデータの詳細出力を許容する
+- 本体の API エラーレスポンスと通常ログでは、引き続き `SensitiveDataMasker` と ADR-008 の方針に従う
 
 ## 運用メモ
 

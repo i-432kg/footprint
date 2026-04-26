@@ -22,121 +22,130 @@
 
 | ID | 項目 | ステータス | 対応内容 | 備考 |
 |---|---|---|---|---|
-| EXC-01 | 例外階層の責務を固定する | Open | `BaseException` / `ApplicationException` / `DomainException` / `UseCaseExecutionException` / `ResourceNotFoundException` の責務と使い分けを明文化する | どの層で何を投げるか |
-| EXC-02 | 具体例外の `details` 生成規約を統一する | Open | 具体例外は `target` / `reason` / `rejectedValue` を基本とし、例外的な追加項目のルールを決める | ADR-027 と連動 |
-| EXC-03 | 例外メッセージの書式と用途を整理する | Open | `message` を人間向け説明としてどう保つか、ログ・API・テストでの扱いを整理する | 英語/日本語、可変値の含め方 |
-| EXC-04 | `ErrorCode` と具体例外の対応を棚卸しする | Open | 1 例外 1 `ErrorCode` の原則、共通コードの許容範囲を見直す | `resolveStatus(...)` と整合 |
-| EXC-05 | 生成ヘルパーの利用ルールを統一する | Open | `DetailBasedException.details(...)` を使うべき例外と独自 `Map.of(...)` を許容する例外を整理する | 実装のばらつき解消 |
-| EXC-06 | resource not found 系 / validation 系 / use case 系の命名規則を整理する | Open | `XxxNotFoundException`, `XxxCommandFailedException`, `InvalidXxxException` の粒度を統一する | 命名の予測可能性 |
-| EXC-07 | 例外設計の ADR を追加する | Open | 設計判断を ADR として固定する | 実装修正前に判断を確定 |
-| EXC-08 | 例外クラス群のテスト観点を整理する | Open | 例外そのものの UT と `GlobalExceptionHandler` 側の責務境界を明確にする | message / details / errorCode |
+| EXC-01 | 例外階層の責務を固定する | Closed | 基底例外へ JavaDoc を追加し、`project_conventions.md` に `DomainException` / `ResourceNotFoundException` / `UseCaseExecutionException` の送出基準と包み替え基準を明文化した | 各レイヤで何をそのまま返し、何を包むかを固定 |
+| EXC-02 | 具体例外の `details` 生成規約を統一する | Closed | ADR-027 に基づき、resource not found 系、validation 系、use case 系、業務例外系の `details` を `target` / `reason` 中心へ揃えた | `rejectedValue` は任意項目 |
+| EXC-03 | 例外メッセージの書式と用途を整理する | Closed | `message` は人間向け説明、非契約、英語統一、機微情報非含有、`errorCode` / `details` で機械判定する方針を `project_conventions.md` に明文化した | helper と個別文面の使い分けも整理 |
+| EXC-04 | `ErrorCode` と具体例外の対応を棚卸しする | Closed | 未使用 `ErrorCode` を削除し、現実装の例外と `ErrorCode` の対応表を整理した | 現時点では粒度・HTTP ステータス対応とも妥当と判断 |
+| EXC-05 | 生成ヘルパーの利用ルールを統一する | Closed | `DetailBasedException.details(...)` の overload を整理し、具体例外は helper または専用基底 helper を使う形へ揃えた | `ResourceNotFoundException` は専用 helper |
+| EXC-06 | resource not found 系 / validation 系 / use case 系の命名規則を整理する | Closed | 例外命名の草案を作成し、`project_conventions.md` に `NotFound`, `InvalidValue`, `InvalidModel`, `Mismatch`, `AlreadyUsed`, `CommandFailed` の使い分けを反映した | 命名の予測可能性を確保 |
+| EXC-07 | 例外設計の ADR を追加する | Closed | 例外詳細の本命設計を typed details DTO とし、リリース前は `Map<String, Object>` を維持する方針を ADR-028 に整理した | リリース後の段階移行方針 |
+| EXC-08 | 例外クラス群のテスト観点を整理する | Closed | 例外単体テストと `GlobalExceptionHandler` / `ContentType` テスト、UT 仕様書を更新し、責務境界を整理した | message / details / errorCode / ProblemDetail |
 
 ## TODO 詳細
 
 ### 1. 例外階層の責務を固定する
 
-状況:
+対応済み:
 
-- `BaseException` を基底として application / domain 例外がぶら下がっている
-- ただし「domain で投げるべきか」「application で包むべきか」「resource not found はどこに属すべきか」の判断基準が文書化されていない
-
-TODO:
-
-- 各抽象例外の責務を定義する
-- 各レイヤで投げてよい例外の範囲を整理する
-- `GlobalExceptionHandler` が想定する例外階層と整合を取る
+- `BaseException`, `ApplicationException`, `DomainException`, `UseCaseExecutionException`, `ResourceNotFoundException` に JavaDoc を追加した
+- `ResourceNotFoundException` は `not_found` 構造、`UseCaseExecutionException` はユースケース失敗構造という責務をコード上で明文化した
+- `docs/project_conventions.md` に以下を追記した
+  - `DomainException` の送出基準
+  - `ResourceNotFoundException` の送出基準
+  - `UseCaseExecutionException` の送出基準
+  - application 層での包み替え基準
+  - presentation 層で独自例外を増やさない原則
 
 ### 2. 具体例外の `details` 生成規約を統一する
 
-状況:
+対応済み:
 
-- ADR-027 により `details` の正規形は定まった
-- 一方で、具体例外クラスごとに `details(...)` を使うものと独自 `Map.of(...)` を使うものが混在してきた
-
-TODO:
-
-- 具体例外は原則 `target` / `reason` / `rejectedValue` を基本に構築する
-- 追加項目 (`resourceId`, `min`, `max`, `expectedFormat` など) の使い方を整理する
-- 正規形から外れる例外があれば例外ルールとして明記する
+- resource not found 系は `target` / `reason=not_found` / `resourceId` に統一した
+- validation / domain 例外は `target` / `reason` / `rejectedValue` を基本に揃えた
+- `ReplyPostMismatchException` は `expectedPostId` / `actualPostId` を持つ例外ルールへ整理した
+- 500 系 `UseCaseExecutionException` は `rejectedValue` を持たず、`target` / `reason` のみ返す運用へ整理した
 
 ### 3. 例外メッセージの書式と用途を整理する
 
-状況:
+対応済み:
 
-- 例外メッセージは英語のもの、日本語のもの、可変値を埋め込むものが混在している
-- `ProblemDetail.detail`、ログ出力、デバッグ用途でどう使うかが明確ではない
+- `message` は人間向け説明とする
+- `message` は API 契約の安定識別子として扱わない
+- クライアントの機械判定は `errorCode` と `details` を使う
+- `message` は原則英語で統一する
+- 機微情報は `message` に含めない
+- `rejectedValue` や補足値は原則 `details` に寄せる
+- 汎用例外は helper による共通書式、個別業務例外は独自文面を許容する
 
-TODO:
+反映先:
 
-- `message` の主用途を決める
-- 可変値をどこまで含めるか決める
-- API 契約として安定させない項目を明確にする
+- `docs/project_conventions.md`
 
 ### 4. `ErrorCode` と具体例外の対応を棚卸しする
 
-状況:
+対応済み:
 
-- 例外ごとに `ErrorCode` を持つが、設計原則が明文化されていない
-- 例外の粒度と `ErrorCode` の粒度が揃っているか再確認が必要
+- 未使用の `FILE_STORAGE_ERROR`, `PERSISTENCE_ERROR` を削除した
+- `adr_003_exception.md` と `GlobalExceptionHandler.resolveStatus(...)` の整合を取り直した
+- 現実装の `具体例外 -> ErrorCode -> 想定 HTTP ステータス` 対応表を作成した
+- 現時点の粒度は実装・運用上問題ないと判断し、追加の分割は行わない
 
-TODO:
+現実装での対応表:
 
-- 具体例外と `ErrorCode` の対応表を作る
-- 共通 `ErrorCode` を許容するか判断する
-- HTTP ステータス対応との整合を確認する
+| レイヤ | 具体例外 | `ErrorCode` | 想定 HTTP ステータス | 備考 |
+|---|---|---|---|---|
+| application | `PostNotFoundException` | `POST_NOT_FOUND` | `404 Not Found` | `ResourceNotFoundException` 派生 |
+| application | `ReplyNotFoundException` | `REPLY_NOT_FOUND` | `404 Not Found` | `ResourceNotFoundException` 派生 |
+| application | `UserNotFoundException` | `USER_NOT_FOUND` | `404 Not Found` | `ResourceNotFoundException` 派生 |
+| application | `PostCommandFailedException` | `POST_COMMAND_FAILED` | `500 Internal Server Error` | `imageSaveFailed`, `imageMetadataExtractFailed`, `persistenceFailed` を内包 |
+| application | `ReplyCommandFailedException` | `REPLY_COMMAND_FAILED` | `500 Internal Server Error` | `saveFailed`, `increaseReplyCountFailed` を内包 |
+| application | `UserCommandFailedException` | `USER_COMMAND_FAILED` | `500 Internal Server Error` | `saveFailed` を内包 |
+| domain | `InvalidValueException` | `DOMAIN_INVALID_VALUE` | `400 Bad Request` | 値オブジェクト単位の入力不正 |
+| domain | `InvalidModelException` | `DOMAIN_INVALID_MODEL` | `400 Bad Request` | モデル不変条件違反 |
+| domain | `ReplyPostMismatchException` | `REPLY_POST_MISMATCH` | `400 Bad Request` | 関係不整合 |
+| domain | `EmailAlreadyUsedException` | `EMAIL_ALREADY_USED` | `409 Conflict` | 重複禁止 |
+| presentation | `Exception` | `UNEXPECTED_ERROR` | `500 Internal Server Error` | `GlobalExceptionHandler` の汎用ハンドラで付与 |
 
 ### 5. 生成ヘルパーの利用ルールを統一する
 
-状況:
+対応済み:
 
-- `DetailBasedException.details(...)` はあるが、全例外で一貫利用されていない
-- そのため実装スタイルにばらつきが出やすい
-
-TODO:
-
-- 具体例外は原則 helper を利用する
-- helper では表現しにくい場合だけ独自生成を許容する
-- helper 側に追加すべき派生パターンがあるかを確認する
+- `DetailBasedException.details(...)` に `rejectedValue` なしの overload を追加した
+- `ReplyPostMismatchException` を helper ベースへ整理し、ダミー `rejectedValue` を廃止した
+- 具体例外は `DetailBasedException` helper または `ResourceNotFoundException` 専用 helper を利用する形へ揃えた
 
 ### 6. 命名規則を整理する
 
-状況:
+対応済み:
 
-- `NotFound`, `Invalid`, `Failed`, `Mismatch` などの命名はあるが、どこまで分けるかが感覚的
+- 例外命名の草案を作成した
+- `docs/project_conventions.md` に以下の使い分けを反映した
+  - `XxxNotFoundException`
+  - `InvalidValueException`
+  - `InvalidModelException`
+  - `XxxMismatchException`
+  - `XxxAlreadyUsedException`
+  - `XxxCommandFailedException`
 
-TODO:
+補足:
 
-- resource not found 系の命名規則を固定する
-- use case 失敗系の命名規則を固定する
-- domain 不変条件違反系の命名規則を固定する
+- 現実装の具体例外名は、上記草案と整合しているため追加リネームは行っていない
 
 ### 7. 例外設計の ADR を追加する
 
-状況:
+対応済み:
 
 - 個別 ADR はあるが、例外クラス設計全体を統一する ADR はまだない
 
-TODO:
+- ADR-028 で、例外詳細の本命設計を typed details DTO とする方針を追加した
+- 当面は `BaseException` の `Map<String, Object>` を維持し、リリース後に段階移行する方針を明記した
+
+今後の課題:
 
 - 例外階層
 - `details` 生成規約
 - `message` / `errorCode` / `detail` の役割分担
 - helper 利用ルール
 
-をまとめた ADR を作成する
+をさらに具体化する補助 ADR が必要なら追加する
 
 ### 8. テスト観点を整理する
 
-状況:
+対応済み:
 
-- 例外変換は `GlobalExceptionHandlerTest` が主に担っている
-- 一方で、例外クラス自体の `details` / `message` / `errorCode` を直接検証するテストは薄い
-
-TODO:
-
-- 例外クラス単体で確認すべき内容を決める
-- handler 側で確認すべき内容との責務境界を決める
-- テスト仕様書へ反映する
+- 例外クラス単体テストを `details` / `message` / `errorCode` 観点で更新した
+- `GlobalExceptionHandlerTest` と `GlobalExceptionHandlerContentTypeTest` により、`ProblemDetail` 変換責務との境界を整理した
+- UT 仕様書も例外単体と handler 側の責務に合わせて更新した
 
 ## 運用メモ
 

@@ -21,9 +21,9 @@
 
 ### 1.3 関連資料
 
-- ADR 一覧: [docs/adr/README.md](/Users/432kg/IdeaProjects/footprint/docs/adr/README.md)
-- UT 仕様書ルール: [docs/ut/README.md](/Users/432kg/IdeaProjects/footprint/docs/ut/README.md)
-- 設計 TODO: [docs/design/todo](/Users/432kg/IdeaProjects/footprint/docs/design/todo)
+- ADR 一覧: `docs/adr/README.md`
+- UT 仕様書ルール: `docs/ut/README.md`
+- 設計 TODO: `docs/design/todo`
 
 ## 2. アーキテクチャ方針
 
@@ -210,6 +210,35 @@
 - `UseCaseExecutionException`
 - `ResourceNotFoundException`
 
+### 9.1.1 送出基準
+
+- `DomainException`
+  - 値オブジェクト、ドメインモデル、ドメインサービスが業務ルール違反を検知したときに送出する
+  - 対象は単一値の不正、不変条件違反、関係不整合、重複禁止など
+  - application 層で catch して別例外へ包み替えるのではなく、原則そのまま上位へ伝播させる
+- `ResourceNotFoundException`
+  - application 層が参照対象の存在確認を行い、必要なリソースが見つからないときに送出する
+  - 対象は投稿、返信、ユーザーなどの参照不在
+  - domain 層では送出しない
+- `UseCaseExecutionException`
+  - application service がユースケース実行中に継続不能な失敗を検知したときに送出する
+  - 対象は永続化失敗、外部 I/O 失敗、補償処理を含む技術的失敗
+  - 業務ルール違反を表す目的では使わない
+- `ApplicationException`
+  - application 層固有の異常を表す基底として扱う
+  - 具体例外は `ResourceNotFoundException` と `UseCaseExecutionException` を優先し、直接派生は例外的な場合に限る
+- `BaseException`
+  - 直接送出しない
+  - `ErrorCode`, `details`, `message` を持つ独自例外の共通基底としてのみ扱う
+
+### 9.1.2 包み替え基準
+
+- domain 起因の妥当性エラーは `DomainException` のまま返す
+- repository / storage / framework 由来の実行失敗は application 層で `UseCaseExecutionException` へ包む
+- 参照不在は application 層で `ResourceNotFoundException` へ変換する
+- presentation 層では原則独自例外を新設せず、framework validation 例外と `GlobalExceptionHandler` で扱う
+- 上記に当てはまらない例外は `Exception` として `UNEXPECTED_ERROR` へ流す
+
 ### 9.2 `ErrorCode`
 
 - 独自例外は `ErrorCode` を必ず持つ
@@ -225,6 +254,21 @@
 
 - 人間向け説明とする
 - クライアントの機械判定に利用させない
+
+### 9.4.1 `message` の運用ルール
+
+- `message` は API 契約の安定識別子として扱わない
+- クライアントは `message` ではなく `errorCode` と `details` を用いて機械判定する
+- `message` は原則英語で統一する
+- 機微情報は `message` に含めない
+- `rejectedValue` や補足値は原則 `details` に寄せる
+- `ProblemDetail.detail` は原則として例外の `message` を利用するため、ログと API の両方に出る前提で保守する
+
+### 9.4.2 helper と個別文面の使い分け
+
+- 汎用 validation 系と use case failure 系は helper による共通書式を優先する
+- 個別業務例外は、意味が明確になる場合に限って独自文面を許容する
+- 想定内例外は簡潔な説明にとどめ、内部実装の詳細は `message` に含めない
 
 ## 10. API 設計ルール
 
