@@ -12,8 +12,8 @@
 
 | No. | 区分 | 観点 | 確認内容 |
 |---|---|---|---|
-| 1 | 正常系 | imageSaveFailed | `target=image`, `reason=image_save_failed`, `rejectedValue`, `cause` を設定すること |
-| 2 | 正常系 | imageMetadataExtractFailed | `target=image`, `reason=image_metadata_extract_failed`, `rejectedValue`, `cause` を設定すること |
+| 1 | 正常系 | imageSaveFailed | `target=image.fileName`, `reason=image_save_failed`, `rejectedValue`, `cause` を設定すること |
+| 2 | 正常系 | imageMetadataExtractFailed | `target=image.objectKey`, `reason=image_metadata_extract_failed`, `rejectedValue`, `cause` を設定すること |
 | 3 | 正常系 | persistenceFailed | `target=post`, `reason=persistence_error`, `rejectedValue`, `cause` を設定すること |
 
 ## 3. テストケース一覧

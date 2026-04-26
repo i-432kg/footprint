@@ -141,7 +141,7 @@ class PostCommandServiceTest {
                 .satisfies(throwable -> {
                     final PostCommandFailedException exception = (PostCommandFailedException) throwable;
                     assertThat(exception.getDetails())
-                            .containsEntry("target", "image")
+                            .containsEntry("target", "image.fileName")
                             .containsEntry("reason", "image_save_failed")
                             .containsEntry("rejectedValue", command.getOriginalFilename().getValue());
                 });
@@ -164,7 +164,7 @@ class PostCommandServiceTest {
                 .satisfies(throwable -> {
                     final PostCommandFailedException exception = (PostCommandFailedException) throwable;
                     assertThat(exception.getDetails())
-                            .containsEntry("target", "image")
+                            .containsEntry("target", "image.objectKey")
                             .containsEntry("reason", "image_metadata_extract_failed")
                             .containsEntry("rejectedValue", storageObject.getObjectKey().getValue());
                 });
@@ -221,7 +221,7 @@ class PostCommandServiceTest {
                     final PostCommandFailedException exception = (PostCommandFailedException) throwable;
                     assertThat(exception.getCause()).hasMessage("extract failed");
                     assertThat(exception.getDetails())
-                            .containsEntry("target", "image")
+                            .containsEntry("target", "image.objectKey")
                             .containsEntry("reason", "image_metadata_extract_failed");
                 });
 

@@ -29,8 +29,8 @@ public class PostCommandFailedException extends UseCaseExecutionException {
             final Throwable cause
     ) {
         return new PostCommandFailedException(
-                message("image", "image_save_failed"),
-                details("image", "image_save_failed", rejectedValue),
+                message("image.fileName", "image_save_failed"),
+                details("image.fileName", "image_save_failed", rejectedValue),
                 cause
         );
     }
@@ -47,8 +47,8 @@ public class PostCommandFailedException extends UseCaseExecutionException {
             final Throwable cause
     ) {
         return new PostCommandFailedException(
-                message("image", "image_metadata_extract_failed"),
-                details("image", "image_metadata_extract_failed", rejectedValue),
+                message("image.objectKey", "image_metadata_extract_failed"),
+                details("image.objectKey", "image_metadata_extract_failed", rejectedValue),
                 cause
         );
     }

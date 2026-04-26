@@ -20,7 +20,12 @@ public enum MaskingTarget {
     /**
      * メールアドレス系の値を表します。
      */
-    EMAIL(MaskingStrategy.EMAIL, "email");
+    EMAIL(MaskingStrategy.EMAIL, "email"),
+
+    /**
+     * ストレージオブジェクトキーやファイル名などを表します。
+     */
+    FILE(MaskingStrategy.FULL, "objectkey", "filename", "fileName", "storageobjectkey");
 
     private final MaskingStrategy strategy;
     private final String[] keywords;

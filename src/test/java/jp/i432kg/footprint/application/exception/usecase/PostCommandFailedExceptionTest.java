@@ -17,9 +17,9 @@ class PostCommandFailedExceptionTest {
         final PostCommandFailedException exception = PostCommandFailedException.imageSaveFailed("image.jpg", cause);
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.POST_COMMAND_FAILED);
-        assertThat(exception.getMessage()).isEqualTo("image is invalid. reason=image_save_failed");
+        assertThat(exception.getMessage()).isEqualTo("image.fileName is invalid. reason=image_save_failed");
         assertThat(exception.getDetails())
-                .containsEntry("target", "image")
+                .containsEntry("target", "image.fileName")
                 .containsEntry("reason", "image_save_failed")
                 .containsEntry("rejectedValue", "image.jpg");
         assertThat(exception.getCause()).isSameAs(cause);
@@ -33,9 +33,9 @@ class PostCommandFailedExceptionTest {
                 PostCommandFailedException.imageMetadataExtractFailed("users/u/posts/p/images/i.jpg", cause);
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.POST_COMMAND_FAILED);
-        assertThat(exception.getMessage()).isEqualTo("image is invalid. reason=image_metadata_extract_failed");
+        assertThat(exception.getMessage()).isEqualTo("image.objectKey is invalid. reason=image_metadata_extract_failed");
         assertThat(exception.getDetails())
-                .containsEntry("target", "image")
+                .containsEntry("target", "image.objectKey")
                 .containsEntry("reason", "image_metadata_extract_failed")
                 .containsEntry("rejectedValue", "users/u/posts/p/images/i.jpg");
         assertThat(exception.getCause()).isSameAs(cause);
