@@ -36,11 +36,11 @@
 | R-11 | `08_deployment.md` | Railway + S3 方針は大筋維持されている | Yes | 現実装ベースの補足を反映した | Closed | frontend 別リポジトリ連携や presigned URL 暫定運用も追記済み |
 | R-12 | `01_overview.md` | アプリの目的・コア機能は概ね現状実装と整合している | Yes | 検索機能、認証必須方針、`public_id`、画像配信方針などの補足を反映した | Closed | 概要レベルの主要差分は解消済み |
 | R-13 | `07_authz_authn.md`, `08_deployment.md`, `SecurityConfig` | stg/prod の画像配信が S3 presigned URL 前提で、URL 保有者は期限内に未認証取得できる | Partial | CloudFront 導入までは presigned URL を短命化し、将来は CloudFront private content へ移行する | In Progress | ADR-021。`APP_STORAGE_S3_PRESIGNED_GET_EXPIRE_MINUTES` は 1〜5 分を推奨 |
-| R-14 | `01_overview.md`, `05_screen_spec.md`, `04_api_spec.yaml` | 位置情報入力元の設計が「EXIF or ユーザー入力」のままだが、現実装は画像 EXIF 抽出のみ | Yes | 投稿作成仕様を実装準拠へ更新し、ユーザー手入力の位置情報は現状スコープ外と明記する | Open | `PostRequest` は `imageFile` と `comment` のみ。位置情報は保存後メタデータ抽出で決定 |
-| R-15 | `01_overview.md`, `04_api_spec.yaml` | 画像アップロード制約が設計と実装で不一致（サイズ上限、許可形式、レート制限/タイムアウト） | Partial | 実装準拠の制約値へ更新し、未実装のレート制限/タイムアウトは TODO として切り出す | Open | 設計は 5MB・JPEG/PNG のみ。実装は multipart 10MB、拡張子は GIF/WEBP も許可 |
-| R-16 | `05_screen_spec.md`, `07_authz_authn.md` | ログイン成功後の挙動が「タイムラインへリダイレクト」前提のまま | Yes | `POST /api/login` 成功時は `200 OK` を返し、画面遷移はフロント側で制御する前提へ更新する | Open | `LastLoginUpdatingAuthenticationSuccessHandler` は `200 OK` を返却し、サーバーリダイレクトしない |
-| R-17 | `03_database.md`, `05_screen_spec.md`, `04_api_spec.yaml` | 返信取得の責務が「post_id で取得してアプリ側でツリー構築」前提のままだが、実装は 1 階層ずつ別 API 取得 | Partial | `03_database.md` にはトップレベル返信 / 子返信の分割取得を反映済み。`05_screen_spec.md` の表現整理と表示順保証の要否は別途整理する | In Progress | `GET /api/posts/{postId}/replies` と `GET /api/replies/{parentReplyId}` はどちらも 1 階層取得 |
-| R-18 | `08_deployment.md`, `01_overview.md` | local/stg の seed 実行・cleanup 運用が設計資料に反映されていない | Yes | 起動時 seed runner と関連設定値を運用設計へ追記する | Open | `app.local-seed.*`, `app.stg-seed.*` と `ApplicationRunner` 実装あり |
+| R-14 | `01_overview.md`, `05_screen_spec.md`, `04_api_spec.yaml` | 位置情報入力元の設計が「EXIF or ユーザー入力」のままだが、現実装は画像 EXIF 抽出のみ | Yes | 投稿作成仕様を実装準拠へ更新し、ユーザー手入力の位置情報は現状スコープ外と明記した | Closed | `PostRequest` は `imageFile` と `comment` のみ。位置情報は保存後メタデータ抽出で決定 |
+| R-15 | `01_overview.md`, `04_api_spec.yaml` | 画像アップロード制約が設計と実装で不一致（サイズ上限、許可形式、レート制限/タイムアウト） | Partial | サイズ上限を 10MB、許可形式を JPEG / PNG / GIF / WEBP へ更新した。レート制限 / タイムアウトは TODO へ切り出して将来対応とする | In Progress | 5MB ではスマホ撮影画像を受けきれないため 10MB へ拡張。未実装分は `API-06` で管理 |
+| R-16 | `05_screen_spec.md`, `07_authz_authn.md` | ログイン成功後の挙動について、`/api/login` の利用形態が資料上あいまい | Yes | `/api/login` はフロントエンドから `application/x-www-form-urlencoded` で呼び出し、成功時は `200 OK` を返して画面遷移はフロントエンドが制御する前提へ資料を更新した | Closed | `LastLoginUpdatingAuthenticationSuccessHandler` の `200 OK` 応答と整合 |
+| R-17 | `03_database.md`, `05_screen_spec.md`, `04_api_spec.yaml` | 返信取得の責務が「post_id で取得してアプリ側でツリー構築」前提のままだが、実装は 1 階層ずつ別 API 取得 | Yes | 投稿直下の返信は全件取得し、子返信は展開時に 1 階層ずつ取得する方針として `05_screen_spec.md` / `04_api_spec.yaml` を実装準拠へ更新した | Closed | `GET /api/posts/{postId}/replies` と `GET /api/replies/{parentReplyId}` はどちらも 1 階層取得 |
+| R-18 | `08_deployment.md`, `01_overview.md` | local/stg の seed 実行・cleanup 運用が設計資料に反映されていない | Yes | 起動時 seed runner、cleanup 運用、関連設定値を運用設計へ追記した | Closed | `app.local-seed.*`, `app.stg-seed.*` と `ApplicationRunner` 実装あり |
 
 ## 更新ログ
 
@@ -57,3 +57,9 @@
 | 2026-04-24 | 検索画面、ログイン/ログアウト経路、概要補足の反映に合わせて R-05 / R-10 / R-12 を Closed へ更新 | Codex |
 | 2026-04-25 | 位置情報入力元、画像アップロード制約、ログイン成功後挙動、返信取得責務、seed 運用のレビュー漏れを R-14 〜 R-18 として追加 | Codex |
 | 2026-04-25 | API / DB TODO と実装修正の反映に合わせて R-01 / R-02 / R-03 / R-04 を Closed へ更新し、R-17 の進捗を更新 | Codex |
+| 2026-04-26 | 位置情報のユーザー手入力を現行スコープ外として `01_overview.md` に反映し、R-14 を Closed へ更新 | Codex |
+| 2026-04-26 | MPA 前提のログイン遷移方針を `05_screen_spec.md` / `07_authz_authn.md` に反映し、R-16 を Closed へ更新 | Codex |
+| 2026-04-26 | `/api/login` の実利用形態に合わせて R-16 の説明を更新し、seed 運用を `01_overview.md` / `08_deployment.md` に反映して R-18 を Closed へ更新 | Codex |
+| 2026-04-26 | 画像アップロード制約を実装準拠へ更新し、R-15 を Closed へ更新 | Codex |
+| 2026-04-26 | 画像アップロード API のレート制限 / タイムアウトを `API-06` へ切り出し、R-15 を In Progress へ戻した | Codex |
+| 2026-04-26 | 返信ツリー取得方針を `05_screen_spec.md` / `04_api_spec.yaml` に反映し、R-17 を Closed へ更新 | Codex |

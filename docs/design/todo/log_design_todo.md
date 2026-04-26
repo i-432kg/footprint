@@ -21,8 +21,8 @@
 | LOG-04 | JSON 構造化ログの導入 | Open | 本番運用向けに JSON ログ出力を整備する | local では可読性優先でも可 |
 | LOG-05 | 認証/認可イベントのログ整備 | Open | ログイン成功/失敗、401/403、CSRF などを明示的に出力する | auth ログ |
 | LOG-06 | 投稿/返信/検索系イベントのログ整備 | Open | 投稿作成、返信作成、bbox 検索、一覧取得などを整理する | app / audit ログ |
-| LOG-07 | バリデーション・例外時のログ粒度見直し | In Progress | `GlobalExceptionHandler` はあるが、カテゴリや項目が未整理 | `errorCode`, `details`, `traceId` の整合確認 |
-| LOG-08 | 機微情報マスキング運用の継続確認 | In Progress | `SensitiveDataMasker` は存在するが、ログ設計全体との接続が未完了 | password / token / email / IP |
+| LOG-07 | バリデーション・例外時のログ粒度見直し | In Progress | `GlobalExceptionHandler` の例外ログは `errorCode` とマスク済み `details` へ整理し、validation は `errors` 出力へ統一した | `traceId` とカテゴリ分割は残件 |
+| LOG-08 | 機微情報マスキング運用の継続確認 | Closed | `SensitiveDataMasker` / `MaskingTarget` を objectKey / fileName 系まで拡張し、既存ログの棚卸しと seed 例外ルール整理を反映した | password / token / email / objectKey / fileName |
 
 ## TODO 詳細
 
@@ -131,17 +131,22 @@ TODO:
 - 想定内例外と想定外例外の扱いを明確にする
 - `traceId` と `errorCode` を確実にひもづける
 
+進捗:
+
+- `GlobalExceptionHandler` は resource / domain / application / use case 例外で `errorCode` とマスク済み `details` を出す形へ整理した
+- validation 例外は `errors` 配列をそのままログ出力し、`MethodArgumentTypeMismatchException` も生値ではなくサニタイズ済み `errors` を出すようにした
+- 500 系 `UseCaseExecutionException` は `details.rejectedValue` を持たない運用へ整理した
+
 ### 8. マスキング方針の接続
 
-状況:
+対応済み:
 
-- `SensitiveDataMasker` は存在する
-- ただし access/auth/app/audit すべてへ一貫適用できているとは限らない
-
-TODO:
-
-- 機微情報がログへ直接出ないことを確認する
-- 新しいログイベント追加時のマスキングルールを整理する
+- `SensitiveDataMasker` の UT と UT 仕様書を追加した
+- `MaskingTarget` を `password`, `token`, `email`, `objectKey`, `fileName` 系まで拡張した
+- `GlobalExceptionHandler` の `details` / validation error はマスキング済み値をログへ出す形へ統一した
+- `UseCaseExecutionException` は `rejectedValue` を持たない方針へ変更した
+- `PostCommandService` cleanup ログ、repository / storage ログなどを棚卸しし、`objectKey`, `originalFilename`, `email` の不要な直接出力を整理した
+- seed ログは fixed seed scenario の固定ダミーデータに限って詳細出力を許容する例外ルールを `06_log_design.md` に明記した
 
 運用メモ:
 
