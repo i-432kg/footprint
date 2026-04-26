@@ -5,6 +5,7 @@ import jp.i432kg.footprint.infrastructure.security.ApiAccessDeniedHandler;
 import jp.i432kg.footprint.infrastructure.security.ApiAuthenticationEntryPoint;
 import jp.i432kg.footprint.infrastructure.security.ApiAuthenticationFailureHandler;
 import jp.i432kg.footprint.infrastructure.security.ApiAuthenticationSuccessHandler;
+import jp.i432kg.footprint.logging.access.AccessLogFilter;
 import jp.i432kg.footprint.logging.trace.TraceIdFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +35,7 @@ public class SecurityConfig {
     private final ApiAuthenticationEntryPoint authenticationEntryPoint;
     private final ApiAccessDeniedHandler accessDeniedHandler;
     private final TraceIdFilter traceIdFilter;
+    private final AccessLogFilter accessLogFilter;
 
     public SecurityConfig(
             final Environment environment,
@@ -42,7 +44,8 @@ public class SecurityConfig {
             final ApiAuthenticationFailureHandler authenticationFailureHandler,
             final ApiAuthenticationEntryPoint authenticationEntryPoint,
             final ApiAccessDeniedHandler accessDeniedHandler,
-            final TraceIdFilter traceIdFilter
+            final TraceIdFilter traceIdFilter,
+            final AccessLogFilter accessLogFilter
     ) {
         this.environment = environment;
         this.storageSecurityProperties = storageSecurityProperties;
@@ -51,6 +54,7 @@ public class SecurityConfig {
         this.authenticationEntryPoint = authenticationEntryPoint;
         this.accessDeniedHandler = accessDeniedHandler;
         this.traceIdFilter = traceIdFilter;
+        this.accessLogFilter = accessLogFilter;
     }
 
     @Bean
@@ -146,6 +150,7 @@ public class SecurityConfig {
                 .securityContext(Customizer.withDefaults());
 
         http.addFilterBefore(traceIdFilter, SecurityContextHolderFilter.class);
+        http.addFilterAfter(accessLogFilter, SecurityContextHolderFilter.class);
 
         return http.build();
     }
