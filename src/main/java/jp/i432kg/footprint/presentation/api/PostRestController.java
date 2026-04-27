@@ -19,7 +19,9 @@ import jp.i432kg.footprint.domain.model.BoundingBox;
 import jp.i432kg.footprint.domain.value.*;
 import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
 import jp.i432kg.footprint.logging.LoggingEvents;
+import jp.i432kg.footprint.logging.LoggingOperations;
 import jp.i432kg.footprint.logging.access.AccessLogFilter;
+import jp.i432kg.footprint.logging.operation.LogOperation;
 import jp.i432kg.footprint.presentation.api.request.PostRequest;
 import jp.i432kg.footprint.presentation.api.response.PostItemResponse;
 import jp.i432kg.footprint.presentation.api.response.ReplyItemResponse;
@@ -68,6 +70,7 @@ public class PostRestController {
      * @return 投稿一覧レスポンス
      */
     @GetMapping
+    @LogOperation(LoggingOperations.POST_TIMELINE_FETCH)
     public ResponseEntity<List<PostItemResponse>> getRecentPosts(
             @RequestParam(required = false) @Pattern(regexp = PresentationValidationPatterns.ULID) final String lastId,
             @RequestParam(defaultValue = "10") @Min(1) @Max(20) final int size,
@@ -98,6 +101,7 @@ public class PostRestController {
      * @return 検索結果レスポンス
      */
     @GetMapping("/search")
+    @LogOperation(LoggingOperations.POST_SEARCH_FETCH)
     public ResponseEntity<List<PostItemResponse>> search(
             @RequestParam @NotBlank @Size(max = 100)
             @Pattern(regexp = PresentationValidationPatterns.NO_CONTROL_CHARS) final String keyword,
@@ -135,6 +139,7 @@ public class PostRestController {
      * @return 検索結果レスポンス
      */
     @GetMapping("/search/map")
+    @LogOperation(LoggingOperations.POST_MAP_BBOX_FETCH)
     public ResponseEntity<List<PostItemResponse>> searchMap(
             @RequestParam @DecimalMin("-90.0") @DecimalMax("90.0") final BigDecimal minLat,
             @RequestParam @DecimalMin("-90.0") @DecimalMax("90.0") final BigDecimal maxLat,
@@ -169,6 +174,7 @@ public class PostRestController {
      * @return 投稿詳細レスポンス
      */
     @GetMapping("/{postId}")
+    @LogOperation(LoggingOperations.POST_DETAIL_FETCH)
     public ResponseEntity<PostItemResponse> getPost(
             @PathVariable @Pattern(regexp = PresentationValidationPatterns.ULID) final String postId,
             final HttpServletRequest request
@@ -195,6 +201,7 @@ public class PostRestController {
      * @return 返信一覧レスポンス
      */
     @GetMapping("/{postId}/replies")
+    @LogOperation(LoggingOperations.REPLY_LIST_FETCH)
     public ResponseEntity<List<ReplyItemResponse>> getReplies(
             @PathVariable @Pattern(regexp = PresentationValidationPatterns.ULID) final String postId,
             final HttpServletRequest request
@@ -223,6 +230,7 @@ public class PostRestController {
      * @throws IOException アップロードファイルの読み取りに失敗した場合
      */
     @PostMapping
+    @LogOperation(LoggingOperations.POST_CREATE)
     public ResponseEntity<Void> create(
             @Valid final PostRequest request,
             @AuthenticationPrincipal final UserDetailsImpl userDetails

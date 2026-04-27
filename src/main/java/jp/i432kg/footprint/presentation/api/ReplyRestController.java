@@ -13,7 +13,9 @@ import jp.i432kg.footprint.domain.value.ReplyId;
 import jp.i432kg.footprint.domain.value.ReplyComment;
 import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
 import jp.i432kg.footprint.logging.LoggingEvents;
+import jp.i432kg.footprint.logging.LoggingOperations;
 import jp.i432kg.footprint.logging.access.AccessLogFilter;
+import jp.i432kg.footprint.logging.operation.LogOperation;
 import jp.i432kg.footprint.presentation.api.request.ReplyRequest;
 import jp.i432kg.footprint.presentation.api.response.ReplyItemResponse;
 import jp.i432kg.footprint.presentation.api.response.mapper.ReplyResponseMapper;
@@ -53,6 +55,7 @@ public class ReplyRestController {
      * @return 返信一覧レスポンス
      */
     @GetMapping("/{parentReplyId}")
+    @LogOperation(LoggingOperations.REPLY_LIST_FETCH)
     public ResponseEntity<List<ReplyItemResponse>> getNextReplies(
             @PathVariable @Pattern(regexp = PresentationValidationPatterns.ULID) final String parentReplyId,
             final HttpServletRequest request
@@ -81,6 +84,7 @@ public class ReplyRestController {
      * @return 201 Created
      */
     @PostMapping("/{postId}/reply")
+    @LogOperation(LoggingOperations.REPLY_CREATE)
     public ResponseEntity<Void> reply(
             @PathVariable @Pattern(regexp = PresentationValidationPatterns.ULID) final String postId,
             @Valid @RequestBody final ReplyRequest request,

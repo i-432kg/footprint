@@ -44,6 +44,16 @@ public final class LoggingEvents {
     public static final String POST_CREATE_SUCCESS = "POST_CREATE_SUCCESS";
 
     /**
+     * 投稿作成バリデーション失敗イベントです。
+     */
+    public static final String POST_CREATE_VALIDATION_FAIL = "POST_CREATE_VALIDATION_FAIL";
+
+    /**
+     * 投稿作成アップロード拒否イベントです。
+     */
+    public static final String POST_CREATE_UPLOAD_REJECTED = "POST_CREATE_UPLOAD_REJECTED";
+
+    /**
      * 最新投稿一覧取得イベントです。
      */
     public static final String POST_TIMELINE_FETCH = "POST_TIMELINE_FETCH";
@@ -69,9 +79,24 @@ public final class LoggingEvents {
     public static final String REPLY_CREATE_SUCCESS = "REPLY_CREATE_SUCCESS";
 
     /**
+     * 返信作成バリデーション失敗イベントです。
+     */
+    public static final String REPLY_CREATE_VALIDATION_FAIL = "REPLY_CREATE_VALIDATION_FAIL";
+
+    /**
      * 返信一覧取得イベントです。
      */
     public static final String REPLY_LIST_FETCH = "REPLY_LIST_FETCH";
+
+    /**
+     * 投稿一覧系 `lastId` 不正イベントです。
+     */
+    public static final String POST_LAST_ID_INVALID = "POST_LAST_ID_INVALID";
+
+    /**
+     * 返信一覧系 `lastId` 不正イベントです。
+     */
+    public static final String REPLY_LAST_ID_INVALID = "REPLY_LAST_ID_INVALID";
 
     /**
      * ユーザー登録成功イベントです。
@@ -92,4 +117,9 @@ public final class LoggingEvents {
      * 現在ユーザー自身の返信一覧取得イベントです。
      */
     public static final String ME_REPLIES_FETCH = "ME_REPLIES_FETCH";
+
+    /**
+     * request 共通のバリデーション失敗イベントです。
+     */
+    public static final String REQUEST_VALIDATION_FAIL = "REQUEST_VALIDATION_FAIL";
 }

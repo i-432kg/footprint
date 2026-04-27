@@ -18,6 +18,7 @@ import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.ReplyId;
 import jp.i432kg.footprint.domain.value.UserId;
 import jp.i432kg.footprint.exception.ErrorCode;
+import jp.i432kg.footprint.logging.operation.FailureEventResolver;
 import jp.i432kg.footprint.logging.masking.SensitiveDataMasker;
 import jp.i432kg.footprint.presentation.api.request.SignUpRequest;
 import org.jspecify.annotations.NonNull;
@@ -32,6 +33,7 @@ import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -62,13 +64,15 @@ class GlobalExceptionHandlerTest {
     @Mock
     private SensitiveDataMasker sensitiveDataMasker;
 
+    private final FailureEventResolver failureEventResolver = new FailureEventResolver();
+
     @Test
     @DisplayName("GlobalExceptionHandler は PostNotFoundException を 404 の ProblemDetail へ変換する")
     void should_createNotFoundProblemDetail_when_postNotFoundExceptionIsHandled() {
         final PostNotFoundException exception = new PostNotFoundException(PostId.of("01ARZ3NDEKTSV4RRFFQ69G5FAX"));
         when(sensitiveDataMasker.maskMap(exception.getDetails())).thenReturn(exception.getDetails());
 
-        final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker).handlePostNotFound(exception);
+        final ProblemDetail actual = newHandler().handlePostNotFound(exception);
 
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(actual.getTitle()).isEqualTo("Post Not Found");
@@ -85,7 +89,7 @@ class GlobalExceptionHandlerTest {
         final ReplyNotFoundException exception = new ReplyNotFoundException(ReplyId.of("01ARZ3NDEKTSV4RRFFQ69G5FAZ"));
         when(sensitiveDataMasker.maskMap(exception.getDetails())).thenReturn(exception.getDetails());
 
-        final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker).handleReplyNotFound(exception);
+        final ProblemDetail actual = newHandler().handleReplyNotFound(exception);
 
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(actual.getTitle()).isEqualTo("Reply Not Found");
@@ -102,7 +106,7 @@ class GlobalExceptionHandlerTest {
         final UserNotFoundException exception = new UserNotFoundException(UserId.of("01ARZ3NDEKTSV4RRFFQ69G5FAV"));
         when(sensitiveDataMasker.maskMap(exception.getDetails())).thenReturn(exception.getDetails());
 
-        final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker).handleUserNotFound(exception);
+        final ProblemDetail actual = newHandler().handleUserNotFound(exception);
 
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(actual.getTitle()).isEqualTo("User Not Found");
@@ -123,7 +127,7 @@ class GlobalExceptionHandlerTest {
         maskedDetails.put("rejectedValue", null);
         when(sensitiveDataMasker.maskMap(exception.getDetails())).thenReturn(maskedDetails);
 
-        final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker).handleInvalidValue(exception);
+        final ProblemDetail actual = newHandler().handleInvalidValue(exception);
 
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(actual.getTitle()).isEqualTo("Invalid Value");
@@ -143,7 +147,7 @@ class GlobalExceptionHandlerTest {
         );
         when(sensitiveDataMasker.maskMap(exception.getDetails())).thenReturn(maskedDetails);
 
-        final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker).handleEmailAlreadyUsed(exception);
+        final ProblemDetail actual = newHandler().handleEmailAlreadyUsed(exception);
 
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
         assertThat(actual.getTitle()).isEqualTo("Email Already Used");
@@ -159,7 +163,7 @@ class GlobalExceptionHandlerTest {
                 new ReplyPostMismatchException(PostId.of("01ARZ3NDEKTSV4RRFFQ69G5FAX"), PostId.of("01ARZ3NDEKTSV4RRFFQ69G5FAY"));
         when(sensitiveDataMasker.maskMap(exception.getDetails())).thenReturn(exception.getDetails());
 
-        final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker).handleReplyPostMismatch(exception);
+        final ProblemDetail actual = newHandler().handleReplyPostMismatch(exception);
 
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(actual.getTitle()).isEqualTo("Reply Post Mismatch");
@@ -180,8 +184,11 @@ class GlobalExceptionHandlerTest {
         bindingResult.addError(new FieldError("signUpRequest", "userName", "ab", false, null, null, "size"));
         when(sensitiveDataMasker.maskRejectedValue("userName", "ab")).thenReturn("ab");
 
-        final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker)
-                .handleMethodArgumentNotValid(new MethodArgumentNotValidException(methodParameter(), bindingResult));
+        final ProblemDetail actual = newHandler()
+                .handleMethodArgumentNotValid(
+                        new MethodArgumentNotValidException(methodParameter(), bindingResult),
+                        newRequest()
+                );
 
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(actual.getTitle()).isEqualTo("Validation Error");
@@ -201,8 +208,8 @@ class GlobalExceptionHandlerTest {
         bindingResult.addError(new FieldError("signUpRequest", "email", "invalid", false, null, null, "email"));
         when(sensitiveDataMasker.maskRejectedValue("email", "invalid")).thenReturn("invalid");
 
-        final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker)
-                .handleBindException(new BindException(bindingResult));
+        final ProblemDetail actual = newHandler()
+                .handleBindException(new BindException(bindingResult), newRequest());
 
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         final List<Map<String, Object>> errors = errors(actual);
@@ -225,8 +232,8 @@ class GlobalExceptionHandlerTest {
         when(violation.getInvalidValue()).thenReturn(" ");
         when(sensitiveDataMasker.maskRejectedValue("create.userName", " ")).thenReturn(" ");
 
-        final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker)
-                .handleConstraintViolation(new ConstraintViolationException(Set.of(violation)));
+        final ProblemDetail actual = newHandler()
+                .handleConstraintViolation(new ConstraintViolationException(Set.of(violation)), newRequest());
 
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         final List<Map<String, Object>> errors = errors(actual);
@@ -240,8 +247,8 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("GlobalExceptionHandler は MissingServletRequestParameterException を validation error の ProblemDetail へ変換する")
     void should_createValidationProblemDetail_when_missingRequestParameterExceptionIsHandled() {
-        final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker)
-                .handleMissingRequestParameter(new MissingServletRequestParameterException("size", "int"));
+        final ProblemDetail actual = newHandler()
+                .handleMissingRequestParameter(new MissingServletRequestParameterException("size", "int"), newRequest());
 
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(actual.getDetail()).isEqualTo("必須パラメータが不足しています。");
@@ -255,8 +262,8 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("GlobalExceptionHandler は MissingServletRequestPartException を validation error の ProblemDetail へ変換する")
     void should_createValidationProblemDetail_when_missingRequestPartExceptionIsHandled() {
-        final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker)
-                .handleMissingRequestPart(new MissingServletRequestPartException("imageFile"));
+        final ProblemDetail actual = newHandler()
+                .handleMissingRequestPart(new MissingServletRequestPartException("imageFile"), newRequest());
 
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(actual.getDetail()).isEqualTo("必須ファイルが不足しています。");
@@ -273,8 +280,8 @@ class GlobalExceptionHandlerTest {
         final HttpMessageNotReadableException exception =
                 new HttpMessageNotReadableException("bad json", new IOException("broken body"), dummyHttpInputMessage());
 
-        final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker)
-                .handleHttpMessageNotReadable(exception);
+        final ProblemDetail actual = newHandler()
+                .handleHttpMessageNotReadable(exception, newRequest());
 
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(actual.getTitle()).isEqualTo("Validation Error");
@@ -293,8 +300,8 @@ class GlobalExceptionHandlerTest {
                 new MethodArgumentTypeMismatchException("abc", Integer.class, "size", methodParameter(), null);
         when(sensitiveDataMasker.maskRejectedValue("size", "abc")).thenReturn("abc");
 
-        final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker)
-                .handleMethodArgumentTypeMismatch(exception);
+        final ProblemDetail actual = newHandler()
+                .handleMethodArgumentTypeMismatch(exception, newRequest());
 
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(actual.getDetail()).isEqualTo("リクエストパラメータの型が不正です。");
@@ -313,7 +320,7 @@ class GlobalExceptionHandlerTest {
                 PostCommandFailedException.persistenceFailed(new IOException("db down"));
         when(sensitiveDataMasker.maskMap(exception.getDetails())).thenReturn(exception.getDetails());
 
-        final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker)
+        final ProblemDetail actual = newHandler()
                 .handleUseCaseExecutionException(exception);
 
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -331,7 +338,7 @@ class GlobalExceptionHandlerTest {
         final InvalidModelException exception = InvalidModelException.invalid("image", "too-big", "total_pixels_exceed_limit");
         when(sensitiveDataMasker.maskMap(exception.getDetails())).thenReturn(exception.getDetails());
 
-        final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker).handleDomainException(exception);
+        final ProblemDetail actual = newHandler().handleDomainException(exception);
 
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(actual.getTitle()).isEqualTo("Domain Error");
@@ -344,7 +351,7 @@ class GlobalExceptionHandlerTest {
         final ApplicationException exception = new TestApplicationException();
         when(sensitiveDataMasker.maskMap(exception.getDetails())).thenReturn(exception.getDetails());
 
-        final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker).handleApplicationException(exception);
+        final ProblemDetail actual = newHandler().handleApplicationException(exception);
 
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         assertThat(actual.getTitle()).isEqualTo("Application Error");
@@ -354,8 +361,7 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("GlobalExceptionHandler は想定外例外を 500 の ProblemDetail へ変換する")
     void should_createInternalServerErrorProblemDetail_when_unexpectedExceptionIsHandled() {
-        final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker)
-                .handleException(new RuntimeException("unexpected"));
+        final ProblemDetail actual = newHandler().handleException(new RuntimeException("unexpected"));
 
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         assertThat(actual.getTitle()).isEqualTo("Internal Server Error");
@@ -374,7 +380,7 @@ class GlobalExceptionHandlerTest {
         );
         when(sensitiveDataMasker.maskMap(exception.getDetails())).thenReturn(maskedDetails);
 
-        final ProblemDetail actual = new GlobalExceptionHandler(sensitiveDataMasker).handleInvalidValue(exception);
+        final ProblemDetail actual = newHandler().handleInvalidValue(exception);
 
         assertThat(actual.getProperties()).containsEntry("details", maskedDetails);
         verify(sensitiveDataMasker, times(2)).maskMap(exception.getDetails());
@@ -383,6 +389,14 @@ class GlobalExceptionHandlerTest {
     private static MethodParameter methodParameter() throws NoSuchMethodException {
         final Method method = GlobalExceptionHandlerTest.class.getDeclaredMethod("dummy", SignUpRequest.class);
         return new MethodParameter(method, 0);
+    }
+
+    private GlobalExceptionHandler newHandler() {
+        return new GlobalExceptionHandler(failureEventResolver, sensitiveDataMasker);
+    }
+
+    private static MockHttpServletRequest newRequest() {
+        return new MockHttpServletRequest();
     }
 
     private static HttpInputMessage dummyHttpInputMessage() {

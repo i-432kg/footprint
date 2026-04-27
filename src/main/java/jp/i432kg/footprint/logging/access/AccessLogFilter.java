@@ -43,6 +43,16 @@ public class AccessLogFilter extends OncePerRequestFilter {
     }
 
     /**
+     * 現在の HTTP リクエストに failure / warning 系 event 解決用の operation 名を設定します。
+     *
+     * @param request operation を保持する HTTP リクエスト
+     * @param operation リクエストが表す operation 名
+     */
+    public static void setOperation(final HttpServletRequest request, final String operation) {
+        getOrCreateContext(request).setOperation(operation);
+    }
+
+    /**
      * 現在の HTTP リクエストに access ログ用の追加項目を登録します。
      *
      * <p>controller 側で設定した値は、レスポンス完了時に 1 本の access ログへ集約されます。

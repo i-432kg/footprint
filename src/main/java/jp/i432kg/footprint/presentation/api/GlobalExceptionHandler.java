@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.presentation.api;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import jp.i432kg.footprint.application.exception.ApplicationException;
 import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;
@@ -13,6 +14,7 @@ import jp.i432kg.footprint.domain.exception.ReplyPostMismatchException;
 import jp.i432kg.footprint.exception.BaseException;
 import jp.i432kg.footprint.exception.ErrorCode;
 import jp.i432kg.footprint.logging.LoggingCategories;
+import jp.i432kg.footprint.logging.operation.FailureEventResolver;
 import jp.i432kg.footprint.logging.masking.SensitiveDataMasker;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -49,6 +51,7 @@ public class GlobalExceptionHandler {
     private static final String ERROR_CODE_UNEXPECTED_ERROR = "UNEXPECTED_ERROR";
     private static final Logger APP_LOGGER = LoggerFactory.getLogger(LoggingCategories.APP);
 
+    private final FailureEventResolver failureEventResolver;
     private final SensitiveDataMasker sensitiveDataMasker;
 
     /**
@@ -109,7 +112,10 @@ public class GlobalExceptionHandler {
      * リクエストボディの Bean Validation 失敗を 400 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ProblemDetail handleMethodArgumentNotValid(final MethodArgumentNotValidException ex) {
+    public ProblemDetail handleMethodArgumentNotValid(
+            final MethodArgumentNotValidException ex,
+            final HttpServletRequest request
+    ) {
         final List<Map<String, Object>> errors = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> validationError(
                         error.getField(),
@@ -118,7 +124,11 @@ public class GlobalExceptionHandler {
                 ))
                 .toList();
 
-        APP_LOGGER.warn("Validation failed. errors={}", errors);
+        APP_LOGGER.warn(
+                "event={}, errors={}",
+                failureEventResolver.resolveValidationEvent(request, ex, errors),
+                errors
+        );
         return createValidationProblemDetail(
                 "リクエストの形式が不正です。",
                 errors
@@ -129,7 +139,7 @@ public class GlobalExceptionHandler {
      * フォーム・クエリパラメータのバインド失敗を 400 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(BindException.class)
-    public ProblemDetail handleBindException(final BindException ex) {
+    public ProblemDetail handleBindException(final BindException ex, final HttpServletRequest request) {
         final List<Map<String, Object>> errors = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> validationError(
                         error.getField(),
@@ -138,7 +148,11 @@ public class GlobalExceptionHandler {
                 ))
                 .toList();
 
-        APP_LOGGER.warn("Binding failed. errors={}", errors);
+        APP_LOGGER.warn(
+                "event={}, errors={}",
+                failureEventResolver.resolveValidationEvent(request, ex, errors),
+                errors
+        );
         return createValidationProblemDetail(
                 "リクエストの形式が不正です。",
                 errors
@@ -149,7 +163,10 @@ public class GlobalExceptionHandler {
      * メソッド引数の制約違反を 400 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(ConstraintViolationException.class)
-    public ProblemDetail handleConstraintViolation(final ConstraintViolationException ex) {
+    public ProblemDetail handleConstraintViolation(
+            final ConstraintViolationException ex,
+            final HttpServletRequest request
+    ) {
         final List<Map<String, Object>> errors = ex.getConstraintViolations().stream()
                 .map(violation -> validationError(
                         violation.getPropertyPath().toString(),
@@ -158,7 +175,11 @@ public class GlobalExceptionHandler {
                 ))
                 .toList();
 
-        APP_LOGGER.warn("Constraint violation. errors={}", errors);
+        APP_LOGGER.warn(
+                "event={}, errors={}",
+                failureEventResolver.resolveValidationEvent(request, ex, errors),
+                errors
+        );
         return createValidationProblemDetail(
                 "リクエストの形式が不正です。",
                 errors
@@ -169,12 +190,19 @@ public class GlobalExceptionHandler {
      * 必須リクエストパラメータ欠落を 400 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ProblemDetail handleMissingRequestParameter(final MissingServletRequestParameterException ex) {
+    public ProblemDetail handleMissingRequestParameter(
+            final MissingServletRequestParameterException ex,
+            final HttpServletRequest request
+    ) {
         final List<Map<String, Object>> errors = List.of(
                 validationError(ex.getParameterName(), "required", null, "query")
         );
 
-        APP_LOGGER.warn("Missing request parameter. parameter={}", ex.getParameterName());
+        APP_LOGGER.warn(
+                "event={}, errors={}",
+                failureEventResolver.resolveValidationEvent(request, ex, errors),
+                errors
+        );
         return createValidationProblemDetail(
                 "必須パラメータが不足しています。",
                 errors
@@ -185,12 +213,19 @@ public class GlobalExceptionHandler {
      * 必須 multipart パート欠落を 400 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(MissingServletRequestPartException.class)
-    public ProblemDetail handleMissingRequestPart(final MissingServletRequestPartException ex) {
+    public ProblemDetail handleMissingRequestPart(
+            final MissingServletRequestPartException ex,
+            final HttpServletRequest request
+    ) {
         final List<Map<String, Object>> errors = List.of(
                 validationError(ex.getRequestPartName(), "required", null, "multipart")
         );
 
-        APP_LOGGER.warn("Missing request part. part={}", ex.getRequestPartName());
+        APP_LOGGER.warn(
+                "event={}, errors={}",
+                failureEventResolver.resolveValidationEvent(request, ex, errors),
+                errors
+        );
         return createValidationProblemDetail(
                 "必須ファイルが不足しています。",
                 errors
@@ -201,14 +236,18 @@ public class GlobalExceptionHandler {
      * リクエストボディの JSON 解析失敗を 400 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ProblemDetail handleHttpMessageNotReadable(final HttpMessageNotReadableException ex) {
+    public ProblemDetail handleHttpMessageNotReadable(
+            final HttpMessageNotReadableException ex,
+            final HttpServletRequest request
+    ) {
         final List<Map<String, Object>> errors = List.of(
                 validationError("requestBody", "not_readable", null, "body")
         );
 
         APP_LOGGER.warn(
-                "Request body is not readable. cause={}",
-                ex.getMostSpecificCause().getClass().getSimpleName()
+                "event={}, errors={}",
+                failureEventResolver.resolveValidationEvent(request, ex, errors),
+                errors
         );
         return createValidationProblemDetail(
                 "リクエストボディを解析できませんでした。",
@@ -220,12 +259,19 @@ public class GlobalExceptionHandler {
      * リクエストパラメータの型変換失敗を 400 の {@link ProblemDetail} へ変換します。
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ProblemDetail handleMethodArgumentTypeMismatch(final MethodArgumentTypeMismatchException ex) {
+    public ProblemDetail handleMethodArgumentTypeMismatch(
+            final MethodArgumentTypeMismatchException ex,
+            final HttpServletRequest request
+    ) {
         final List<Map<String, Object>> errors = List.of(
                 validationError(ex.getName(), "type_mismatch", ex.getValue(), "query")
         );
 
-        APP_LOGGER.warn("Type mismatch. errors={}", errors);
+        APP_LOGGER.warn(
+                "event={}, errors={}",
+                failureEventResolver.resolveValidationEvent(request, ex, errors),
+                errors
+        );
         return createValidationProblemDetail(
                 "リクエストパラメータの型が不正です。",
                 errors

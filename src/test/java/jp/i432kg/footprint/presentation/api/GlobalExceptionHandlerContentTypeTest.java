@@ -3,6 +3,7 @@ package jp.i432kg.footprint.presentation.api;
 import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.logging.masking.SensitiveDataMasker;
+import jp.i432kg.footprint.logging.operation.FailureEventResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ class GlobalExceptionHandlerContentTypeTest {
     void setUp() {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(new TestController())
-                .setControllerAdvice(new GlobalExceptionHandler(new SensitiveDataMasker()))
+                .setControllerAdvice(new GlobalExceptionHandler(new FailureEventResolver(), new SensitiveDataMasker()))
                 .build();
     }
 

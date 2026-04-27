@@ -13,6 +13,7 @@ import jp.i432kg.footprint.infrastructure.security.mapper.AuthMapper;
 import jp.i432kg.footprint.logging.LoggingCategories;
 import jp.i432kg.footprint.logging.LoggingEvents;
 import jp.i432kg.footprint.logging.masking.SensitiveDataMasker;
+import jp.i432kg.footprint.logging.operation.FailureEventResolver;
 import jp.i432kg.footprint.logging.trace.TraceIdFilter;
 import jp.i432kg.footprint.presentation.api.GlobalExceptionHandler;
 import org.junit.jupiter.api.AfterEach;
@@ -53,7 +54,7 @@ class AccessLogFilterTest {
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(new TestController())
-                .setControllerAdvice(new GlobalExceptionHandler(new SensitiveDataMasker()))
+                .setControllerAdvice(new GlobalExceptionHandler(new FailureEventResolver(), new SensitiveDataMasker()))
                 .addFilters(traceIdFilter, accessLogFilter)
                 .build();
     }

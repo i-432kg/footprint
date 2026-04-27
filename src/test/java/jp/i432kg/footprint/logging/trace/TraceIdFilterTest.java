@@ -4,6 +4,7 @@ import jakarta.servlet.ServletException;
 import jp.i432kg.footprint.application.exception.resource.PostNotFoundException;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.logging.masking.SensitiveDataMasker;
+import jp.i432kg.footprint.logging.operation.FailureEventResolver;
 import jp.i432kg.footprint.presentation.api.GlobalExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +35,7 @@ class TraceIdFilterTest {
     void setUp() {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(new TestController())
-                .setControllerAdvice(new GlobalExceptionHandler(new SensitiveDataMasker()))
+                .setControllerAdvice(new GlobalExceptionHandler(new FailureEventResolver(), new SensitiveDataMasker()))
                 .addFilters(traceIdFilter)
                 .build();
     }

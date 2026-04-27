@@ -21,7 +21,9 @@ import jp.i432kg.footprint.domain.value.RawPassword;
 import jp.i432kg.footprint.domain.value.BirthDate;
 import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
 import jp.i432kg.footprint.logging.LoggingEvents;
+import jp.i432kg.footprint.logging.LoggingOperations;
 import jp.i432kg.footprint.logging.access.AccessLogFilter;
+import jp.i432kg.footprint.logging.operation.LogOperation;
 import jp.i432kg.footprint.presentation.api.request.SignUpRequest;
 import jp.i432kg.footprint.presentation.api.response.PostItemResponse;
 import jp.i432kg.footprint.presentation.api.response.ReplyItemResponse;
@@ -76,6 +78,7 @@ public class UserRestController {
      * @return ユーザープロフィールレスポンス
      */
     @GetMapping("/me")
+    @LogOperation(LoggingOperations.ME_FETCH)
     public ResponseEntity<UserProfileItemResponse> getCurrentUser(
             final HttpServletRequest request,
             @AuthenticationPrincipal final UserDetailsImpl userDetails) {
@@ -102,6 +105,7 @@ public class UserRestController {
      * @return 投稿一覧レスポンス
      */
     @GetMapping("/me/posts")
+    @LogOperation(LoggingOperations.ME_POSTS_FETCH)
     public ResponseEntity<List<PostItemResponse>> getMyPosts(
             @RequestParam(required = false) @Pattern(regexp = PresentationValidationPatterns.ULID) final String lastId,
             @RequestParam(defaultValue = "10") @Min(1) @Max(20) final int size,
@@ -134,6 +138,7 @@ public class UserRestController {
      * @return 返信一覧レスポンス
      */
     @GetMapping("/me/replies")
+    @LogOperation(LoggingOperations.ME_REPLIES_FETCH)
     public ResponseEntity<List<ReplyItemResponse>> getMyReplies(
             @RequestParam(required = false) @Pattern(regexp = PresentationValidationPatterns.ULID) final String lastId,
             @RequestParam(defaultValue = "10") @Min(1) @Max(20) final int size,
@@ -165,6 +170,7 @@ public class UserRestController {
      * @throws Exception `request.login(...)` を含む後続処理が失敗した場合
      */
     @PostMapping
+    @LogOperation(LoggingOperations.USER_CREATE)
     public ResponseEntity<Void> create(
             @Valid @RequestBody final SignUpRequest signUpRequest,
             final HttpServletRequest request) throws Exception {
