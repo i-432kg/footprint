@@ -123,3 +123,4 @@ Accepted
 | 027 | `adr_027_problem_detail_details_structure.md` | `ProblemDetail.details` の正規構造を object + 正規項目へ固定する方針 |
 | 028 | `adr_028_typed_exception_details_dto_direction.md` | 例外詳細の本命設計を typed details DTO とし、リリース後に段階移行する方針 |
 | 029 | `adr_029_api_security_handler_naming.md` | API 向け Security Handler は入口の役割で命名し、具体的な副作用は委譲先へ分離する方針 |
+| 030 | `adr_030_access_log_context.md` | access ログの request 受け渡しを `AccessLogContext` へ集約する方針 |

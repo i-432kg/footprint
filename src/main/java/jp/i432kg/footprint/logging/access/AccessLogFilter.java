@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
 import jp.i432kg.footprint.logging.LoggingCategories;
-import jp.i432kg.footprint.logging.LoggingEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -15,6 +14,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -25,6 +28,47 @@ public class AccessLogFilter extends OncePerRequestFilter {
 
     private static final Logger ACCESS_LOGGER = LoggerFactory.getLogger(LoggingCategories.ACCESS);
     private static final int INTERNAL_SERVER_ERROR = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+
+    //他の Filter / Interceptor と名前衝突しないよう、FQCN を接頭辞に使います。
+    private static final String CONTEXT_ATTRIBUTE = AccessLogFilter.class.getName() + ".context";
+
+    /**
+     * 現在の HTTP リクエストに access ログ用のイベント名を設定します。
+     *
+     * @param request event を保持する HTTP リクエスト
+     * @param event access ログへ出力するイベント名
+     */
+    public static void setEvent(final HttpServletRequest request, final String event) {
+        getOrCreateContext(request).setEvent(event);
+    }
+
+    /**
+     * 現在の HTTP リクエストに access ログ用の追加項目を登録します。
+     *
+     * <p>controller 側で設定した値は、レスポンス完了時に 1 本の access ログへ集約されます。
+     *
+     * @param request 追加項目を保持する HTTP リクエスト
+     * @param fieldName 追加するログ項目名
+     * @param fieldValue 追加するログ項目値
+     */
+    public static void addField(
+            final HttpServletRequest request,
+            final String fieldName,
+            final Object fieldValue
+    ) {
+        getOrCreateContext(request).addField(fieldName, fieldValue);
+    }
+
+    /**
+     * 現在の HTTP リクエストに紐づく access ログコンテキストを取得します。
+     *
+     * @param request access ログコンテキストを参照したい HTTP リクエスト
+     * @return access ログコンテキスト。未設定時は空
+     */
+    public static Optional<AccessLogContext> findContext(final HttpServletRequest request) {
+        final Object attribute = request.getAttribute(CONTEXT_ATTRIBUTE);
+        return attribute instanceof AccessLogContext context ? Optional.of(context) : Optional.empty();
+    }
 
     /**
      * 1 リクエスト分の処理時間を計測し、完了後に access ログを出力します。
@@ -68,30 +112,44 @@ public class AccessLogFilter extends OncePerRequestFilter {
      * @param durationMs リクエスト処理に要した時間（ミリ秒）
      */
     private void logAccess(final HttpServletRequest request, final int status, final long durationMs) {
+        final AccessLogContext context = findContext(request).orElseGet(AccessLogContext::new);
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl userDetails) {
-            ACCESS_LOGGER.info(
-                    "event={}, method={}, path={}, status={}, durationMs={}, userId={}, username={}",
-                    LoggingEvents.HTTP_ACCESS,
-                    request.getMethod(),
-                    request.getRequestURI(),
-                    status,
-                    durationMs,
-                    userDetails.getUserId().getValue(),
-                    userDetails.getDisplayUsername()
-            );
-            return;
-        }
-
-        ACCESS_LOGGER.info(
-                "event={}, method={}, path={}, status={}, durationMs={}",
-                LoggingEvents.HTTP_ACCESS,
+        final List<Object> arguments = new ArrayList<>(List.of(
+                context.event(),
                 request.getMethod(),
                 request.getRequestURI(),
                 status,
                 durationMs
-        );
+        ));
+        final StringBuilder template = new StringBuilder("event={}, method={}, path={}, status={}, durationMs={}");
+
+        appendFields(template, arguments, context.fields());
+
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl userDetails) {
+            template.append(", userId={}, username={}");
+            arguments.add(userDetails.getUserId().getValue());
+            arguments.add(userDetails.getDisplayUsername());
+        }
+
+        ACCESS_LOGGER.info(template.toString(), arguments.toArray());
+    }
+
+    /**
+     * テンプレート文字列と引数配列へ request 固有の追加ログ項目を連結します。
+     *
+     * @param template ログメッセージのテンプレート
+     * @param arguments ログ出力に渡す引数配列
+     * @param fields 追加ログ項目
+     */
+    private void appendFields(
+            final StringBuilder template,
+            final List<Object> arguments,
+            final Map<String, Object> fields
+    ) {
+        for (Map.Entry<String, Object> entry : fields.entrySet()) {
+            template.append(", ").append(entry.getKey()).append("={}");
+            arguments.add(entry.getValue());
+        }
     }
 
     /**
@@ -115,5 +173,19 @@ public class AccessLogFilter extends OncePerRequestFilter {
      */
     private long elapsedMillis(final long startNanos) {
         return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNanos);
+    }
+
+    /**
+     * request に紐づく access ログコンテキストを取得し、未作成なら初期化します。
+     *
+     * @param request access ログコンテキストを保持する HTTP リクエスト
+     * @return access ログコンテキスト
+     */
+    private static AccessLogContext getOrCreateContext(final HttpServletRequest request) {
+        return findContext(request).orElseGet(() -> {
+            final AccessLogContext newContext = new AccessLogContext();
+            request.setAttribute(CONTEXT_ATTRIBUTE, newContext);
+            return newContext;
+        });
     }
 }

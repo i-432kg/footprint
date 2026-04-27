@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.presentation.api;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import jp.i432kg.footprint.application.command.service.ReplyCommandService;
@@ -11,6 +12,8 @@ import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.ReplyId;
 import jp.i432kg.footprint.domain.value.ReplyComment;
 import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
+import jp.i432kg.footprint.logging.LoggingEvents;
+import jp.i432kg.footprint.logging.access.AccessLogFilter;
 import jp.i432kg.footprint.presentation.api.request.ReplyRequest;
 import jp.i432kg.footprint.presentation.api.response.ReplyItemResponse;
 import jp.i432kg.footprint.presentation.api.response.mapper.ReplyResponseMapper;
@@ -46,11 +49,13 @@ public class ReplyRestController {
      * 指定した親返信に紐づくネスト返信一覧を取得します。
      *
      * @param parentReplyId 親返信 ID
+     * @param request HTTP リクエスト
      * @return 返信一覧レスポンス
      */
     @GetMapping("/{parentReplyId}")
     public ResponseEntity<List<ReplyItemResponse>> getNextReplies(
-            @PathVariable @Pattern(regexp = PresentationValidationPatterns.ULID) final String parentReplyId
+            @PathVariable @Pattern(regexp = PresentationValidationPatterns.ULID) final String parentReplyId,
+            final HttpServletRequest request
     ) {
 
         // 返信一覧を取得する
@@ -58,6 +63,11 @@ public class ReplyRestController {
 
         // レスポンス形式に変換する
         final List<ReplyItemResponse> responses = replyResponseMapper.fromList(replySummaries);
+
+        // access ログ出力用のイベント名と補助項目を設定する
+        AccessLogFilter.setEvent(request, LoggingEvents.REPLY_LIST_FETCH);
+        AccessLogFilter.addField(request, "parentReplyId", parentReplyId);
+        AccessLogFilter.addField(request, "items", responses.size());
 
         return ResponseEntity.ok(responses);
     }

@@ -111,6 +111,30 @@ class AccessLogFilterTest {
     }
 
     @Test
+    @DisplayName("AccessLogFilter は controller が設定した event と追加項目を access ログへ含める")
+    void should_logControllerSuppliedEventAndFields_when_requestAttributesExist() throws ServletException, IOException {
+        final MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/posts/search");
+        final MockHttpServletResponse response = new MockHttpServletResponse();
+        AccessLogFilter.setEvent(request, LoggingEvents.POST_SEARCH_FETCH);
+        AccessLogFilter.addField(request, "lastIdPresent", true);
+        AccessLogFilter.addField(request, "size", 10);
+        AccessLogFilter.addField(request, "items", 3);
+
+        accessLogFilter.doFilter(request, response, (req, res) -> ((MockHttpServletResponse) res).setStatus(200));
+
+        final ILoggingEvent event = singleEvent();
+
+        assertThat(event.getFormattedMessage())
+                .contains("event=" + LoggingEvents.POST_SEARCH_FETCH)
+                .contains("lastIdPresent=true")
+                .contains("size=10")
+                .contains("items=3");
+        assertThat(AccessLogFilter.findContext(request))
+                .map(AccessLogContext::event)
+                .contains(LoggingEvents.POST_SEARCH_FETCH);
+    }
+
+    @Test
     @DisplayName("AccessLogFilter は TraceIdFilter と併用したとき access ログへ traceId を引き継ぐ")
     void should_includeTraceIdInMdc_when_usedWithTraceIdFilter() throws Exception {
         mockMvc.perform(get("/trace/posts/01ARZ3NDEKTSV4RRFFQ69G5FAX"))

@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.presentation.api;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jp.i432kg.footprint.application.command.model.CreatePostCommand;
 import jp.i432kg.footprint.application.command.service.PostCommandService;
 import jp.i432kg.footprint.application.query.model.PostSummary;
@@ -11,6 +12,8 @@ import jp.i432kg.footprint.domain.model.BoundingBox;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
 import jp.i432kg.footprint.infrastructure.security.mapper.AuthMapper;
+import jp.i432kg.footprint.logging.LoggingEvents;
+import jp.i432kg.footprint.logging.access.AccessLogFilter;
 import jp.i432kg.footprint.presentation.api.request.PostRequest;
 import jp.i432kg.footprint.presentation.api.response.PostItemResponse;
 import jp.i432kg.footprint.presentation.api.response.ReplyItemResponse;
@@ -23,10 +26,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -55,13 +60,19 @@ class PostRestControllerTest {
     void should_returnRecentPosts_when_getRecentPostsIsCalled() {
         final List<PostSummary> summaries = List.of(new PostSummary());
         final List<PostItemResponse> responses = List.of(dummyPostResponse());
+        final MockHttpServletRequest request = new MockHttpServletRequest();
         when(postQueryService.listRecentPosts(PostId.of("01ARZ3NDEKTSV4RRFFQ69G5FAX"), 10)).thenReturn(summaries);
         when(postResponseMapper.fromList(summaries)).thenReturn(responses);
 
-        final var actual = newController().getRecentPosts("01ARZ3NDEKTSV4RRFFQ69G5FAX", 10);
+        final var actual = newController().getRecentPosts("01ARZ3NDEKTSV4RRFFQ69G5FAX", 10, request);
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(actual.getBody()).isEqualTo(responses);
+        assertLogEvent(request, LoggingEvents.POST_TIMELINE_FETCH);
+        assertThat(logFields(request))
+                .containsEntry("lastIdPresent", true)
+                .containsEntry("size", 10)
+                .containsEntry("items", 1);
     }
 
     @Test
@@ -69,6 +80,7 @@ class PostRestControllerTest {
     void should_searchPosts_when_searchIsCalled() {
         final List<PostSummary> summaries = List.of(new PostSummary());
         final List<PostItemResponse> responses = List.of(dummyPostResponse());
+        final MockHttpServletRequest request = new MockHttpServletRequest();
         when(postQueryService.searchPosts(
                 org.mockito.ArgumentMatchers.eq(jp.i432kg.footprint.domain.value.SearchKeyword.of("hello")),
                 org.mockito.ArgumentMatchers.eq(PostId.of("01ARZ3NDEKTSV4RRFFQ69G5FAX")),
@@ -76,10 +88,15 @@ class PostRestControllerTest {
         )).thenReturn(summaries);
         when(postResponseMapper.fromList(summaries)).thenReturn(responses);
 
-        final var actual = newController().search("hello", "01ARZ3NDEKTSV4RRFFQ69G5FAX", 10);
+        final var actual = newController().search("hello", "01ARZ3NDEKTSV4RRFFQ69G5FAX", 10, request);
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(actual.getBody()).isEqualTo(responses);
+        assertLogEvent(request, LoggingEvents.POST_SEARCH_FETCH);
+        assertThat(logFields(request))
+                .containsEntry("lastIdPresent", true)
+                .containsEntry("size", 10)
+                .containsEntry("items", 1);
     }
 
     @Test
@@ -87,6 +104,7 @@ class PostRestControllerTest {
     void should_searchPostsByMapBounds_when_searchMapIsCalled() {
         final List<PostSummary> summaries = List.of(new PostSummary());
         final List<PostItemResponse> responses = List.of(dummyPostResponse());
+        final MockHttpServletRequest request = new MockHttpServletRequest();
         when(postQueryService.searchPostsByBBox(
                 org.mockito.ArgumentMatchers.eq(BoundingBox.of(
                         new java.math.BigDecimal("35.681236"),
@@ -101,11 +119,19 @@ class PostRestControllerTest {
                 new java.math.BigDecimal("35.681236"),
                 new java.math.BigDecimal("35.700000"),
                 new java.math.BigDecimal("139.767125"),
-                new java.math.BigDecimal("139.800000")
+                new java.math.BigDecimal("139.800000"),
+                request
         );
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(actual.getBody()).isEqualTo(responses);
+        assertLogEvent(request, LoggingEvents.POST_MAP_BBOX_FETCH);
+        assertThat(logFields(request))
+                .containsEntry("minLat", new java.math.BigDecimal("35.681236"))
+                .containsEntry("maxLat", new java.math.BigDecimal("35.700000"))
+                .containsEntry("minLng", new java.math.BigDecimal("139.767125"))
+                .containsEntry("maxLng", new java.math.BigDecimal("139.800000"))
+                .containsEntry("items", 1);
     }
 
     @Test
@@ -113,13 +139,16 @@ class PostRestControllerTest {
     void should_returnPostDetail_when_getPostIsCalled() {
         final PostSummary summary = new PostSummary();
         final PostItemResponse response = dummyPostResponse();
+        final MockHttpServletRequest request = new MockHttpServletRequest();
         when(postQueryService.getPost(PostId.of("01ARZ3NDEKTSV4RRFFQ69G5FAX"))).thenReturn(summary);
         when(postResponseMapper.from(summary)).thenReturn(response);
 
-        final var actual = newController().getPost("01ARZ3NDEKTSV4RRFFQ69G5FAX");
+        final var actual = newController().getPost("01ARZ3NDEKTSV4RRFFQ69G5FAX", request);
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(actual.getBody()).isEqualTo(response);
+        assertLogEvent(request, LoggingEvents.POST_DETAIL_FETCH);
+        assertThat(logFields(request)).containsEntry("postId", "01ARZ3NDEKTSV4RRFFQ69G5FAX");
     }
 
     @Test
@@ -127,13 +156,18 @@ class PostRestControllerTest {
     void should_returnTopLevelReplies_when_getRepliesIsCalled() {
         final List<ReplySummary> summaries = List.of(new ReplySummary());
         final List<ReplyItemResponse> responses = List.of(dummyReplyResponse());
+        final MockHttpServletRequest request = new MockHttpServletRequest();
         when(replyQueryService.listTopLevelReplies(PostId.of("01ARZ3NDEKTSV4RRFFQ69G5FAX"))).thenReturn(summaries);
         when(replyResponseMapper.fromList(summaries)).thenReturn(responses);
 
-        final var actual = newController().getReplies("01ARZ3NDEKTSV4RRFFQ69G5FAX");
+        final var actual = newController().getReplies("01ARZ3NDEKTSV4RRFFQ69G5FAX", request);
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(actual.getBody()).isEqualTo(responses);
+        assertLogEvent(request, LoggingEvents.REPLY_LIST_FETCH);
+        assertThat(logFields(request))
+                .containsEntry("postId", "01ARZ3NDEKTSV4RRFFQ69G5FAX")
+                .containsEntry("items", 1);
     }
 
     @Test
@@ -182,6 +216,22 @@ class PostRestControllerTest {
                 postResponseMapper,
                 replyResponseMapper
         );
+    }
+
+    private static void assertLogEvent(final HttpServletRequest request, final String expectedEvent) {
+        assertThat(logContext(request))
+                .map(jp.i432kg.footprint.logging.access.AccessLogContext::event)
+                .contains(expectedEvent);
+    }
+
+    private static Map<String, Object> logFields(final HttpServletRequest request) {
+        return logContext(request).orElseThrow().fields();
+    }
+
+    private static java.util.Optional<jp.i432kg.footprint.logging.access.AccessLogContext> logContext(
+            final HttpServletRequest request
+    ) {
+        return AccessLogFilter.findContext(request);
     }
 
     private static UserDetailsImpl userDetails() {

@@ -12,6 +12,8 @@ import jp.i432kg.footprint.application.query.service.UserQueryService;
 import jp.i432kg.footprint.domain.DomainTestFixtures;
 import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
 import jp.i432kg.footprint.infrastructure.security.mapper.AuthMapper;
+import jp.i432kg.footprint.logging.LoggingEvents;
+import jp.i432kg.footprint.logging.access.AccessLogFilter;
 import jp.i432kg.footprint.presentation.api.request.SignUpRequest;
 import jp.i432kg.footprint.presentation.api.response.PostItemResponse;
 import jp.i432kg.footprint.presentation.api.response.ReplyItemResponse;
@@ -26,6 +28,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -33,6 +36,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -76,13 +80,17 @@ class UserRestControllerTest {
     void should_returnCurrentUserProfile_when_getCurrentUserIsCalled() {
         final UserProfileSummary summary = new UserProfileSummary();
         final UserProfileItemResponse response = UserProfileItemResponse.of("user-01", "user", "user@example.com", 3, 5);
+        final MockHttpServletRequest request = new MockHttpServletRequest();
         when(userQueryService.getUserProfile(DomainTestFixtures.userId())).thenReturn(summary);
         when(userProfileResponseMapper.from(summary)).thenReturn(response);
 
-        final var actual = newController().getCurrentUser(userDetails());
+        final var actual = newController().getCurrentUser(request, userDetails());
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(actual.getBody()).isEqualTo(response);
+        assertThat(AccessLogFilter.findContext(request))
+                .map(jp.i432kg.footprint.logging.access.AccessLogContext::event)
+                .contains(LoggingEvents.ME_FETCH);
     }
 
     @Test
@@ -92,13 +100,21 @@ class UserRestControllerTest {
         final List<PostItemResponse> responses = List.of(
                 PostItemResponse.of("post-01", "caption", List.of(), false, null, OffsetDateTime.now())
         );
+        final MockHttpServletRequest request = new MockHttpServletRequest();
         when(postQueryService.listMyPosts(DomainTestFixtures.userId(), DomainTestFixtures.postId(), 10)).thenReturn(summaries);
         when(postResponseMapper.fromList(summaries)).thenReturn(responses);
 
-        final var actual = newController().getMyPosts(DomainTestFixtures.POST_ID, 10, userDetails());
+        final var actual = newController().getMyPosts(DomainTestFixtures.POST_ID, 10, request, userDetails());
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(actual.getBody()).isEqualTo(responses);
+        assertThat(AccessLogFilter.findContext(request))
+                .map(jp.i432kg.footprint.logging.access.AccessLogContext::event)
+                .contains(LoggingEvents.ME_POSTS_FETCH);
+        assertThat(logFields(request))
+                .containsEntry("lastIdPresent", true)
+                .containsEntry("size", 10)
+                .containsEntry("items", 1);
     }
 
     @Test
@@ -108,13 +124,21 @@ class UserRestControllerTest {
         final List<ReplyItemResponse> responses = List.of(
                 ReplyItemResponse.of("reply-01", "post-01", null, "reply", 0, OffsetDateTime.now())
         );
+        final MockHttpServletRequest request = new MockHttpServletRequest();
         when(replyQueryService.listMyReplies(DomainTestFixtures.userId(), DomainTestFixtures.replyId(), 10)).thenReturn(summaries);
         when(replyResponseMapper.fromList(summaries)).thenReturn(responses);
 
-        final var actual = newController().getMyReplies(DomainTestFixtures.REPLY_ID, 10, userDetails());
+        final var actual = newController().getMyReplies(DomainTestFixtures.REPLY_ID, 10, request, userDetails());
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(actual.getBody()).isEqualTo(responses);
+        assertThat(AccessLogFilter.findContext(request))
+                .map(jp.i432kg.footprint.logging.access.AccessLogContext::event)
+                .contains(LoggingEvents.ME_REPLIES_FETCH);
+        assertThat(logFields(request))
+                .containsEntry("lastIdPresent", true)
+                .containsEntry("size", 10)
+                .containsEntry("items", 1);
     }
 
     @Test
@@ -177,6 +201,10 @@ class UserRestControllerTest {
                 replyResponseMapper,
                 userProfileResponseMapper
         );
+    }
+
+    private static Map<String, Object> logFields(final HttpServletRequest request) {
+        return AccessLogFilter.findContext(request).orElseThrow().fields();
     }
 
     private static UserDetailsImpl userDetails() {

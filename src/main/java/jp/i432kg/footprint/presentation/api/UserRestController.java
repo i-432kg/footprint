@@ -20,6 +20,8 @@ import jp.i432kg.footprint.domain.value.EmailAddress;
 import jp.i432kg.footprint.domain.value.RawPassword;
 import jp.i432kg.footprint.domain.value.BirthDate;
 import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
+import jp.i432kg.footprint.logging.LoggingEvents;
+import jp.i432kg.footprint.logging.access.AccessLogFilter;
 import jp.i432kg.footprint.presentation.api.request.SignUpRequest;
 import jp.i432kg.footprint.presentation.api.response.PostItemResponse;
 import jp.i432kg.footprint.presentation.api.response.ReplyItemResponse;
@@ -69,11 +71,13 @@ public class UserRestController {
     /**
      * 現在ログイン中のユーザープロフィールを取得します。
      *
+     * @param request HTTP リクエスト
      * @param userDetails 認証済みユーザー
      * @return ユーザープロフィールレスポンス
      */
     @GetMapping("/me")
     public ResponseEntity<UserProfileItemResponse> getCurrentUser(
+            final HttpServletRequest request,
             @AuthenticationPrincipal final UserDetailsImpl userDetails) {
 
         // ユーザーのプロフィール情報を取得する
@@ -81,6 +85,9 @@ public class UserRestController {
 
         // レスポンス形式に変換する
         final UserProfileItemResponse response = userProfileResponseMapper.from(userProfile);
+
+        // access ログ出力用のイベント名と補助項目を設定する
+        AccessLogFilter.setEvent(request, LoggingEvents.ME_FETCH);
 
         return ResponseEntity.ok(response);
     }
@@ -90,6 +97,7 @@ public class UserRestController {
      *
      * @param lastId スクロール読み込み用の基準投稿 ID。未指定可
      * @param size 取得件数。1 から 20 の範囲
+     * @param request HTTP リクエスト
      * @param userDetails 認証済みユーザー
      * @return 投稿一覧レスポンス
      */
@@ -97,6 +105,7 @@ public class UserRestController {
     public ResponseEntity<List<PostItemResponse>> getMyPosts(
             @RequestParam(required = false) @Pattern(regexp = PresentationValidationPatterns.ULID) final String lastId,
             @RequestParam(defaultValue = "10") @Min(1) @Max(20) final int size,
+            final HttpServletRequest request,
             @AuthenticationPrincipal final UserDetailsImpl userDetails) {
 
         // 自分の投稿一覧を取得する
@@ -106,6 +115,12 @@ public class UserRestController {
         // レスポンス形式に変換する
         final List<PostItemResponse> responses = postResponseMapper.fromList(postSummaries);
 
+        // access ログ出力用のイベント名と補助項目を設定する
+        AccessLogFilter.setEvent(request, LoggingEvents.ME_POSTS_FETCH);
+        AccessLogFilter.addField(request, "lastIdPresent", hasLastId(lastId));
+        AccessLogFilter.addField(request, "size", size);
+        AccessLogFilter.addField(request, "items", responses.size());
+
         return ResponseEntity.ok(responses);
     }
 
@@ -114,6 +129,7 @@ public class UserRestController {
      *
      * @param lastId スクロール読み込み用の基準返信 ID。未指定可
      * @param size 取得件数。1 から 20 の範囲
+     * @param request HTTP リクエスト
      * @param userDetails 認証済みユーザー
      * @return 返信一覧レスポンス
      */
@@ -121,6 +137,7 @@ public class UserRestController {
     public ResponseEntity<List<ReplyItemResponse>> getMyReplies(
             @RequestParam(required = false) @Pattern(regexp = PresentationValidationPatterns.ULID) final String lastId,
             @RequestParam(defaultValue = "10") @Min(1) @Max(20) final int size,
+            final HttpServletRequest request,
             @AuthenticationPrincipal final UserDetailsImpl userDetails) {
 
         // 自分の返信一覧を取得する
@@ -129,6 +146,12 @@ public class UserRestController {
 
         // レスポンス形式に変換する
         final List<ReplyItemResponse> responses = replyResponseMapper.fromList(replySummaries);
+
+        // access ログ出力用のイベント名と補助項目を設定する
+        AccessLogFilter.setEvent(request, LoggingEvents.ME_REPLIES_FETCH);
+        AccessLogFilter.addField(request, "lastIdPresent", hasLastId(lastId));
+        AccessLogFilter.addField(request, "size", size);
+        AccessLogFilter.addField(request, "items", responses.size());
 
         return ResponseEntity.ok(responses);
     }
@@ -171,5 +194,9 @@ public class UserRestController {
 
     private ReplyId toReplyId(final String rawReplyId) {
         return rawReplyId == null ? null : ReplyId.of(rawReplyId);
+    }
+
+    private boolean hasLastId(final String lastId) {
+        return lastId != null;
     }
 }

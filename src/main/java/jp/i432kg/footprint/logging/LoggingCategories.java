@@ -1,8 +1,11 @@
 package jp.i432kg.footprint.logging;
 
+import lombok.NoArgsConstructor;
+
 /**
  * ログカテゴリ名を一元管理する定数クラスです。
  */
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class LoggingCategories {
 
     /**
@@ -24,7 +27,4 @@ public final class LoggingCategories {
      * 重要な状態変更操作の監査ログカテゴリです。
      */
     public static final String AUDIT = "footprint.audit";
-
-    private LoggingCategories() {
-    }
 }
