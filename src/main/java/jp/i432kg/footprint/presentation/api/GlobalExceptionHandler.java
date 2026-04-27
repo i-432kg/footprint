@@ -124,11 +124,7 @@ public class GlobalExceptionHandler {
                 ))
                 .toList();
 
-        APP_LOGGER.warn(
-                "event={}, errors={}",
-                failureEventResolver.resolveValidationEvent(request, ex, errors),
-                errors
-        );
+        logValidationWarning(request, ex, errors);
         return createValidationProblemDetail(
                 "リクエストの形式が不正です。",
                 errors
@@ -148,11 +144,7 @@ public class GlobalExceptionHandler {
                 ))
                 .toList();
 
-        APP_LOGGER.warn(
-                "event={}, errors={}",
-                failureEventResolver.resolveValidationEvent(request, ex, errors),
-                errors
-        );
+        logValidationWarning(request, ex, errors);
         return createValidationProblemDetail(
                 "リクエストの形式が不正です。",
                 errors
@@ -175,11 +167,7 @@ public class GlobalExceptionHandler {
                 ))
                 .toList();
 
-        APP_LOGGER.warn(
-                "event={}, errors={}",
-                failureEventResolver.resolveValidationEvent(request, ex, errors),
-                errors
-        );
+        logValidationWarning(request, ex, errors);
         return createValidationProblemDetail(
                 "リクエストの形式が不正です。",
                 errors
@@ -198,11 +186,7 @@ public class GlobalExceptionHandler {
                 validationError(ex.getParameterName(), "required", null, "query")
         );
 
-        APP_LOGGER.warn(
-                "event={}, errors={}",
-                failureEventResolver.resolveValidationEvent(request, ex, errors),
-                errors
-        );
+        logValidationWarning(request, ex, errors);
         return createValidationProblemDetail(
                 "必須パラメータが不足しています。",
                 errors
@@ -221,11 +205,7 @@ public class GlobalExceptionHandler {
                 validationError(ex.getRequestPartName(), "required", null, "multipart")
         );
 
-        APP_LOGGER.warn(
-                "event={}, errors={}",
-                failureEventResolver.resolveValidationEvent(request, ex, errors),
-                errors
-        );
+        logValidationWarning(request, ex, errors);
         return createValidationProblemDetail(
                 "必須ファイルが不足しています。",
                 errors
@@ -244,11 +224,7 @@ public class GlobalExceptionHandler {
                 validationError("requestBody", "not_readable", null, "body")
         );
 
-        APP_LOGGER.warn(
-                "event={}, errors={}",
-                failureEventResolver.resolveValidationEvent(request, ex, errors),
-                errors
-        );
+        logValidationWarning(request, ex, errors);
         return createValidationProblemDetail(
                 "リクエストボディを解析できませんでした。",
                 errors
@@ -267,11 +243,7 @@ public class GlobalExceptionHandler {
                 validationError(ex.getName(), "type_mismatch", ex.getValue(), "query")
         );
 
-        APP_LOGGER.warn(
-                "event={}, errors={}",
-                failureEventResolver.resolveValidationEvent(request, ex, errors),
-                errors
-        );
+        logValidationWarning(request, ex, errors);
         return createValidationProblemDetail(
                 "リクエストパラメータの型が不正です。",
                 errors
@@ -310,7 +282,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleException(final Exception ex) {
-        APP_LOGGER.error("Unexpected error occurred.", ex);
+        APP_LOGGER.error("Unexpected error occurred. errorCode={}", ERROR_CODE_UNEXPECTED_ERROR, ex);
         final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "サーバー内部でエラーが発生しました。"
@@ -364,6 +336,25 @@ public class GlobalExceptionHandler {
         problemDetail.setProperty("errorCode", ERROR_CODE_DOMAIN_INVALID_VALUE);
         problemDetail.setProperty("details", Map.of("errors", errors));
         return problemDetail;
+    }
+
+    /**
+     * validation / warning 系例外の共通ログを出力します。
+     *
+     * @param request 現在処理中の HTTP リクエスト
+     * @param exception 発生した例外
+     * @param errors サニタイズ済みの validation error 一覧
+     */
+    private void logValidationWarning(
+            final HttpServletRequest request,
+            final Exception exception,
+            final List<Map<String, Object>> errors
+    ) {
+        APP_LOGGER.warn(
+                "event={}, errors={}",
+                failureEventResolver.resolveValidationEvent(request, exception, errors),
+                errors
+        );
     }
 
     /**
