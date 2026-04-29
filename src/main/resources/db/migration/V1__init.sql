@@ -24,7 +24,6 @@ CREATE TABLE users
     updated_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 更新日時
 
     CONSTRAINT uq_users_public_id UNIQUE (public_id),
-    CONSTRAINT uq_users_username UNIQUE (username),
     CONSTRAINT uq_users_email UNIQUE (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

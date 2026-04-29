@@ -22,6 +22,7 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -46,11 +47,15 @@ class UserCommandServiceTest {
     private PasswordEncoder passwordEncoder;
 
     private UserCommandService newService() {
+        return newService(fixedUserIdGenerator());
+    }
+
+    private UserCommandService newService(final UserIdGenerator userIdGenerator) {
         return new UserCommandService(
                 userDomainService,
                 userRepository,
                 passwordEncoder,
-                fixedUserIdGenerator(FIXED_USER_ID)
+                userIdGenerator
         );
     }
 
@@ -72,6 +77,39 @@ class UserCommandServiceTest {
         assertThat(actual.getBirthDate()).isEqualTo(command.getBirthDate());
         assertThat(actual.getHashedPassword().getValue()).isEqualTo("encoded-password");
         verify(userDomainService).ensureEmailNotAlreadyUsed(command.getEmail());
+    }
+
+    @Test
+    @DisplayName("UserCommandService.createUser は同一 username でも email が異なれば登録できる")
+    void should_allowSameUsername_when_emailsAreDifferent() {
+        final CreateUserCommand first = createUserCommand();
+        final CreateUserCommand second = CreateUserCommand.of(
+                first.getUserName(),
+                EmailAddress.of("other@example.com"),
+                RawPassword.of("Another12"),
+                first.getBirthDate()
+        );
+        when(passwordEncoder.encode(any(String.class))).thenReturn("encoded-password");
+        final UserCommandService service = newService(sequenceUserIdGenerator(
+        ));
+
+        service.createUser(first);
+        service.createUser(second);
+
+        final ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository, org.mockito.Mockito.times(2)).saveUser(captor.capture());
+        final List<User> actual = captor.getAllValues();
+
+        assertThat(actual).hasSize(2);
+        assertThat(actual.getFirst().getUserName()).isEqualTo(first.getUserName());
+        assertThat(actual.getLast().getUserName()).isEqualTo(second.getUserName());
+        assertThat(actual.getFirst().getEmail()).isEqualTo(first.getEmail());
+        assertThat(actual.getLast().getEmail()).isEqualTo(second.getEmail());
+        assertThat(actual.getFirst().getUserId().getValue()).isEqualTo("01ARZ3NDEKTSV4RRFFQ69G5FAV");
+        assertThat(actual.getLast().getUserId().getValue()).isEqualTo("01ARZ3NDEKTSV4RRFFQ69G5FAW");
+
+        verify(userDomainService).ensureEmailNotAlreadyUsed(first.getEmail());
+        verify(userDomainService).ensureEmailNotAlreadyUsed(second.getEmail());
     }
 
     @Test
@@ -113,7 +151,13 @@ class UserCommandServiceTest {
         );
     }
 
-    private static UserIdGenerator fixedUserIdGenerator(final String value) {
-        return () -> jp.i432kg.footprint.domain.value.UserId.of(value);
+    private static UserIdGenerator fixedUserIdGenerator() {
+        return () -> jp.i432kg.footprint.domain.value.UserId.of(UserCommandServiceTest.FIXED_USER_ID);
+    }
+
+    private static UserIdGenerator sequenceUserIdGenerator() {
+        final List<String> sequence = List.of(new String[]{"01ARZ3NDEKTSV4RRFFQ69G5FAV", "01ARZ3NDEKTSV4RRFFQ69G5FAW"});
+        final int[] index = {0};
+        return () -> jp.i432kg.footprint.domain.value.UserId.of(sequence.get(index[0]++));
     }
 }
