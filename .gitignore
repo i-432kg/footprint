@@ -10,9 +10,12 @@ build/
 .env.*
 !.env.example
 
-# local seed image
+# local seed images
 seed-source/posts/**
 storage/**
+
+# local log files
+logs/
 
 ### STS ###
 .apt_generated

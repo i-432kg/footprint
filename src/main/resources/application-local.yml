@@ -13,6 +13,8 @@ springdoc:
     enabled: true
 
 app:
+  logging:
+    environment: local
   storage:
     type: LOCAL
     image-csp-allow-origins: ""
