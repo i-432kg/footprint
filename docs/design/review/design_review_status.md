@@ -7,8 +7,8 @@
 - `docs/design/review/implementation_gap_review.md`
 - `docs/design/todo/api_spec_todo.md`
 - `docs/design/todo/db_design_todo.md`
-- `docs/design/review/log_design_todo.md`
-- `docs/design/review/deployment_todo.md`
+- `docs/design/todo/log_design_todo.md`
+- `docs/design/todo/deployment_todo.md`
 
 ## ステータス定義
 
@@ -30,15 +30,15 @@
 | R-05 | `05_screen_spec.md`, `01_overview.md`, `02_architecture.md` | 初期設計にない検索画面 `/search` が存在する | Yes | 検索画面と検索導線を資料へ追加した | Closed | `/search`, `/api/posts/search`, `/api/posts/search/map` を反映済み |
 | R-06 | `05_screen_spec.md`, `04_api_spec.yaml` | サインアップ仕様に `birthDate` 必須、自動ログインが反映されていない | Yes | 登録項目と登録後挙動を実装準拠で更新した | Closed | `userName`, `email`, `password`, `birthDate` を反映済み |
 | R-07 | `04_api_spec.yaml`, `07_authz_authn.md` | エラーレスポンスが独自 `ErrorResponse` 前提のまま | Yes | `04_api_spec.yaml` と `07_authz_authn.md` を `ProblemDetail` ベースへ更新した | Closed | ADR-024, `GlobalExceptionHandler` 準拠 |
-| R-08 | `06_log_design.md` | ログ設計が現状実装より先行している | No | `06_log_design.md` を正とし、実装不足を TODO 化して追う | In Progress | TODO は `log_design_todo.md` で管理 |
+| R-08 | `06_log_design.md` | ログ設計が現状実装より先行している | No | `06_log_design.md` を正とし、実装不足を TODO 化して追い、`traceId` / `X-Trace-Id` / カテゴリ分割 / 認証・業務イベント / 例外ログ / JSON 構造化ログ / マスキング方針まで反映した | Closed | `log_design_todo.md` の `LOG-01` 〜 `LOG-08` はすべて Closed |
 | R-09 | `08_deployment.md`, `02_architecture.md`, `01_overview.md` | フロントエンド別リポジトリ取り込み構成が反映されていない | Partial | `08_deployment.md` は現実装ベースへ更新済み。残論点は TODO で管理する | In Progress | TODO は `deployment_todo.md` で管理 |
 | R-10 | `07_authz_authn.md` | ログイン/ログアウト経路が旧前提のまま | Yes | `POST /api/login`, `POST /api/logout`, `loginId` を明記した | Closed | Spring Security 実装準拠 |
 | R-11 | `08_deployment.md` | Railway + S3 方針は大筋維持されている | Yes | 現実装ベースの補足を反映した | Closed | frontend 別リポジトリ連携や presigned URL 暫定運用も追記済み |
 | R-12 | `01_overview.md` | アプリの目的・コア機能は概ね現状実装と整合している | Yes | 検索機能、認証必須方針、`public_id`、画像配信方針などの補足を反映した | Closed | 概要レベルの主要差分は解消済み |
-| R-13 | `07_authz_authn.md`, `08_deployment.md`, `SecurityConfig` | stg/prod の画像配信が S3 presigned URL 前提で、URL 保有者は期限内に未認証取得できる | Partial | CloudFront 導入までは presigned URL を短命化し、将来は CloudFront private content へ移行する | In Progress | ADR-021。`APP_STORAGE_S3_PRESIGNED_GET_EXPIRE_MINUTES` は 1〜5 分を推奨 |
+| R-13 | `07_authz_authn.md`, `08_deployment.md`, `SecurityConfig` | stg/prod の画像配信が S3 presigned URL 前提で、URL 保有者は期限内に未認証取得できる | Partial | CloudFront 導入までは presigned URL を短命化し、現行採用値として `APP_STORAGE_S3_PRESIGNED_GET_EXPIRE_MINUTES=1` を運用する。期限切れは URL 再取得で吸収し、将来は CloudFront private content へ移行する | In Progress | ADR-021 は短命化方針の判断履歴として維持し、現行運用値は設計資料と設定値で管理する |
 | R-14 | `01_overview.md`, `05_screen_spec.md`, `04_api_spec.yaml` | 位置情報入力元の設計が「EXIF or ユーザー入力」のままだが、現実装は画像 EXIF 抽出のみ | Yes | 投稿作成仕様を実装準拠へ更新し、ユーザー手入力の位置情報は現状スコープ外と明記した | Closed | `PostRequest` は `imageFile` と `comment` のみ。位置情報は保存後メタデータ抽出で決定 |
 | R-15 | `01_overview.md`, `04_api_spec.yaml` | 画像アップロード制約が設計と実装で不一致（サイズ上限、許可形式、レート制限/タイムアウト） | Partial | サイズ上限を 10MB、許可形式を JPEG / PNG / GIF / WEBP へ更新した。レート制限 / タイムアウトは TODO へ切り出して将来対応とする | In Progress | 5MB ではスマホ撮影画像を受けきれないため 10MB へ拡張。未実装分は `API-06` で管理 |
-| R-16 | `05_screen_spec.md`, `07_authz_authn.md` | ログイン成功後の挙動について、`/api/login` の利用形態が資料上あいまい | Yes | `/api/login` はフロントエンドから `application/x-www-form-urlencoded` で呼び出し、成功時は `200 OK` を返して画面遷移はフロントエンドが制御する前提へ資料を更新した | Closed | `LastLoginUpdatingAuthenticationSuccessHandler` の `200 OK` 応答と整合 |
+| R-16 | `05_screen_spec.md`, `07_authz_authn.md` | ログイン成功後の挙動について、`/api/login` の利用形態が資料上あいまい | Yes | `/api/login` はフロントエンドから `application/x-www-form-urlencoded` で呼び出し、成功時は `200 OK` を返して画面遷移はフロントエンドが制御する前提へ資料を更新した | Closed | `ApiAuthenticationSuccessHandler` の `200 OK` 応答と整合 |
 | R-17 | `03_database.md`, `05_screen_spec.md`, `04_api_spec.yaml` | 返信取得の責務が「post_id で取得してアプリ側でツリー構築」前提のままだが、実装は 1 階層ずつ別 API 取得 | Yes | 投稿直下の返信は全件取得し、子返信は展開時に 1 階層ずつ取得する方針として `05_screen_spec.md` / `04_api_spec.yaml` を実装準拠へ更新した | Closed | `GET /api/posts/{postId}/replies` と `GET /api/replies/{parentReplyId}` はどちらも 1 階層取得 |
 | R-18 | `08_deployment.md`, `01_overview.md` | local/stg の seed 実行・cleanup 運用が設計資料に反映されていない | Yes | 起動時 seed runner、cleanup 運用、関連設定値を運用設計へ追記した | Closed | `app.local-seed.*`, `app.stg-seed.*` と `ApplicationRunner` 実装あり |
 
@@ -63,3 +63,5 @@
 | 2026-04-26 | 画像アップロード制約を実装準拠へ更新し、R-15 を Closed へ更新 | Codex |
 | 2026-04-26 | 画像アップロード API のレート制限 / タイムアウトを `API-06` へ切り出し、R-15 を In Progress へ戻した | Codex |
 | 2026-04-26 | 返信ツリー取得方針を `05_screen_spec.md` / `04_api_spec.yaml` に反映し、R-17 を Closed へ更新 | Codex |
+| 2026-04-29 | ログ設計 TODO の完了に合わせて R-08 を Closed へ更新し、関連資料のパス表記を実在パスへ整理 | Codex |
+| 2026-04-29 | presigned URL 暫定運用の方針を 1 分へ固定し、`07_authz_authn.md` / `08_deployment.md` / `deployment_todo.md` / R-13 へ反映 | Codex |

@@ -16,121 +16,87 @@
 
 | ID | 項目 | ステータス | 対応内容 | 備考 |
 |---|---|---|---|---|
-| DEP-01 | frontend 別リポジトリ依存の失敗時運用整理 | Open | checkout 失敗、PAT 失効、ref 不正時の扱いを決める | backend デプロイ全体に影響 |
-| DEP-02 | ロールバック単位の整理 | Open | backend commit と frontend ref を組で戻す運用を明文化する | 単独ロールバック不可 |
-| DEP-03 | Flyway migration 実行責務の明確化 | Open | 起動時実行を正式運用とするか、事前実行へ分離するか決める | STG/PROD 起動失敗に直結 |
-| DEP-04 | Secrets / Variables の責務分担整理 | Open | GitHub 側と Railway 側で何を持つかを明文化する | 保守性向上 |
-| DEP-05 | セッション Cookie 属性の運用固定 | Open | Secure / SameSite / Domain などを環境別に決める | 認証運用に直結 |
-| DEP-06 | 監視・可観測性の実装方針整理 | Open | Railway logs, healthcheck, 将来監視基盤の方針を決める | `06_log_design.md` と連動 |
-| DEP-07 | presigned URL 暫定運用のデプロイ設計反映 | In Progress | ADR-021 に沿って `08_deployment.md` へ反映済み。運用値の確定が残る | CloudFront 未導入 |
-| DEP-08 | frontend ref の追跡性向上 | Open | どの frontend ref を含む成果物か追跡できるようにする | 障害調査向け |
+| DEP-01 | frontend 別リポジトリ依存の失敗時運用整理 | Closed | frontend checkout 失敗、PAT 失効、ref 不正時は GitHub Actions ログを一次確認先とし、デプロイ後のアプリ起動失敗は Railway ログを確認する運用に整理した。特別な自動復旧や追加ハンドリングは設けない | backend デプロイ全体に影響 |
+| DEP-02 | ロールバック単位の整理 | Closed | backend commit と frontend ref を 1 セットのリリース単位として扱い、ロールバックも同じ組で戻す運用方針を整理した。`deploy-stg.yml` では backend commit / frontend ref / frontend commit を GitHub Actions summary へ残すようにした | 当面は同梱デプロイを正式運用とし、個別ロールバックは原則行わない |
+| DEP-03 | Flyway migration 実行責務の明確化 | Closed | local / stg / prod ともにアプリ起動時の自動実行を正式運用とし、本番投入前に同一 migration を stg で検証する方針を `08_deployment.md` へ反映した | 小規模運用と GitHub Actions ベースの継続デプロイを前提に採用 |
+| DEP-04 | Secrets / Variables の責務分担整理 | Closed | GitHub Actions Variables / Secrets、Railway 環境変数、local `.env` の現状対応表を `docs/ops/env_management.md` へ分離し、DB 接続キーは `SPRING_DATASOURCE_*` に統一した。prod も初回リリース時は Railway で stg 同構成とする前提まで反映した | 将来構成変更時は `env_management.md` を更新する |
+| DEP-05 | セッション Cookie 属性の運用固定 | Closed | `docs/ops/cookie_management.md` に環境別の Cookie 管理表を追加し、`JSESSIONID` は session cookie 設定、`XSRF-TOKEN` は `CookieCsrfTokenRepository` customizer で `Secure` / `SameSite` を反映した | `Domain` は明示せず host-only cookie を維持 |
+| DEP-06 | 監視・可観測性の実装方針整理 | Closed | Railway の deploy healthcheck と Railway logs を一次確認手段とする最小運用方針を `docs/ops/observability.md` に整理した | 外部監視基盤は必要になった段階で検討する |
+| DEP-07 | presigned URL 暫定運用のデプロイ設計反映 | Closed | `08_deployment.md` へ反映し、現行採用値として `APP_STORAGE_S3_PRESIGNED_GET_EXPIRE_MINUTES=1` を運用する方針まで確定した | CloudFront 未導入。恒久対策は将来の構成見直しで扱う |
+| DEP-08 | frontend ref の追跡性向上 | Closed | `deploy-stg.yml` で backend commit / frontend ref / frontend commit を GitHub Actions summary へ出力し、どの frontend ref を含む成果物か追跡できるようにした | STG デプロイ履歴の一次参照先は GitHub Actions summary |
 
 ## TODO 詳細
 
 ### 1. frontend 別リポジトリ依存の失敗時運用整理
 
-状況:
+対応済み:
 
 - STG デプロイは backend workflow 内で frontend repository を checkout している
 - frontend 取得に失敗すると backend デプロイも失敗する
-
-TODO:
-
-- checkout 失敗時のリカバリ手順を決める
-- PAT のローテーションや失効時の運用を明文化する
-- backend 単独変更時の扱いを整理する
+- frontend checkout 失敗、PAT 失効、ref 不正時は GitHub Actions ログを一次確認先とする
+- デプロイ後のアプリ起動失敗は Railway ログを一次確認先とする
+- 特別な自動復旧や追加ハンドリングは設けず、ログ確認を基本対応とする
 
 ### 2. ロールバック単位の整理
 
-状況:
+対応済み:
 
 - デプロイ成果物は backend と frontend build 産物を同梱した 1 イメージ
-
-TODO:
-
-- ロールバック時は backend commit と frontend ref を組で戻す運用を定義する
-- どの組み合わせをデプロイしたか追跡できるようにする
+- 当面は同梱デプロイを正式運用とし、frontend / backend の個別ロールバックは原則行わない
+- ロールバック時は backend commit と frontend ref を 1 セットのリリース単位として戻す運用とする
+- どの組み合わせをデプロイしたかは GitHub Actions summary を参照する運用とする
 
 ### 3. Flyway migration 実行責務の明確化
 
-状況:
+対応済み:
 
 - 実装では Flyway が有効
-- ただし、migration を起動時実行に委ねるかどうかの運用判断が未固定
-
-TODO:
-
-- 現行どおりアプリ起動時 migration を正式運用とするか判断する
-- 失敗時の切り戻しや確認手順を整理する
+- local / stg / prod ともにアプリ起動時の自動実行を正式運用とする
+- 継続的なコード変更と GitHub Actions ベースの CI/CD を前提に、migration 実行責務を deploy step へ分離しない
+- 本番投入前に同一 migration を stg で検証する前提を `08_deployment.md` に反映した
 
 ### 4. Secrets / Variables の責務分担整理
 
-状況:
+対応済み:
 
 - 現実装では GitHub Actions Variables / Secrets と Railway 側の環境変数を併用している
+- local は `.env` と `compose.yaml`、stg は GitHub Actions + Railway、prod は実行環境変数で構成されている
+- 継続参照する対応表は [env_management.md](/Users/432kg/IdeaProjects/footprint/docs/ops/env_management.md:1) で管理する
 
-TODO:
-
-- GitHub 側に置く値
-- Railway 側に置く値
-- `.env` / local 用に置く値
-
-を整理する
 
 ### 5. セッション Cookie 属性の運用固定
 
-状況:
+対応済み:
 
-- セッション運用自体は設計済み
-- ただし Cookie 属性の環境別方針が未固定
-
-TODO:
-
-- Secure
-- SameSite
-- Domain
-- HTTPS 前提
-
-の扱いを環境ごとに整理する
+- Cookie 属性の運用方針は [cookie_management.md](/Users/432kg/IdeaProjects/footprint/docs/ops/cookie_management.md:1) で管理する
+- `JSESSIONID` は `server.servlet.session.cookie.*` で `HttpOnly` / `Secure` / `SameSite` を環境別に固定した
+- `XSRF-TOKEN` は `CookieCsrfTokenRepository.withHttpOnlyFalse()` を維持しつつ、customizer で `Secure` / `SameSite=Lax` を明示した
+- `Domain` は設定せず host-only cookie を維持する
 
 ### 6. 監視・可観測性の実装方針整理
 
-状況:
+対応済み:
 
-- `/actuator/health` は存在する
-- ただしログ・ヘルスチェック・監視基盤の接続方針は未整理
-
-TODO:
-
-- Railway logs の扱い
-- healthcheck の監視方法
-- 将来 CloudWatch 等へどう寄せるか
-
-を整理する
+- `/actuator/health` は存在し、Railway の deploy healthcheck を正式な確認手段とする
+- ログの一次確認先は Railway のデプロイログ / 実行ログとする
+- 最小運用方針は [observability.md](/Users/432kg/IdeaProjects/footprint/docs/ops/observability.md:1) で管理する
+- 外部監視基盤は必要になった段階で別途検討する
 
 ### 7. presigned URL 暫定運用のデプロイ設計反映
 
-状況:
+対応済み:
 
 - 画像配信は stg / prod で S3 presigned URL を使う
 - 将来は CloudFront private content を想定している
-
-TODO:
-
-- presigned URL 有効期限の運用値を決める
-- CloudFront 移行条件を整理する
+- presigned URL 有効期限は 1 分を採用する
+- 期限切れ時はアプリケーションから画像 URL を再取得する運用を前提とする
 
 ### 8. frontend ref の追跡性向上
 
-状況:
+対応済み:
 
 - workflow では `FRONTEND_REF_FOR_DEPLOY` を使って checkout している
-- ただし成果物や運用ログにどの frontend ref を含んだか残しきれていない
-
-TODO:
-
-- デプロイログへ ref を残す
-- 必要ならアプリメタデータとして公開できるようにする
+- `deploy-stg.yml` で backend commit / frontend ref / frontend commit を GitHub Actions summary へ残すようにした
 
 ## 運用メモ
 

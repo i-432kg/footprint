@@ -4,7 +4,7 @@
 
 対象:
 
-- `docs/design/06_log_design.md`
+- `docs/design/tmp/06_log_design.md`
 - ログ出力実装全般
 
 ## 目的
@@ -15,65 +15,58 @@
 
 | ID | 項目 | ステータス | 対応内容 | 備考 |
 |---|---|---|---|---|
-| LOG-01 | `traceId` の採番と MDC 格納 | Open | リクエスト単位の相関 ID を生成し、全ログへ付与する | Filter / Interceptor で実装候補 |
-| LOG-02 | `X-Trace-Id` レスポンスヘッダ返却 | Open | クライアントが障害時に参照できるようレスポンスへ付与する | `traceId` 実装と同時対応 |
-| LOG-03 | access / auth / app / audit のカテゴリ分割 | Open | 用途別ロガー名または appender を整理する | `06_log_design.md` 準拠 |
-| LOG-04 | JSON 構造化ログの導入 | Open | 本番運用向けに JSON ログ出力を整備する | local では可読性優先でも可 |
-| LOG-05 | 認証/認可イベントのログ整備 | Open | ログイン成功/失敗、401/403、CSRF などを明示的に出力する | auth ログ |
-| LOG-06 | 投稿/返信/検索系イベントのログ整備 | Open | 投稿作成、返信作成、bbox 検索、一覧取得などを整理する | app / audit ログ |
-| LOG-07 | バリデーション・例外時のログ粒度見直し | In Progress | `GlobalExceptionHandler` の例外ログは `errorCode` とマスク済み `details` へ整理し、validation は `errors` 出力へ統一した | `traceId` とカテゴリ分割は残件 |
+| LOG-01 | `traceId` の採番と MDC 格納 | Closed | `TraceIdFilter` を追加し、リクエスト単位の ULID を採番して MDC / request attribute へ格納するようにした | Spring Security より前で適用 |
+| LOG-02 | `X-Trace-Id` レスポンスヘッダ返却 | Closed | `TraceIdFilter` で `X-Trace-Id` を全レスポンスへ付与するようにした | 正常系 / `GlobalExceptionHandler` 経由のエラー系をテスト済み |
+| LOG-03 | access / auth / app / audit のカテゴリ分割 | Closed | `LoggingCategories` で `footprint.access`, `footprint.auth`, `footprint.app`, `footprint.audit` を定義し、auth ハンドラ・`AccessLogFilter`・`GlobalExceptionHandler`・command service 群へ適用した | read 系 access ログの request 受け渡しは `AccessLogContext` に集約 |
+| LOG-04 | JSON 構造化ログの導入 | Closed | Spring Boot 標準 structured logging を導入し、`local` / `stg` / `prod` の console を `logstash` JSON で出力するようにした。`environment` は共通設定から profile ごとに差し替え、`local-logfile` では file 出力も確認できるようにした。加えて `access` / `auth` / `app` / `audit` に加え、repository / storage / seed 系の周辺技術ログも fluent logging に寄せて主要項目を独立 JSON field 化した | 運用基盤向けの rename / exclude / add 最終調整やログ検証観点の追補は、本番後の運用改善で扱う |
+| LOG-05 | 認証/認可イベントのログ整備 | Closed | success / failure / entry point / access denied を専用ハンドラへ切り出し、`AUTH_LOGIN_SUCCESS`, `AUTH_LOGIN_FAILURE`, `AUTH_UNAUTHORIZED`, `AUTH_FORBIDDEN`, `AUTH_CSRF_REJECTED` を扱える形にした | auth ログ |
+| LOG-06 | 投稿/返信/検索系イベントのログ整備 | Closed | 投稿作成 / 返信作成 / ユーザー登録成功は `audit` / `app` へ、read 系成功イベントは controller で event 名と補助項目を設定し `AccessLogFilter` で 1 リクエスト 1 本の `access` ログへ集約した。加えて `@LogOperation` と `FailureEventResolver` により、validation failure / upload rejected / paging invalid を operation ベースで解決する形を実装した | bbox 業務警告や semantic cursor invalid などの read warning は、リリース後の運用改善タスクとして別管理する |
+| LOG-07 | バリデーション・例外時のログ粒度見直し | Closed | `GlobalExceptionHandler` の独自例外ログは `errorCode` とマスク済み `details` へ整理し、validation 系例外は `event={}, errors={}` の形式へ統一した。想定外 500 ログにも `errorCode=UNEXPECTED_ERROR` を明示し、validation / warning event の命名ルールを設計書へ固定した | validation ログ出力は helper 化して共通化済み |
 | LOG-08 | 機微情報マスキング運用の継続確認 | Closed | `SensitiveDataMasker` / `MaskingTarget` を objectKey / fileName 系まで拡張し、既存ログの棚卸しと seed 例外ルール整理を反映した | password / token / email / objectKey / fileName |
 
 ## TODO 詳細
 
 ### 1. `traceId` の採番と伝播
 
-状況:
+対応済み:
 
-- 設計書では `traceId` を共通キーとする前提
-- 現実装ではリクエスト相関 ID の採番実装を確認できていない
-
-TODO:
-
-- リクエスト開始時に `traceId` を採番する
-- MDC に格納して下流ログへ渡す
-- 非同期処理や例外時でも欠落しないようにする
+- `TraceIdFilter` を追加し、リクエスト開始時に ULID を採番するようにした
+- `MDC`, request attribute, response header へ同一値を設定するようにした
+- `finally` で `MDC.remove("traceId")` を行い、例外時でも後始末するようにした
 
 ### 2. `X-Trace-Id` レスポンスヘッダ返却
 
-状況:
+対応済み:
 
-- 設計書ではクライアントへ `X-Trace-Id` を返す方針
-- 現実装では確認できていない
-
-TODO:
-
-- レスポンスヘッダへ `X-Trace-Id` を付与する
-- フロントや障害報告で利用できる形にする
+- `TraceIdFilter` で `X-Trace-Id` をレスポンスヘッダへ付与するようにした
+- 正常レスポンスと `GlobalExceptionHandler` 経由のエラーレスポンスで付与されることをテストで確認した
 
 ### 3. ログカテゴリ分割
 
-状況:
+対応済み:
 
-- 設計では `access` / `auth` / `app` / `audit` を分ける前提
-- 現実装では例外ログ中心で、カテゴリ分割は未整備
-
-TODO:
-
-- ロガー名または appender でカテゴリを分ける
-- 各イベントがどのカテゴリに属するかを整理する
+- `LoggingCategories` で `footprint.access`, `footprint.auth`, `footprint.app`, `footprint.audit` を定義した
+- 認証/認可ハンドラは `footprint.auth` を使うようにした
+- `AccessLogFilter` を追加し、HTTP リクエスト共通ログを `footprint.access` へ集約した
+- `GlobalExceptionHandler` は `footprint.app` を使うようにした
+- 投稿作成成功、返信作成成功などの重要操作成功イベントは `footprint.audit` を使うようにした
+- read 系 access ログの request 内受け渡しは `AccessLogContext` に集約し、attribute 名や生 `Map` への依存を隠蔽した
 
 ### 4. JSON 構造化ログの導入
 
 状況:
 
 - 設計では JSON 構造化ログを前提
-- 現実装では設定ファイルや出力形式が未整備
+- Spring Boot 標準の structured logging を導入し、`local` / `stg` / `prod` の console は `logstash` JSON で出力するようにした
+- `application.yml` に共通設定を寄せ、`environment` だけを各 profile の `app.logging.environment` で差し替える形に整理した
+- `local-logfile` 補助 profile では `logs/footprint-local-${PID}.json` への file 出力も行えるようにした
 
 TODO:
 
-- 本番・stg で JSON ログを出せる設定を追加する
-- 共通キーを最低限そろえる
+- `access` / `auth` / `app` / `audit` の主要ログを key-value 形式へ統一し、`event`, `status`, `durationMs`, `errorCode` などを独立 JSON field として出せるようにした
+- repository / storage / seed 系の周辺技術ログも fluent logging に寄せ、`event` と主要識別子で検索しやすい形へそろえた
+- 運用基盤側で必要な rename / exclude / add 項目があれば最終調整する
+- 主要ログの JSON field を前提とした UT / UT 仕様書の追補を必要に応じて進める
 
 対象キー例:
 
@@ -88,35 +81,34 @@ TODO:
 - `userId`
 - `event`
 - `errorCode`
+- `environment`
 
 ### 5. 認証/認可ログの整備
 
-状況:
+対応済み:
 
-- 設計では `AUTH_LOGIN_SUCCESS`, `AUTH_LOGIN_FAILURE`, `AUTH_UNAUTHORIZED`, `AUTH_FORBIDDEN`, `AUTH_CSRF_REJECTED` などを想定
-- 現実装ではこの粒度の明示ログは未整備
-
-TODO:
-
-- 認証成功/失敗時のイベントログを追加する
-- 401/403/CSRF 失敗時のログ方針を実装へ反映する
+- 認証成功は `ApiAuthenticationSuccessHandler` で `AUTH_LOGIN_SUCCESS` を出すようにした
+- 認証失敗は `ApiAuthenticationFailureHandler` で `AUTH_LOGIN_FAILURE` を出すようにした
+- 未認証アクセスは `ApiAuthenticationEntryPoint` で `AUTH_UNAUTHORIZED` を出すようにした
+- 認可失敗は `ApiAccessDeniedHandler` で `AUTH_FORBIDDEN` を出すようにした
+- `CsrfException` は `ApiAccessDeniedHandler` 内で分岐し、`AUTH_CSRF_REJECTED` を出すようにした
 
 ### 6. 業務イベントログの整備
 
-状況:
+進捗:
 
-- 設計では投稿、返信、bbox 検索、一覧取得などのイベントログを想定
-- 現実装では業務イベントログが十分ではない
+- `POST_CREATE_SUCCESS`, `REPLY_CREATE_SUCCESS`, `USER_CREATE_SUCCESS` を command service で出すようにした
+- `POST_TIMELINE_FETCH`, `POST_SEARCH_FETCH`, `POST_MAP_BBOX_FETCH`, `POST_DETAIL_FETCH`, `REPLY_LIST_FETCH`, `ME_FETCH`, `ME_POSTS_FETCH`, `ME_REPLIES_FETCH` を実装した
+- read 系成功イベントは controller が event 名と補助項目を設定し、`AccessLogFilter` が 1 リクエスト 1 本の `footprint.access` ログへ集約する形にした
+- `items`, `size`, `lastIdPresent`, `postId`, `parentReplyId`, bbox 値を access ログへ載せるようにした
+- request 内の read 系 access ログ文脈は `AccessLogContext` に集約した
+- `@LogOperation` と `LoggingOperationInterceptor` で request 文脈へ `operation` を設定し、`FailureEventResolver` が `POST_CREATE_VALIDATION_FAIL`, `POST_CREATE_UPLOAD_REJECTED`, `REPLY_CREATE_VALIDATION_FAIL`, `POST_LAST_ID_INVALID`, `REPLY_LAST_ID_INVALID` を解決する形にした
 
-TODO:
+運用改善として後続対応する項目:
 
-- 投稿作成
-- 返信作成
-- タイムライン取得
-- マイページ取得
-- bbox 検索
-
-などのログ出力ポイントを整理する
+- bbox 業務制約違反や semantic cursor invalid など、read 中の `app` 警告イベント
+- seek ページング異常兆候の観測強化
+- `LOG-04` の JSON 構造化ログ導入後の出力形式最終化
 
 ### 7. 例外ログとバリデーションログの粒度見直し
 
@@ -134,8 +126,13 @@ TODO:
 進捗:
 
 - `GlobalExceptionHandler` は resource / domain / application / use case 例外で `errorCode` とマスク済み `details` を出す形へ整理した
-- validation 例外は `errors` 配列をそのままログ出力し、`MethodArgumentTypeMismatchException` も生値ではなくサニタイズ済み `errors` を出すようにした
+- `MethodArgumentNotValidException`, `BindException`, `ConstraintViolationException`, `MethodArgumentTypeMismatchException` はサニタイズ済み `errors` をログ出力する形へ整理した
+- `MissingServletRequestParameterException`, `MissingServletRequestPartException`, `HttpMessageNotReadableException` も `event={}, errors={}` 形式で出すように整理した
+- failure / warning 系 event 名は `FailureEventResolver` が request 文脈の `operation` と例外種別から解決する形へ整理した
 - 500 系 `UseCaseExecutionException` は `details.rejectedValue` を持たない運用へ整理した
+- `TraceIdFilter` と `logging.pattern.level` により `traceId` を MDC と通常ログ出力へ載せる基盤を追加した
+- 想定外例外の 500 ログは `errorCode=UNEXPECTED_ERROR` をメッセージへ明示する形へ整理した
+- validation / warning event の命名ルールは `06_log_design.md` に固定し、`GlobalExceptionHandler` の validation ログ出力は helper 化して共通化した
 
 ### 8. マスキング方針の接続
 
