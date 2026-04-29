@@ -4,6 +4,7 @@ import jp.i432kg.footprint.domain.model.Post;
 import jp.i432kg.footprint.domain.repository.PostRepository;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.infrastructure.datasource.mapper.repository.PostMapper;
+import jp.i432kg.footprint.logging.LoggingEvents;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -23,7 +24,11 @@ public class PostRepositoryImpl implements PostRepository {
         try {
             return postMapper.countByPostId(postId) > 0;
         } catch (RuntimeException e) {
-            log.error("Failed to check post existence. postId={}", postId.getValue(), e);
+            log.atError()
+                    .addKeyValue("event", LoggingEvents.POST_EXISTS_CHECK_FAILED)
+                    .addKeyValue("postId", postId.getValue())
+                    .setCause(e)
+                    .log("Failed to check post existence");
             throw e;
         }
     }
@@ -40,12 +45,12 @@ public class PostRepositoryImpl implements PostRepository {
                     PostMapper.PostImageInsertEntity.from(post);
             postMapper.insertPostImages(postImageEntity);
         } catch (RuntimeException e) {
-            log.error(
-                    "Failed to save post. postId={}, userId={}",
-                    post.getPostId().getValue(),
-                    post.getUserId().getValue(),
-                    e
-            );
+            log.atError()
+                    .addKeyValue("event", LoggingEvents.POST_SAVE_FAILED)
+                    .addKeyValue("postId", post.getPostId().getValue())
+                    .addKeyValue("userId", post.getUserId().getValue())
+                    .setCause(e)
+                    .log("Failed to save post");
             throw e;
         }
     }

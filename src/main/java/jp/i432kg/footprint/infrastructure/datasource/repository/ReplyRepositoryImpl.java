@@ -4,6 +4,7 @@ import jp.i432kg.footprint.domain.model.Reply;
 import jp.i432kg.footprint.domain.repository.ReplyRepository;
 import jp.i432kg.footprint.domain.value.ReplyId;
 import jp.i432kg.footprint.infrastructure.datasource.mapper.repository.ReplyMapper;
+import jp.i432kg.footprint.logging.LoggingEvents;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -26,7 +27,11 @@ public class ReplyRepositoryImpl implements ReplyRepository {
             return replyMapper.findReplyById(replyId)
                     .map(ReplyMapper.ReplyResultEntity::toDomain);
         } catch (RuntimeException e) {
-            log.error("Failed to find reply by id. replyId={}", replyId.getValue(), e);
+            log.atError()
+                    .addKeyValue("event", LoggingEvents.REPLY_FIND_FAILED)
+                    .addKeyValue("replyId", replyId.getValue())
+                    .setCause(e)
+                    .log("Failed to find reply");
             throw e;
         }
     }
@@ -38,13 +43,13 @@ public class ReplyRepositoryImpl implements ReplyRepository {
             final ReplyMapper.ReplyInsertEntity insertReplyEntity = ReplyMapper.ReplyInsertEntity.from(reply);
             replyMapper.insert(insertReplyEntity);
         } catch (RuntimeException e) {
-            log.error(
-                    "Failed to save reply. replyId={}, postId={}, userId={}",
-                    reply.getReplyId().getValue(),
-                    reply.getPostId().getValue(),
-                    reply.getUserId().getValue(),
-                    e
-            );
+            log.atError()
+                    .addKeyValue("event", LoggingEvents.REPLY_SAVE_FAILED)
+                    .addKeyValue("replyId", reply.getReplyId().getValue())
+                    .addKeyValue("postId", reply.getPostId().getValue())
+                    .addKeyValue("userId", reply.getUserId().getValue())
+                    .setCause(e)
+                    .log("Failed to save reply");
             throw e;
         }
     }
@@ -54,7 +59,11 @@ public class ReplyRepositoryImpl implements ReplyRepository {
         try {
             replyMapper.incrementChildCount(replyId);
         } catch (RuntimeException e) {
-            log.error("Failed to increase reply count. replyId={}", replyId.getValue(), e);
+            log.atError()
+                    .addKeyValue("event", LoggingEvents.REPLY_COUNT_INCREMENT_FAILED)
+                    .addKeyValue("replyId", replyId.getValue())
+                    .setCause(e)
+                    .log("Failed to increase reply count");
             throw e;
         }
     }

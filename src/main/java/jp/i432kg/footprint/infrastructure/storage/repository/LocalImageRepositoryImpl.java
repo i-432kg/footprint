@@ -16,6 +16,7 @@ import jp.i432kg.footprint.domain.exception.DomainException;
 import jp.i432kg.footprint.domain.model.Location;
 import jp.i432kg.footprint.domain.value.*;
 import jp.i432kg.footprint.domain.value.Byte;
+import jp.i432kg.footprint.logging.LoggingEvents;
 import jp.i432kg.footprint.infrastructure.storage.LocalStoragePathResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -116,10 +117,11 @@ public class LocalImageRepositoryImpl implements ImageStorage, ImageMetadataExtr
             );
 
         } catch (IllegalArgumentException | DomainException e) {
-            log.error(
-                    "Failed to extract image metadata.",
-                    e
-            );
+            log.atError()
+                    .addKeyValue("event", LoggingEvents.LOCAL_IMAGE_METADATA_EXTRACT_FAILED)
+                    .addKeyValue("objectKey", storageObject.getObjectKey().getValue())
+                    .setCause(e)
+                    .log("Failed to extract local image metadata");
             throw new ImageProcessingException(
                     "画像メタデータの解析に失敗しました: " + storageObject.getObjectKey().getValue(),
                     e
@@ -171,20 +173,20 @@ public class LocalImageRepositoryImpl implements ImageStorage, ImageMetadataExtr
 
             return storageObject;
         } catch (IllegalArgumentException | DomainException e) {
-            log.error(
-                    "Failed to save image. userId={}, postId={}",
-                    userId.getValue(),
-                    postId.getValue(),
-                    e
-            );
+            log.atError()
+                    .addKeyValue("event", LoggingEvents.LOCAL_IMAGE_STORE_FAILED)
+                    .addKeyValue("userId", userId.getValue())
+                    .addKeyValue("postId", postId.getValue())
+                    .setCause(e)
+                    .log("Failed to store local image");
             throw new IOException("サポートされていない画像形式です。", e);
         } catch (IOException e) {
-            log.error(
-                    "Failed to save image. userId={}, postId={}",
-                    userId.getValue(),
-                    postId.getValue(),
-                    e
-            );
+            log.atError()
+                    .addKeyValue("event", LoggingEvents.LOCAL_IMAGE_STORE_FAILED)
+                    .addKeyValue("userId", userId.getValue())
+                    .addKeyValue("postId", postId.getValue())
+                    .setCause(e)
+                    .log("Failed to store local image");
             throw e;
         }
     }

@@ -5,6 +5,7 @@ import jp.i432kg.footprint.domain.repository.UserRepository;
 import jp.i432kg.footprint.domain.value.EmailAddress;
 import jp.i432kg.footprint.domain.value.UserId;
 import jp.i432kg.footprint.infrastructure.datasource.mapper.repository.UserMapper;
+import jp.i432kg.footprint.logging.LoggingEvents;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -27,7 +28,11 @@ public class UserRepositoryImpl implements UserRepository {
         try {
             return userMapper.countByUserId(userId) > 0;
         } catch (RuntimeException e) {
-            log.error("Failed to check user existence by id. userId={}", userId.getValue(), e);
+            log.atError()
+                    .addKeyValue("event", LoggingEvents.USER_EXISTS_CHECK_FAILED)
+                    .addKeyValue("userId", userId.getValue())
+                    .setCause(e)
+                    .log("Failed to check user existence by id");
             throw e;
         }
     }
@@ -37,7 +42,11 @@ public class UserRepositoryImpl implements UserRepository {
         try {
             return userMapper.countByEmail(email) > 0;
         } catch (RuntimeException e) {
-            log.error("Failed to check user existence by email.", e);
+            log.atError()
+                    .addKeyValue("event", LoggingEvents.USER_EMAIL_EXISTS_CHECK_FAILED)
+                    .addKeyValue("email", email.getValue())
+                    .setCause(e)
+                    .log("Failed to check user existence by email");
             throw e;
         }
     }
@@ -49,11 +58,11 @@ public class UserRepositoryImpl implements UserRepository {
             final UserMapper.UserInsertEntity entity = UserMapper.UserInsertEntity.from(user, clock);
             userMapper.insert(entity);
         } catch (RuntimeException e) {
-            log.error(
-                    "Failed to save user. userId={}",
-                    user.getUserId().getValue(),
-                    e
-            );
+            log.atError()
+                    .addKeyValue("event", LoggingEvents.USER_SAVE_FAILED)
+                    .addKeyValue("userId", user.getUserId().getValue())
+                    .setCause(e)
+                    .log("Failed to save user");
             throw e;
         }
     }

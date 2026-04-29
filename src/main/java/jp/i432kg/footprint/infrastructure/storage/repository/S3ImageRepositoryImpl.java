@@ -25,6 +25,7 @@ import jp.i432kg.footprint.domain.value.Pixel;
 import jp.i432kg.footprint.domain.value.PostId;
 import jp.i432kg.footprint.domain.value.StorageObject;
 import jp.i432kg.footprint.domain.value.UserId;
+import jp.i432kg.footprint.logging.LoggingEvents;
 import jp.i432kg.footprint.infrastructure.storage.S3ObjectResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -137,13 +138,25 @@ public class S3ImageRepositoryImpl implements ImageStorage, ImageMetadataExtract
             }
 
         } catch (NoSuchKeyException e) {
-            log.error("S3 object not found.", e);
+            log.atError()
+                    .addKeyValue("event", LoggingEvents.S3_OBJECT_NOT_FOUND)
+                    .addKeyValue("objectKey", storageObject.getObjectKey().getValue())
+                    .setCause(e)
+                    .log("S3 object not found");
             throw new IOException("S3上の画像ファイルが見つかりません: " + storageObject.getObjectKey().getValue(), e);
         } catch (S3Exception e) {
-            log.error("Failed to access S3 object.", e);
+            log.atError()
+                    .addKeyValue("event", LoggingEvents.S3_OBJECT_ACCESS_FAILED)
+                    .addKeyValue("objectKey", storageObject.getObjectKey().getValue())
+                    .setCause(e)
+                    .log("Failed to access S3 object");
             throw new IOException("S3上の画像ファイルへのアクセスに失敗しました: " + storageObject.getObjectKey().getValue(), e);
         } catch (IllegalArgumentException | DomainException e) {
-            log.error("Failed to extract image metadata from S3.", e);
+            log.atError()
+                    .addKeyValue("event", LoggingEvents.S3_IMAGE_METADATA_EXTRACT_FAILED)
+                    .addKeyValue("objectKey", storageObject.getObjectKey().getValue())
+                    .setCause(e)
+                    .log("Failed to extract S3 image metadata");
             throw new ImageProcessingException(
                     "画像メタデータの解析に失敗しました: " + storageObject.getObjectKey().getValue(),
                     e
@@ -189,20 +202,20 @@ public class S3ImageRepositoryImpl implements ImageStorage, ImageMetadataExtract
 
             return storageObject;
         } catch (IllegalArgumentException | DomainException e) {
-            log.error(
-                    "Failed to save image to S3. userId={}, postId={}",
-                    userId.getValue(),
-                    postId.getValue(),
-                    e
-            );
+            log.atError()
+                    .addKeyValue("event", LoggingEvents.S3_IMAGE_STORE_FAILED)
+                    .addKeyValue("userId", userId.getValue())
+                    .addKeyValue("postId", postId.getValue())
+                    .setCause(e)
+                    .log("Failed to store S3 image");
             throw new IOException("サポートされていない画像形式です。", e);
         } catch (S3Exception e) {
-            log.error(
-                    "Failed to upload image to S3. userId={}, postId={}",
-                    userId.getValue(),
-                    postId.getValue(),
-                    e
-            );
+            log.atError()
+                    .addKeyValue("event", LoggingEvents.S3_IMAGE_UPLOAD_FAILED)
+                    .addKeyValue("userId", userId.getValue())
+                    .addKeyValue("postId", postId.getValue())
+                    .setCause(e)
+                    .log("Failed to upload S3 image");
             throw new IOException("S3への画像アップロードに失敗しました。", e);
         }
     }
@@ -219,7 +232,11 @@ public class S3ImageRepositoryImpl implements ImageStorage, ImageMetadataExtract
                             .build()
             );
         } catch (S3Exception e) {
-            log.error("Failed to delete image from S3.", e);
+            log.atError()
+                    .addKeyValue("event", LoggingEvents.S3_IMAGE_DELETE_FAILED)
+                    .addKeyValue("objectKey", storageObject.getObjectKey().getValue())
+                    .setCause(e)
+                    .log("Failed to delete S3 image");
             throw new IOException("S3上の画像削除に失敗しました。", e);
         }
     }

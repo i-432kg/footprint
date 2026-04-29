@@ -122,4 +122,94 @@ public final class LoggingEvents {
      * request 共通のバリデーション失敗イベントです。
      */
     public static final String REQUEST_VALIDATION_FAIL = "REQUEST_VALIDATION_FAIL";
+
+    /**
+     * 認証成功後の最終ログイン更新失敗イベントです。
+     */
+    public static final String LAST_LOGIN_UPDATE_FAILED = "LAST_LOGIN_UPDATE_FAILED";
+
+    /**
+     * ローカル画像メタデータ抽出失敗イベントです。
+     */
+    public static final String LOCAL_IMAGE_METADATA_EXTRACT_FAILED = "LOCAL_IMAGE_METADATA_EXTRACT_FAILED";
+
+    /**
+     * ローカル画像保存失敗イベントです。
+     */
+    public static final String LOCAL_IMAGE_STORE_FAILED = "LOCAL_IMAGE_STORE_FAILED";
+
+    /**
+     * S3 オブジェクト未検出イベントです。
+     */
+    public static final String S3_OBJECT_NOT_FOUND = "S3_OBJECT_NOT_FOUND";
+
+    /**
+     * S3 オブジェクトアクセス失敗イベントです。
+     */
+    public static final String S3_OBJECT_ACCESS_FAILED = "S3_OBJECT_ACCESS_FAILED";
+
+    /**
+     * S3 画像メタデータ抽出失敗イベントです。
+     */
+    public static final String S3_IMAGE_METADATA_EXTRACT_FAILED = "S3_IMAGE_METADATA_EXTRACT_FAILED";
+
+    /**
+     * S3 画像保存失敗イベントです。
+     */
+    public static final String S3_IMAGE_STORE_FAILED = "S3_IMAGE_STORE_FAILED";
+
+    /**
+     * S3 画像アップロード失敗イベントです。
+     */
+    public static final String S3_IMAGE_UPLOAD_FAILED = "S3_IMAGE_UPLOAD_FAILED";
+
+    /**
+     * S3 画像削除失敗イベントです。
+     */
+    public static final String S3_IMAGE_DELETE_FAILED = "S3_IMAGE_DELETE_FAILED";
+
+    /**
+     * 投稿存在確認失敗イベントです。
+     */
+    public static final String POST_EXISTS_CHECK_FAILED = "POST_EXISTS_CHECK_FAILED";
+
+    /**
+     * 投稿保存失敗イベントです。
+     */
+    public static final String POST_SAVE_FAILED = "POST_SAVE_FAILED";
+
+    /**
+     * 返信取得失敗イベントです。
+     */
+    public static final String REPLY_FIND_FAILED = "REPLY_FIND_FAILED";
+
+    /**
+     * 返信保存失敗イベントです。
+     */
+    public static final String REPLY_SAVE_FAILED = "REPLY_SAVE_FAILED";
+
+    /**
+     * 返信件数更新失敗イベントです。
+     */
+    public static final String REPLY_COUNT_INCREMENT_FAILED = "REPLY_COUNT_INCREMENT_FAILED";
+
+    /**
+     * ユーザー存在確認失敗イベントです。
+     */
+    public static final String USER_EXISTS_CHECK_FAILED = "USER_EXISTS_CHECK_FAILED";
+
+    /**
+     * メールアドレス存在確認失敗イベントです。
+     */
+    public static final String USER_EMAIL_EXISTS_CHECK_FAILED = "USER_EMAIL_EXISTS_CHECK_FAILED";
+
+    /**
+     * ユーザー保存失敗イベントです。
+     */
+    public static final String USER_SAVE_FAILED = "USER_SAVE_FAILED";
+
+    /**
+     * 投稿失敗時の保存済み画像 cleanup 失敗イベントです。
+     */
+    public static final String POST_IMAGE_CLEANUP_FAILED = "POST_IMAGE_CLEANUP_FAILED";
 }

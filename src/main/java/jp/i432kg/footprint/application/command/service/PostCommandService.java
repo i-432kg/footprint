@@ -131,7 +131,11 @@ public class PostCommandService {
         } catch (IOException e) {
             // ここで cleanup 失敗を再送出すると一次障害の原因が隠れるため、
             // 元例外を優先しつつ補償処理失敗はログに残す。
-            APP_LOGGER.warn("Failed to cleanup stored image after post processing failure.", e);
+            APP_LOGGER.atWarn()
+                    .addKeyValue("event", LoggingEvents.POST_IMAGE_CLEANUP_FAILED)
+                    .addKeyValue("objectKey", storageObject.getObjectKey().getValue())
+                    .setCause(e)
+                    .log("Failed to cleanup stored image after post processing failure");
         }
     }
 

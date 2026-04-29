@@ -2,6 +2,7 @@ package jp.i432kg.footprint.infrastructure.security;
 
 import jp.i432kg.footprint.domain.value.UserId;
 import jp.i432kg.footprint.infrastructure.security.mapper.AuthMapper;
+import jp.i432kg.footprint.logging.LoggingEvents;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,11 @@ public class LastLoginRecorder {
             authMapper.updateLastLoginAt(userId, LocalDateTime.now(clock));
         } catch (RuntimeException e) {
             // 認証自体は成功しているため、監査用更新失敗はログに残して処理は継続する。
-            log.warn("Failed to update last login timestamp after authentication success. userId={}", userId.getValue(), e);
+            log.atWarn()
+                    .addKeyValue("event", LoggingEvents.LAST_LOGIN_UPDATE_FAILED)
+                    .addKeyValue("userId", userId.getValue())
+                    .setCause(e)
+                    .log("Failed to update last login timestamp");
         }
     }
 }
