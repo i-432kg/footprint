@@ -42,8 +42,6 @@ logging:
     # text ログ出力時のレベル表示へ traceId を載せる設定。structured logging(JSON) では直接使われない。
     level: "%5p [traceId:%X{traceId}]"
   structured:
-    format:
-      console: logstash
     json:
       add:
         environment: ${app.logging.environment}

@@ -54,3 +54,8 @@ app:
   frontend:
     vite:
       manifest-location: classpath:/static/manifest.json
+
+logging:
+  structured:
+    format:
+      console: logstash
