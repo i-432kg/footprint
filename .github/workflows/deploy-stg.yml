@@ -47,6 +47,20 @@ jobs:
           token: ${{ secrets.FRONTEND_REPO_PAT }}
           path: frontend
 
+      - name: Write deploy summary
+        run: |
+          FRONTEND_COMMIT="$(git -C frontend rev-parse HEAD)"
+          {
+            echo "## Deploy Summary"
+            echo ""
+            echo "| Key | Value |"
+            echo "|---|---|"
+            echo "| Backend commit | \`${GITHUB_SHA}\` |"
+            echo "| Frontend ref | \`${FRONTEND_REF_FOR_DEPLOY}\` |"
+            echo "| Frontend commit | \`${FRONTEND_COMMIT}\` |"
+            echo "| Environment | \`stg\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
