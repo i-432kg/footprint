@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.infrastructure.seed.local;
 
+import jp.i432kg.footprint.logging.LoggingEvents;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
@@ -28,27 +29,40 @@ public class LocalSeedRunner implements ApplicationRunner {
     @Override
     public void run(final ApplicationArguments args) {
         if (!properties.isEnabled()) {
-            log.info("Local seed skipped. app.local-seed.enabled=false");
+            log.atInfo()
+                    .addKeyValue("event", LoggingEvents.LOCAL_SEED_SKIPPED)
+                    .addKeyValue("enabled", false)
+                    .log("Local seed skipped");
             return;
         }
 
         validateSeedProperties();
 
-        log.info("Local seed start.");
+        log.atInfo()
+                .addKeyValue("event", LoggingEvents.LOCAL_SEED_STARTED)
+                .log("Local seed started");
 
         if (properties.isCleanupBeforeSeed() || properties.isCleanupOnly()) {
-            log.info("Local seed cleanup start.");
+            log.atInfo()
+                    .addKeyValue("event", LoggingEvents.LOCAL_SEED_CLEANUP_STARTED)
+                    .log("Local seed cleanup started");
             localSeedCleaner.cleanup();
-            log.info("Local seed cleanup finished.");
+            log.atInfo()
+                    .addKeyValue("event", LoggingEvents.LOCAL_SEED_CLEANUP_FINISHED)
+                    .log("Local seed cleanup finished");
         }
 
         if (properties.isCleanupOnly()) {
-            log.info("Local seed cleanup only completed.");
+            log.atInfo()
+                    .addKeyValue("event", LoggingEvents.LOCAL_SEED_CLEANUP_ONLY_COMPLETED)
+                    .log("Local seed cleanup only completed");
             return;
         }
 
         localSeedService.seed();
-        log.info("Local seed finished.");
+        log.atInfo()
+                .addKeyValue("event", LoggingEvents.LOCAL_SEED_FINISHED)
+                .log("Local seed finished");
     }
 
     private void validateSeedProperties() {

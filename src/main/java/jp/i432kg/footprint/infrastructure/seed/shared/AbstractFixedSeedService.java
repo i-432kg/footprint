@@ -17,6 +17,7 @@ import jp.i432kg.footprint.domain.value.ReplyId;
 import jp.i432kg.footprint.domain.value.ReplyComment;
 import jp.i432kg.footprint.domain.value.UserId;
 import jp.i432kg.footprint.domain.value.UserName;
+import jp.i432kg.footprint.logging.LoggingEvents;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,7 +83,10 @@ public abstract class AbstractFixedSeedService {
                 seedReplyMessage("reply_without_children")
         );
 
-        log.info("{} fixed seed scenario prepared.", seedLogName());
+        log.atInfo()
+                .addKeyValue("event", LoggingEvents.FIXED_SEED_SCENARIO_PREPARED)
+                .addKeyValue("seedType", seedLogName())
+                .log("Fixed seed scenario prepared");
     }
 
     protected abstract String envPrefix();
@@ -107,7 +111,12 @@ public abstract class AbstractFixedSeedService {
                             BirthDate.of(LocalDate.of(1990, 1, birthDay), LocalDate.now(clock))
                     )
             );
-            log.info("{} seed user created. email={}, username={}", seedLogName(), email, username);
+            log.atInfo()
+                    .addKeyValue("event", LoggingEvents.FIXED_SEED_USER_CREATED)
+                    .addKeyValue("seedType", seedLogName())
+                    .addKeyValue("email", email)
+                    .addKeyValue("username", username)
+                    .log("Fixed seed user created");
         }
 
         final String userId = seedAdminOperations.findUserIdByEmail(email)
@@ -119,8 +128,13 @@ public abstract class AbstractFixedSeedService {
     private String createOrLoadPost(final UserSeed author, final String caption, final String imageEntry) {
         if (seedAdminOperations.findPostIdByCaption(caption).isEmpty()) {
             createPost(author.userId(), caption, imageEntry);
-            log.info("{} seed post created. email={}, caption={}, {}={}",
-                    seedLogName(), author.email(), caption, imageEntryName(), imageEntry);
+            log.atInfo()
+                    .addKeyValue("event", LoggingEvents.FIXED_SEED_POST_CREATED)
+                    .addKeyValue("seedType", seedLogName())
+                    .addKeyValue("email", author.email())
+                    .addKeyValue("caption", caption)
+                    .addKeyValue(imageEntryName(), imageEntry)
+                    .log("Fixed seed post created");
         }
 
         return seedAdminOperations.findPostIdByCaption(caption)
@@ -142,8 +156,13 @@ public abstract class AbstractFixedSeedService {
                             ReplyComment.of(message)
                     )
             );
-            log.info("{} seed reply created. postId={}, replier={}, message={}",
-                    seedLogName(), postId, replier.email(), message);
+            log.atInfo()
+                    .addKeyValue("event", LoggingEvents.FIXED_SEED_REPLY_CREATED)
+                    .addKeyValue("seedType", seedLogName())
+                    .addKeyValue("postId", postId)
+                    .addKeyValue("replier", replier.email())
+                    .addKeyValue("message", message)
+                    .log("Fixed seed reply created");
         }
 
         return seedAdminOperations.findReplyIdByPostIdAndMessage(postId, message)

@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.infrastructure.seed.local;
 
+import jp.i432kg.footprint.logging.LoggingEvents;
 import jp.i432kg.footprint.infrastructure.seed.shared.SeedImageEntryLoader;
 import jp.i432kg.footprint.infrastructure.seed.shared.SeedImageManifestParser;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,10 @@ public class LocalSeedImageManifestLoader implements SeedImageEntryLoader {
     public List<String> loadImagePaths() {
         final Path manifestPath = Paths.get(properties.getManifestPath()).normalize();
         if (!Files.exists(manifestPath)) {
-            log.warn("Local seed manifest not found. path={}", manifestPath);
+            log.atWarn()
+                    .addKeyValue("event", LoggingEvents.LOCAL_SEED_MANIFEST_NOT_FOUND)
+                    .addKeyValue("path", manifestPath)
+                    .log("Local seed manifest not found");
             return List.of();
         }
 

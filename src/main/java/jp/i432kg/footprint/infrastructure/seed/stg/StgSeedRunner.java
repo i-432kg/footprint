@@ -1,5 +1,6 @@
 package jp.i432kg.footprint.infrastructure.seed.stg;
 
+import jp.i432kg.footprint.logging.LoggingEvents;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
@@ -31,28 +32,41 @@ public class StgSeedRunner implements ApplicationRunner {
     @Override
     public void run(final ApplicationArguments args) {
         if (!properties.isEnabled()) {
-            log.info("STG seed skipped. app.stg-seed.enabled=false");
+            log.atInfo()
+                    .addKeyValue("event", LoggingEvents.STG_SEED_SKIPPED)
+                    .addKeyValue("enabled", false)
+                    .log("STG seed skipped");
             return;
         }
 
         validateSeedProperties();
 
-        log.info("STG seed start.");
+        log.atInfo()
+                .addKeyValue("event", LoggingEvents.STG_SEED_STARTED)
+                .log("STG seed started");
 
         if (properties.isCleanupBeforeSeed() || properties.isCleanupOnly()) {
-            log.info("STG seed cleanup start.");
+            log.atInfo()
+                    .addKeyValue("event", LoggingEvents.STG_SEED_CLEANUP_STARTED)
+                    .log("STG seed cleanup started");
             stgSeedCleaner.cleanup();
-            log.info("STG seed cleanup finished.");
+            log.atInfo()
+                    .addKeyValue("event", LoggingEvents.STG_SEED_CLEANUP_FINISHED)
+                    .log("STG seed cleanup finished");
         }
 
         if (properties.isCleanupOnly()) {
-            log.info("STG seed cleanup only completed.");
+            log.atInfo()
+                    .addKeyValue("event", LoggingEvents.STG_SEED_CLEANUP_ONLY_COMPLETED)
+                    .log("STG seed cleanup only completed");
             return;
         }
 
         stgSeedService.seed();
 
-        log.info("STG seed finished.");
+        log.atInfo()
+                .addKeyValue("event", LoggingEvents.STG_SEED_FINISHED)
+                .log("STG seed finished");
     }
 
     private void validateSeedProperties() {

@@ -2,6 +2,7 @@ package jp.i432kg.footprint.infrastructure.seed.stg;
 
 import jp.i432kg.footprint.domain.value.ObjectKey;
 import jp.i432kg.footprint.domain.value.StorageObject;
+import jp.i432kg.footprint.logging.LoggingEvents;
 import jp.i432kg.footprint.infrastructure.storage.S3ObjectResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +51,11 @@ public class StgSeedCleaner {
                             .build()
             );
         } catch (RuntimeException e) {
-            log.warn("Failed to delete seed image object. objectKey={}", objectKeyValue, e);
+            log.atWarn()
+                    .addKeyValue("event", LoggingEvents.STG_SEED_IMAGE_DELETE_FAILED)
+                    .addKeyValue("objectKey", objectKeyValue)
+                    .setCause(e)
+                    .log("Failed to delete STG seed image");
         }
     }
 }

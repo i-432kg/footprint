@@ -212,4 +212,99 @@ public final class LoggingEvents {
      * 投稿失敗時の保存済み画像 cleanup 失敗イベントです。
      */
     public static final String POST_IMAGE_CLEANUP_FAILED = "POST_IMAGE_CLEANUP_FAILED";
+
+    /**
+     * local seed スキップイベントです。
+     */
+    public static final String LOCAL_SEED_SKIPPED = "LOCAL_SEED_SKIPPED";
+
+    /**
+     * local seed 開始イベントです。
+     */
+    public static final String LOCAL_SEED_STARTED = "LOCAL_SEED_STARTED";
+
+    /**
+     * local seed cleanup 開始イベントです。
+     */
+    public static final String LOCAL_SEED_CLEANUP_STARTED = "LOCAL_SEED_CLEANUP_STARTED";
+
+    /**
+     * local seed cleanup 完了イベントです。
+     */
+    public static final String LOCAL_SEED_CLEANUP_FINISHED = "LOCAL_SEED_CLEANUP_FINISHED";
+
+    /**
+     * local seed cleanup only 完了イベントです。
+     */
+    public static final String LOCAL_SEED_CLEANUP_ONLY_COMPLETED = "LOCAL_SEED_CLEANUP_ONLY_COMPLETED";
+
+    /**
+     * local seed 完了イベントです。
+     */
+    public static final String LOCAL_SEED_FINISHED = "LOCAL_SEED_FINISHED";
+
+    /**
+     * STG seed スキップイベントです。
+     */
+    public static final String STG_SEED_SKIPPED = "STG_SEED_SKIPPED";
+
+    /**
+     * STG seed 開始イベントです。
+     */
+    public static final String STG_SEED_STARTED = "STG_SEED_STARTED";
+
+    /**
+     * STG seed cleanup 開始イベントです。
+     */
+    public static final String STG_SEED_CLEANUP_STARTED = "STG_SEED_CLEANUP_STARTED";
+
+    /**
+     * STG seed cleanup 完了イベントです。
+     */
+    public static final String STG_SEED_CLEANUP_FINISHED = "STG_SEED_CLEANUP_FINISHED";
+
+    /**
+     * STG seed cleanup only 完了イベントです。
+     */
+    public static final String STG_SEED_CLEANUP_ONLY_COMPLETED = "STG_SEED_CLEANUP_ONLY_COMPLETED";
+
+    /**
+     * STG seed 完了イベントです。
+     */
+    public static final String STG_SEED_FINISHED = "STG_SEED_FINISHED";
+
+    /**
+     * local seed 画像 cleanup 失敗イベントです。
+     */
+    public static final String LOCAL_SEED_IMAGE_DELETE_FAILED = "LOCAL_SEED_IMAGE_DELETE_FAILED";
+
+    /**
+     * STG seed 画像 cleanup 失敗イベントです。
+     */
+    public static final String STG_SEED_IMAGE_DELETE_FAILED = "STG_SEED_IMAGE_DELETE_FAILED";
+
+    /**
+     * local seed manifest 未検出イベントです。
+     */
+    public static final String LOCAL_SEED_MANIFEST_NOT_FOUND = "LOCAL_SEED_MANIFEST_NOT_FOUND";
+
+    /**
+     * fixed seed scenario 準備完了イベントです。
+     */
+    public static final String FIXED_SEED_SCENARIO_PREPARED = "FIXED_SEED_SCENARIO_PREPARED";
+
+    /**
+     * fixed seed ユーザー作成イベントです。
+     */
+    public static final String FIXED_SEED_USER_CREATED = "FIXED_SEED_USER_CREATED";
+
+    /**
+     * fixed seed 投稿作成イベントです。
+     */
+    public static final String FIXED_SEED_POST_CREATED = "FIXED_SEED_POST_CREATED";
+
+    /**
+     * fixed seed 返信作成イベントです。
+     */
+    public static final String FIXED_SEED_REPLY_CREATED = "FIXED_SEED_REPLY_CREATED";
 }
