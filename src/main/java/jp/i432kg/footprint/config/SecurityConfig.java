@@ -7,6 +7,7 @@ import jp.i432kg.footprint.infrastructure.security.ApiAuthenticationFailureHandl
 import jp.i432kg.footprint.infrastructure.security.ApiAuthenticationSuccessHandler;
 import jp.i432kg.footprint.logging.access.AccessLogFilter;
 import jp.i432kg.footprint.logging.trace.TraceIdFilter;
+import org.springframework.boot.web.server.servlet.CookieSameSiteSupplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -21,8 +22,10 @@ import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.http.ResponseCookie;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 @Configuration
 @EnableWebSecurity
@@ -63,11 +66,19 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CookieSameSiteSupplier csrfCookieSameSiteSupplier() {
+        return CookieSameSiteSupplier.ofLax().whenHasName("XSRF-TOKEN");
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
+        final CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        csrfTokenRepository.setCookieCustomizer(buildCsrfCookieCustomizer());
+
         http
                 // セッション認証を継続しつつ、SPA/JS から扱いやすい CSRF にする
                 .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRepository(csrfTokenRepository)
                         .spa()
                         .ignoringRequestMatchers("/actuator/health")
                 )
@@ -153,6 +164,12 @@ public class SecurityConfig {
         http.addFilterAfter(accessLogFilter, SecurityContextHolderFilter.class);
 
         return http.build();
+    }
+
+    private Consumer<ResponseCookie.ResponseCookieBuilder> buildCsrfCookieCustomizer() {
+        return builder -> builder
+                .sameSite("Lax")
+                .secure(!isLocalProfile());
     }
 
     private boolean isLocalProfile() {

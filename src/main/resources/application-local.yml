@@ -12,6 +12,14 @@ springdoc:
   swagger-ui:
     enabled: true
 
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: false
+        same-site: lax
+
 app:
   logging:
     environment: local

@@ -13,6 +13,14 @@ springdoc:
   swagger-ui:
     enabled: false
 
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: true
+        same-site: lax
+
 # 本番環境設定
 app:
   logging:
