@@ -26,7 +26,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
             final LoggingOperationInterceptor loggingOperationInterceptor,
             @Value("${app.storage.type}") String storageType,
             @Value("${app.storage.local.root-dir:}") String localRootDir,
-            @Value("${app.storage.image-base-url}") String imageBaseUrl) {
+            @Value("${app.storage.image-base-url:/images/}") String imageBaseUrl) {
         this.loggingOperationInterceptor = loggingOperationInterceptor;
         this.storageType = storageType;
         this.localRootDir = localRootDir;

@@ -20,7 +20,6 @@ app:
   storage:
     type: ${APP_STORAGE_TYPE:S3}
     image-csp-allow-origins: ${APP_STORAGE_IMAGE_CSP_ALLOW_ORIGINS:}
-    image-base-url: ${APP_STORAGE_IMAGE_BASE_URL:/images/}
     s3:
       endpoint: ${APP_STORAGE_S3_ENDPOINT:}
       bucket-name: ${APP_STORAGE_S3_BUCKET_NAME:}
