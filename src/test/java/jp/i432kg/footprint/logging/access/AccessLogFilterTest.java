@@ -20,6 +20,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.event.KeyValuePair;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -31,6 +32,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -75,15 +78,17 @@ class AccessLogFilterTest {
         accessLogFilter.doFilter(request, response, (req, res) -> ((MockHttpServletResponse) res).setStatus(204));
 
         final ILoggingEvent event = singleEvent();
+        final Map<String, Object> keyValues = keyValues(event);
 
         assertThat(event.getLoggerName()).isEqualTo(LoggingCategories.ACCESS);
         assertThat(event.getLevel()).isEqualTo(Level.INFO);
-        assertThat(event.getFormattedMessage())
-                .contains("event=" + LoggingEvents.HTTP_ACCESS)
-                .contains("method=GET")
-                .contains("path=/api/posts")
-                .contains("status=204")
-                .contains("durationMs=");
+        assertThat(event.getFormattedMessage()).isEqualTo("HTTP access completed");
+        assertThat(keyValues)
+                .containsEntry("event", LoggingEvents.HTTP_ACCESS)
+                .containsEntry("method", "GET")
+                .containsEntry("path", "/api/posts")
+                .containsEntry("status", 204)
+                .containsKey("durationMs");
     }
 
     @Test
@@ -105,10 +110,11 @@ class AccessLogFilterTest {
         accessLogFilter.doFilter(request, response, (req, res) -> ((MockHttpServletResponse) res).setStatus(200));
 
         final ILoggingEvent event = singleEvent();
+        final Map<String, Object> keyValues = keyValues(event);
 
-        assertThat(event.getFormattedMessage())
-                .contains("userId=01JQW8D4Q3G9Y2X6N7M8P9R0ST")
-                .contains("username=user");
+        assertThat(keyValues)
+                .containsEntry("userId", "01JQW8D4Q3G9Y2X6N7M8P9R0ST")
+                .containsEntry("username", "user");
     }
 
     @Test
@@ -124,12 +130,13 @@ class AccessLogFilterTest {
         accessLogFilter.doFilter(request, response, (req, res) -> ((MockHttpServletResponse) res).setStatus(200));
 
         final ILoggingEvent event = singleEvent();
+        final Map<String, Object> keyValues = keyValues(event);
 
-        assertThat(event.getFormattedMessage())
-                .contains("event=" + LoggingEvents.POST_SEARCH_FETCH)
-                .contains("lastIdPresent=true")
-                .contains("size=10")
-                .contains("items=3");
+        assertThat(keyValues)
+                .containsEntry("event", LoggingEvents.POST_SEARCH_FETCH)
+                .containsEntry("lastIdPresent", true)
+                .containsEntry("size", 10)
+                .containsEntry("items", 3);
         assertThat(AccessLogFilter.findContext(request))
                 .map(AccessLogContext::event)
                 .contains(LoggingEvents.POST_SEARCH_FETCH);
@@ -147,7 +154,7 @@ class AccessLogFilterTest {
                 .containsKey(TraceIdFilter.MDC_KEY);
         assertThat(event.getMDCPropertyMap().get(TraceIdFilter.MDC_KEY))
                 .matches("^[0-9A-HJKMNP-TV-Z]{26}$");
-        assertThat(event.getFormattedMessage()).contains("status=404");
+        assertThat(keyValues(event)).containsEntry("status", 404);
     }
 
     @Test
@@ -164,12 +171,21 @@ class AccessLogFilterTest {
 
         final ILoggingEvent event = singleEvent();
 
-        assertThat(event.getFormattedMessage()).contains("status=500");
+        assertThat(keyValues(event)).containsEntry("status", 500);
     }
 
     private ILoggingEvent singleEvent() {
         assertThat(listAppender.list).hasSize(1);
         return listAppender.list.getFirst();
+    }
+
+    private Map<String, Object> keyValues(final ILoggingEvent event) {
+        return event.getKeyValuePairs().stream()
+                .collect(Collectors.toMap(
+                        pair -> pair.key,
+                        pair -> pair.value,
+                        (left, right) -> right
+                ));
     }
 
     @RestController

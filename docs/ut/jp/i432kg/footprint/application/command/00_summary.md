@@ -16,6 +16,8 @@
 | 4 | 補償処理 | 投稿作成失敗時に保存済み画像を削除すること |
 | 5 | 分岐 | 親返信あり / なし、正常 / 異常などの分岐ごとに副作用が正しいこと |
 | 6 | 固定値生成 | `Clock.fixed(...)` と固定 ID generator により、保存対象の `createdAt` / ID を明示的に検証すること |
+| 7 | 成功イベントログ | 投稿作成・返信作成・ユーザー登録成功時に `event` と主要識別子を key-value で出力できること |
+| 8 | 補助 warning ログ | 補償処理失敗など、一次障害を隠さない warning ログを必要箇所で残せること |
 
 ## 3. グルーピング方針
 
@@ -38,5 +40,6 @@
   - `application.port.id.*IdGenerator` の test double による生成 ID
 - `PostCommandService`, `ReplyCommandService` は保存対象の `createdAt` と生成 ID を検証する
 - `UserCommandService` は生成された `UserId` を検証する
-- `PostCommandService` の cleanup 失敗は再送出せずログのみなので、UT は一次例外優先を確認する
+- `PostCommandService` の cleanup 失敗は再送出せずログのみなので、UT は一次例外優先に加え、必要に応じて warning ログも確認する
+- ログ観点を追加する場合は `footprint.audit` / `footprint.app` に `ListAppender<ILoggingEvent>` を付与する
 - 各テストメソッドには `@DisplayName` を付与し、日本語の見出しで観点を明示する

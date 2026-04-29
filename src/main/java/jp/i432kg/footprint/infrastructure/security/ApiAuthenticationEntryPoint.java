@@ -29,8 +29,11 @@ public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
             final @NonNull HttpServletResponse response,
             final @NonNull AuthenticationException authException
     ) throws IOException {
-        AUTH_LOGGER.warn("event={}, method={}, path={}",
-                LoggingEvents.AUTH_UNAUTHORIZED, request.getMethod(), request.getRequestURI());
+        AUTH_LOGGER.atWarn()
+                .addKeyValue("event", LoggingEvents.AUTH_UNAUTHORIZED)
+                .addKeyValue("method", request.getMethod())
+                .addKeyValue("path", request.getRequestURI())
+                .log("Authentication is required");
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }

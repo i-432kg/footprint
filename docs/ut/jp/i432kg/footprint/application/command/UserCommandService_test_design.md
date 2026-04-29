@@ -23,6 +23,7 @@
 | 1 | 正常系 | ユーザー作成成功 | 重複確認、パスワードエンコード、保存が行われ、固定 `UserIdGenerator` に基づく `UserId` が設定されること |
 | 2 | 異常系 | 重複メール | `ensureEmailNotAlreadyUsed(...)` の例外をそのまま伝播し、保存しないこと |
 | 3 | 異常系 | 保存失敗 | `DataAccessException` を `UserCommandFailedException.saveFailed(...)` に変換すること |
+| 4 | 正常系 | 登録成功ログ | 成功時に `event`, `userId`, `username` を key-value で出力すること |
 
 ## 4. テストケース一覧
 
@@ -31,6 +32,7 @@
 | 1 | 正常系 | ユーザーを作成する | 重複確認成功、`PasswordEncoder.encode` 成功、保存成功、固定 `UserIdGenerator` | `saveUser` 呼び出し、固定 `UserId` とハッシュ済みパスワードで保存 |  |
 | 2 | 異常系 | メール重複例外を伝播する | `ensureEmailNotAlreadyUsed` が例外送出 | 同例外を送出、`saveUser` 未呼び出し |  |
 | 3 | 異常系 | 保存失敗を変換する | `saveUser` が `DataAccessException` | `UserCommandFailedException` |  |
+| 4 | 正常系 | ユーザー作成成功ログを出力する | 正常終了 | `event=USER_CREATE_SUCCESS`, `userId`, `username` を key-value で出力する | 今後追加 |
 
 ## 5. 実装メモ
 
@@ -40,6 +42,7 @@
 - 備考:
   - 固定 `UserIdGenerator` により `UserId` を明示的に確認する
   - 保存される `User` では `UserId` に加え、メール・ユーザー名・生年月日・ハッシュ済みパスワードを確認する
+  - ログ観点を追加する場合は `footprint.app` に `ListAppender<ILoggingEvent>` を付与する
 
 ## 6. 対応するテストメソッド
 
@@ -48,3 +51,4 @@
 | 1 | `should_createUser_when_dependenciesSucceed` | `UserCommandService.createUser は重複確認とパスワードハッシュ化後にユーザーを保存する` |
 | 2 | `should_propagateException_when_emailAlreadyUsed` | `UserCommandService.createUser はメール重複例外をそのまま送出する` |
 | 3 | `should_throwUsecaseException_when_saveFails` | `UserCommandService.createUser は保存失敗を UserCommandFailedException に変換する` |
+| 4 | `-` | `ログ観点: ユーザー作成成功ログを key-value で確認する（今後追加）` |

@@ -26,6 +26,8 @@
 | 4 | 異常系 | メタデータ抽出失敗 | 保存済み画像を削除し、`imageMetadataExtractFailed(...)` へ変換すること |
 | 5 | 異常系 | 投稿保存失敗 | 保存済み画像を削除し、`persistenceFailed(...)` へ変換すること |
 | 6 | エッジケース | cleanup 失敗 | cleanup 失敗は再送出せず、元の例外を優先すること |
+| 7 | 正常系 | audit ログ | 成功時に `event`, `postId`, `userId`, `imageSizeBytes`, `hasLocation` を key-value で出力すること |
+| 8 | 異常系 | cleanup warning ログ | cleanup 失敗時に一次例外を優先しつつ warning ログを残すこと |
 
 ## 4. テストケース一覧
 
@@ -37,6 +39,8 @@
 | 4 | 異常系 | メタデータ抽出失敗時に cleanup する | `extract` が `ImageProcessingException` または `IOException` | `PostCommandFailedException`, `imageStorage.delete` 呼び出し |  |
 | 5 | 異常系 | 投稿保存失敗時に cleanup する | `savePost` が `DataAccessException` | `PostCommandFailedException`, `imageStorage.delete` 呼び出し |  |
 | 6 | エッジケース | cleanup 自体が失敗しても元例外を優先する | 4 または 5 に加え `delete` が `IOException` | 元の `PostCommandFailedException` を送出 |  |
+| 7 | 正常系 | 投稿作成成功 audit ログを出力する | 正常終了 | `event=POST_CREATE_SUCCESS`, `postId`, `userId`, `imageSizeBytes`, `hasLocation` を key-value で出力する | 今後追加 |
+| 8 | 異常系 | cleanup 失敗 warning ログを出力する | `delete` が `IOException` | warning ログを 1 件出し、元例外を優先する | 今後追加 |
 
 ## 5. 実装メモ
 
@@ -46,6 +50,7 @@
 - 備考:
   - 固定 `Clock` により `createdAt` を `2026-04-18T19:15:30` として確認する
   - 固定 `PostIdGenerator` により `PostId` を明示的に確認する
+  - ログ観点を追加する場合は `footprint.audit` と `footprint.app` へ `ListAppender<ILoggingEvent>` を付与する
 
 ## 6. 対応するテストメソッド
 
@@ -57,3 +62,5 @@
 | 4 | `should_cleanupStoredImage_when_metadataExtractionFails` | `PostCommandService.createPost はメタデータ抽出失敗時に保存済み画像を削除する` |
 | 5 | `should_cleanupStoredImage_when_persistenceFails` | `PostCommandService.createPost は投稿保存失敗時に保存済み画像を削除する` |
 | 6 | `should_prioritizeOriginalException_when_cleanupFails` | `PostCommandService.createPost は cleanup 失敗時も元の例外を優先する` |
+| 7 | `-` | `ログ観点: 投稿作成成功 audit ログを key-value で確認する（今後追加）` |
+| 8 | `-` | `ログ観点: cleanup 失敗 warning ログを key-value で確認する（今後追加）` |

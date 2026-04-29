@@ -36,8 +36,11 @@ public class ApiAuthenticationSuccessHandler implements AuthenticationSuccessHan
             // ログイン日時を更新する
             lastLoginRecorder.recordSuccessfulLogin(userDetails.getUserId());
 
-            AUTH_LOGGER.info("event={}, userId={}, username={}",
-                    LoggingEvents.AUTH_LOGIN_SUCCESS, userDetails.getUserId().getValue(), userDetails.getDisplayUsername());
+            AUTH_LOGGER.atInfo()
+                    .addKeyValue("event", LoggingEvents.AUTH_LOGIN_SUCCESS)
+                    .addKeyValue("userId", userDetails.getUserId().getValue())
+                    .addKeyValue("username", userDetails.getDisplayUsername())
+                    .log("Authentication succeeded");
         }
 
         response.setStatus(HttpServletResponse.SC_OK);

@@ -116,14 +116,13 @@ public class PostCommandService {
             throw PostCommandFailedException.persistenceFailed(e);
         }
 
-        AUDIT_LOGGER.info(
-                "event={}, postId={}, userId={}, imageSizeBytes={}, hasLocation={}",
-                LoggingEvents.POST_CREATE_SUCCESS,
-                post.getPostId().getValue(),
-                post.getUserId().getValue(),
-                post.getImage().getFileSize().getValue(),
-                post.getImage().hasLocation()
-        );
+        AUDIT_LOGGER.atInfo()
+                .addKeyValue("event", LoggingEvents.POST_CREATE_SUCCESS)
+                .addKeyValue("postId", post.getPostId().getValue())
+                .addKeyValue("userId", post.getUserId().getValue())
+                .addKeyValue("imageSizeBytes", post.getImage().getFileSize().getValue())
+                .addKeyValue("hasLocation", post.getImage().hasLocation())
+                .log("Post created");
     }
 
     private void cleanupStoredImage(final StorageObject storageObject) {

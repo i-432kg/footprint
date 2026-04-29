@@ -15,7 +15,8 @@
 | 3 | 例外時継続 | 監査目的の更新失敗が認証成功フローを妨げないこと |
 | 4 | 認証ユーザー取得 | `UserDetailsServiceImpl` が login ID から認証ユーザーを取得し、不在時は `UsernameNotFoundException` に変換すること |
 | 5 | auth イベント | 認証成功/失敗、401、403、CSRF 拒否で適切な HTTP ステータスを返すこと |
-| 6 | Spring Security 契約 | `UserDetails` / `AuthenticationSuccessHandler` / `AuthenticationFailureHandler` / `AuthenticationEntryPoint` / `AccessDeniedHandler` / `UserDetailsService` の契約に従うこと |
+| 6 | auth ログ | `event`, `reason`, `method`, `path`, `userId`, `username` などを key-value で出力できること |
+| 7 | Spring Security 契約 | `UserDetails` / `AuthenticationSuccessHandler` / `AuthenticationFailureHandler` / `AuthenticationEntryPoint` / `AccessDeniedHandler` / `UserDetailsService` の契約に従うこと |
 
 ## 3. グルーピング方針
 
@@ -45,5 +46,5 @@
   - `AuthMapper.AuthUserEntity` の `UserId`, email, displayUsername, password
 - `UserDetailsImpl` は Spring Security デフォルト実装に委譲している `isAccountNonExpired` なども必要に応じて確認する
 - `ApiAuthenticationSuccessHandler` は principal が `UserDetailsImpl` でないケースも確認する
-- auth ログ系ハンドラは HTTP ステータスとエラーメッセージを中心に確認する
+- auth ログ系ハンドラは HTTP ステータスとエラーメッセージに加え、必要に応じて `footprint.auth` への key-value 出力も確認する
 - `UserDetailsServiceImpl` は `EmailAddress.of(username)` への変換と mapper 呼び出し引数を確認する

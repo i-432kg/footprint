@@ -27,6 +27,7 @@
 | 5 | 異常系 | 親返信不存在 | `ReplyNotFoundException` を送出し、保存しないこと |
 | 6 | 異常系 | 保存失敗 | `DataAccessException` を `ReplyCommandFailedException.saveFailed(...)` に変換すること |
 | 7 | 異常系 | 返信数更新失敗 | `increaseReplyCountFailed(...)` に変換すること |
+| 8 | 正常系 | audit ログ | 成功時に `event`, `replyId`, `postId`, `parentReplyId`, `userId` を key-value で出力すること |
 
 ## 4. テストケース一覧
 
@@ -39,6 +40,7 @@
 | 5 | 異常系 | 親返信不存在を拒否する | `findReplyById=Optional.empty()` | `ReplyNotFoundException` | `saveReply` 未呼び出し |
 | 6 | 異常系 | 保存失敗を変換する | `saveReply` が `DataAccessException` | `ReplyCommandFailedException` |  |
 | 7 | 異常系 | 返信数更新失敗を変換する | `increaseReplyCount` が `DataAccessException` | `ReplyCommandFailedException` | 子返信ケース |
+| 8 | 正常系 | 返信作成成功 audit ログを出力する | 正常終了 | `event=REPLY_CREATE_SUCCESS`, `replyId`, `postId`, `parentReplyId`, `userId` を key-value で出力する | 今後追加 |
 
 ## 5. 実装メモ
 
@@ -48,6 +50,7 @@
 - 備考:
   - 親返信ありケースでは `validateParentReplyBelongsToPost(...)` が呼ばれることも確認対象とする
   - ルート返信ケースでは固定 `Clock` による `createdAt` と固定 `ReplyIdGenerator` による `ReplyId` を確認する
+  - ログ観点を追加する場合は `footprint.audit` に `ListAppender<ILoggingEvent>` を付与する
 
 ## 6. 対応するテストメソッド
 
@@ -60,3 +63,4 @@
 | 5 | `should_throwReplyNotFoundException_when_parentReplyDoesNotExist` | `ReplyCommandService.createReply は親返信が存在しない場合に ReplyNotFoundException を送出する` |
 | 6 | `should_throwUsecaseException_when_saveFails` | `ReplyCommandService.createReply は保存失敗を ReplyCommandFailedException に変換する` |
 | 7 | `should_throwUsecaseException_when_increaseReplyCountFails` | `ReplyCommandService.createReply は返信数更新失敗を ReplyCommandFailedException に変換する` |
+| 8 | `-` | `ログ観点: 返信作成成功 audit ログを key-value で確認する（今後追加）` |

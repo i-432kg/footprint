@@ -30,8 +30,12 @@ public class ApiAuthenticationFailureHandler implements AuthenticationFailureHan
             final @NonNull HttpServletResponse response,
             final @NonNull AuthenticationException exception
     ) throws IOException {
-        AUTH_LOGGER.warn("event={}, reason={}, method={}, path={}",
-                LoggingEvents.AUTH_LOGIN_FAILURE, REASON, request.getMethod(), request.getRequestURI());
+        AUTH_LOGGER.atWarn()
+                .addKeyValue("event", LoggingEvents.AUTH_LOGIN_FAILURE)
+                .addKeyValue("reason", REASON)
+                .addKeyValue("method", request.getMethod())
+                .addKeyValue("path", request.getRequestURI())
+                .log("Authentication failed");
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication Failed");
     }
 }

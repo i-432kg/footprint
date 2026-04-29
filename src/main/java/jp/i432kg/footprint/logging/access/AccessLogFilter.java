@@ -8,14 +8,13 @@ import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
 import jp.i432kg.footprint.logging.LoggingCategories;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -124,41 +123,32 @@ public class AccessLogFilter extends OncePerRequestFilter {
     private void logAccess(final HttpServletRequest request, final int status, final long durationMs) {
         final AccessLogContext context = findContext(request).orElseGet(AccessLogContext::new);
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        final List<Object> arguments = new ArrayList<>(List.of(
-                context.event(),
-                request.getMethod(),
-                request.getRequestURI(),
-                status,
-                durationMs
-        ));
-        final StringBuilder template = new StringBuilder("event={}, method={}, path={}, status={}, durationMs={}");
+        final LoggingEventBuilder builder = ACCESS_LOGGER.atInfo()
+                .addKeyValue("event", context.event())
+                .addKeyValue("method", request.getMethod())
+                .addKeyValue("path", request.getRequestURI())
+                .addKeyValue("status", status)
+                .addKeyValue("durationMs", durationMs);
 
-        appendFields(template, arguments, context.fields());
+        appendFields(builder, context.fields());
 
         if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl userDetails) {
-            template.append(", userId={}, username={}");
-            arguments.add(userDetails.getUserId().getValue());
-            arguments.add(userDetails.getDisplayUsername());
+            builder.addKeyValue("userId", userDetails.getUserId().getValue())
+                    .addKeyValue("username", userDetails.getDisplayUsername());
         }
 
-        ACCESS_LOGGER.info(template.toString(), arguments.toArray());
+        builder.log("HTTP access completed");
     }
 
     /**
-     * テンプレート文字列と引数配列へ request 固有の追加ログ項目を連結します。
+     * request 固有の追加ログ項目を fluent logging の key-value として連結します。
      *
-     * @param template ログメッセージのテンプレート
-     * @param arguments ログ出力に渡す引数配列
+     * @param builder ログ出力ビルダー
      * @param fields 追加ログ項目
      */
-    private void appendFields(
-            final StringBuilder template,
-            final List<Object> arguments,
-            final Map<String, Object> fields
-    ) {
+    private void appendFields(final LoggingEventBuilder builder, final Map<String, Object> fields) {
         for (Map.Entry<String, Object> entry : fields.entrySet()) {
-            template.append(", ").append(entry.getKey()).append("={}");
-            arguments.add(entry.getValue());
+            builder.addKeyValue(entry.getKey(), entry.getValue());
         }
     }
 

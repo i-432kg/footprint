@@ -25,7 +25,8 @@
 | 6 | 正常系 | use case / generic handler | `UseCaseExecutionException`, `DomainException`, `ApplicationException` を `ErrorCode` に応じた HTTP ステータスへ変換すること |
 | 7 | 正常系 | 想定外例外 | `Exception` を 500 / `UNEXPECTED_ERROR` の `ProblemDetail` に変換すること |
 | 8 | 正常系 | マスキング | 独自例外の `details` が `SensitiveDataMasker` の戻り値に置き換えられること |
-| 9 | 正常系 | Content-Type | resource 例外と validation 例外が `application/problem+json` で返ること |
+| 9 | 正常系 | ログ出力 | validation 系は `event`, `errors`、独自例外系は `errorCode`, `details`、想定外例外は `errorCode=UNEXPECTED_ERROR` を key-value で出力すること |
+| 10 | 正常系 | Content-Type | resource 例外と validation 例外が `application/problem+json` で返ること |
 
 ## 4. テストケース一覧
 
@@ -48,9 +49,12 @@
 | 15 | 正常系 | generic domain 例外を変換する | `InvalidModelException.invalid(...)` | status=400, title=`Domain Error` |
 | 16 | 正常系 | generic application 例外を変換する | `ApplicationException` test double | status=500, title=`Application Error` |
 | 17 | 正常系 | 想定外例外を変換する | `RuntimeException` | status=500, title=`Internal Server Error`, `errorCode=UNEXPECTED_ERROR` |
-| 18 | 正常系 | details をマスクする | `BaseException.details` がある独自例外 | `ProblemDetail.details` が masker の戻り値と一致する |
-| 19 | 正常系 | resource 例外の Content-Type を確認する | `PostNotFoundException` を送出するテスト controller を MockMvc で呼ぶ | status=404, `Content-Type` が `application/problem+json` |
-| 20 | 正常系 | validation 例外の Content-Type を確認する | `MethodArgumentTypeMismatchException` が発生するテスト controller を MockMvc で呼ぶ | status=400, `Content-Type` が `application/problem+json` |
+| 18 | 正常系 | validation warning ログを出力する | `MethodArgumentNotValidException` などの validation 例外 | `event`, `errors` を key-value で出力する | 今後追加 |
+| 19 | 正常系 | 独自例外 warning ログを出力する | `PostNotFoundException`, `InvalidValueException` など | `errorCode`, `details` を key-value で出力する | 今後追加 |
+| 20 | 正常系 | 想定外例外 error ログを出力する | `RuntimeException` | `errorCode=UNEXPECTED_ERROR` を key-value で出力し、cause を保持する | 今後追加 |
+| 21 | 正常系 | details をマスクする | `BaseException.details` がある独自例外 | `ProblemDetail.details` が masker の戻り値と一致する |
+| 22 | 正常系 | resource 例外の Content-Type を確認する | `PostNotFoundException` を送出するテスト controller を MockMvc で呼ぶ | status=404, `Content-Type` が `application/problem+json` |
+| 23 | 正常系 | validation 例外の Content-Type を確認する | `MethodArgumentTypeMismatchException` が発生するテスト controller を MockMvc で呼ぶ | status=400, `Content-Type` が `application/problem+json` |
 
 ## 5. 実装メモ
 
@@ -58,6 +62,7 @@
 - `MethodArgumentNotValidException` と `BindException` は `BeanPropertyBindingResult` から作る
 - `ConstraintViolationException` は mock violation で十分
 - `ProblemDetail.getProperties()` から `errorCode`, `details` を取得して確認する
+- ログ観点を追加する場合は `ListAppender<ILoggingEvent>` で `getKeyValuePairs()` を確認する
 - `Content-Type` は `ProblemDetail` オブジェクト単体では確認できないため、`GlobalExceptionHandlerContentTypeTest` で `MockMvcBuilders.standaloneSetup(...)` を使って補足確認する
 
 ## 6. 対応するテストメソッド
@@ -81,6 +86,9 @@
 | 15 | `should_createDomainProblemDetail_when_domainExceptionIsHandled` | `GlobalExceptionHandler は DomainException を対応ステータスの ProblemDetail へ変換する` |
 | 16 | `should_createApplicationProblemDetail_when_applicationExceptionIsHandled` | `GlobalExceptionHandler は ApplicationException を対応ステータスの ProblemDetail へ変換する` |
 | 17 | `should_createInternalServerErrorProblemDetail_when_unexpectedExceptionIsHandled` | `GlobalExceptionHandler は想定外例外を 500 の ProblemDetail へ変換する` |
-| 18 | `should_useMaskedDetails_when_baseExceptionIsHandled` | `GlobalExceptionHandler は独自例外の details に SensitiveDataMasker の結果を使う` |
-| 19 | `should_returnProblemJson_when_resourceExceptionIsHandled` | `GlobalExceptionHandler は resource 例外を application/problem+json で返す` |
-| 20 | `should_returnProblemJson_when_validationExceptionIsHandled` | `GlobalExceptionHandler は validation 例外を application/problem+json で返す` |
+| 18 | `-` | `ログ観点: validation warning ログを key-value で確認する（今後追加）` |
+| 19 | `-` | `ログ観点: 独自例外 warning ログを key-value で確認する（今後追加）` |
+| 20 | `-` | `ログ観点: 想定外例外 error ログを key-value で確認する（今後追加）` |
+| 21 | `should_useMaskedDetails_when_baseExceptionIsHandled` | `GlobalExceptionHandler は独自例外の details に SensitiveDataMasker の結果を使う` |
+| 22 | `should_returnProblemJson_when_resourceExceptionIsHandled` | `GlobalExceptionHandler は resource 例外を application/problem+json で返す` |
+| 23 | `should_returnProblemJson_when_validationExceptionIsHandled` | `GlobalExceptionHandler は validation 例外を application/problem+json で返す` |

@@ -61,12 +61,11 @@ public class UserCommandService {
             throw UserCommandFailedException.saveFailed(e);
         }
 
-        APP_LOGGER.info(
-                "event={}, userId={}, username={}",
-                LoggingEvents.USER_CREATE_SUCCESS,
-                user.getUserId().getValue(),
-                user.getUserName().getValue()
-        );
+        APP_LOGGER.atInfo()
+                .addKeyValue("event", LoggingEvents.USER_CREATE_SUCCESS)
+                .addKeyValue("userId", user.getUserId().getValue())
+                .addKeyValue("username", user.getUserName().getValue())
+                .log("User created");
     }
 
     /**

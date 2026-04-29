@@ -34,7 +34,11 @@ public class ApiAccessDeniedHandler implements AccessDeniedHandler {
         final String event = isCsrfException(accessDeniedException) ?
                 LoggingEvents.AUTH_CSRF_REJECTED :
                 LoggingEvents.AUTH_FORBIDDEN;
-        AUTH_LOGGER.warn("event={}, method={}, path={}", event, request.getMethod(), request.getRequestURI());
+        AUTH_LOGGER.atWarn()
+                .addKeyValue("event", event)
+                .addKeyValue("method", request.getMethod())
+                .addKeyValue("path", request.getRequestURI())
+                .log("Access denied");
 
         response.sendError(HttpServletResponse.SC_FORBIDDEN);
     }

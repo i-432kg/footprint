@@ -102,14 +102,13 @@ public class ReplyCommandService {
         }
 
         final ReplyId parentReplyId = reply.getParentReplyId();
-        AUDIT_LOGGER.info(
-                "event={}, replyId={}, postId={}, parentReplyId={}, userId={}",
-                LoggingEvents.REPLY_CREATE_SUCCESS,
-                reply.getReplyId().getValue(),
-                reply.getPostId().getValue(),
-                parentReplyId == null ? null : parentReplyId.getValue(),
-                reply.getUserId().getValue()
-        );
+        AUDIT_LOGGER.atInfo()
+                .addKeyValue("event", LoggingEvents.REPLY_CREATE_SUCCESS)
+                .addKeyValue("replyId", reply.getReplyId().getValue())
+                .addKeyValue("postId", reply.getPostId().getValue())
+                .addKeyValue("parentReplyId", parentReplyId == null ? null : parentReplyId.getValue())
+                .addKeyValue("userId", reply.getUserId().getValue())
+                .log("Reply created");
     }
 
 }
