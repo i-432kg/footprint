@@ -35,7 +35,7 @@ app:
       access-key: ${APP_STORAGE_S3_ACCESS_KEY:}
       secret-key: ${APP_STORAGE_S3_SECRET_KEY:}
       path-style: ${APP_STORAGE_S3_PATH_STYLE:false}
-      presigned-get-expire-minutes: ${APP_STORAGE_S3_PRESIGNED_GET_EXPIRE_MINUTES:30}
+      presigned-get-expire-minutes: ${APP_STORAGE_S3_PRESIGNED_GET_EXPIRE_MINUTES:1}
 
   stg-seed:
     enabled: ${APP_STG_SEED_ENABLED:false}
