@@ -31,7 +31,7 @@
 | R-06 | `05_screen_spec.md`, `04_api_spec.yaml` | サインアップ仕様に `birthDate` 必須、自動ログインが反映されていない | Yes | 登録項目と登録後挙動を実装準拠で更新した | Closed | `userName`, `email`, `password`, `birthDate` を反映済み |
 | R-07 | `04_api_spec.yaml`, `07_authz_authn.md` | エラーレスポンスが独自 `ErrorResponse` 前提のまま | Yes | `04_api_spec.yaml` と `07_authz_authn.md` を `ProblemDetail` ベースへ更新した | Closed | ADR-024, `GlobalExceptionHandler` 準拠 |
 | R-08 | `06_log_design.md` | ログ設計が現状実装より先行している | No | `06_log_design.md` を正とし、実装不足を TODO 化して追い、`traceId` / `X-Trace-Id` / カテゴリ分割 / 認証・業務イベント / 例外ログ / JSON 構造化ログ / マスキング方針まで反映した | Closed | `log_design_todo.md` の `LOG-01` 〜 `LOG-08` はすべて Closed |
-| R-09 | `08_deployment.md`, `02_architecture.md`, `01_overview.md` | フロントエンド別リポジトリ取り込み構成が反映されていない | Partial | `08_deployment.md` は現実装ベースへ更新済み。残論点は TODO で管理する | In Progress | TODO は `deployment_todo.md` で管理 |
+| R-09 | `08_deployment.md`, `02_architecture.md`, `01_overview.md` | フロントエンド別リポジトリ取り込み構成が反映されていない | Yes | `08_deployment.md` を現実装ベースへ更新し、frontend checkout 失敗時運用、ロールバック単位、frontend ref 追跡まで `deployment_todo.md` で整理して完了した | Closed | `deployment_todo.md` の `DEP-01` 〜 `DEP-08` はすべて Closed |
 | R-10 | `07_authz_authn.md` | ログイン/ログアウト経路が旧前提のまま | Yes | `POST /api/login`, `POST /api/logout`, `loginId` を明記した | Closed | Spring Security 実装準拠 |
 | R-11 | `08_deployment.md` | Railway + S3 方針は大筋維持されている | Yes | 現実装ベースの補足を反映した | Closed | frontend 別リポジトリ連携や presigned URL 暫定運用も追記済み |
 | R-12 | `01_overview.md` | アプリの目的・コア機能は概ね現状実装と整合している | Yes | 検索機能、認証必須方針、`public_id`、画像配信方針などの補足を反映した | Closed | 概要レベルの主要差分は解消済み |
@@ -65,3 +65,4 @@
 | 2026-04-26 | 返信ツリー取得方針を `05_screen_spec.md` / `04_api_spec.yaml` に反映し、R-17 を Closed へ更新 | Codex |
 | 2026-04-29 | ログ設計 TODO の完了に合わせて R-08 を Closed へ更新し、関連資料のパス表記を実在パスへ整理 | Codex |
 | 2026-04-29 | presigned URL 暫定運用の方針を 1 分へ固定し、`07_authz_authn.md` / `08_deployment.md` / `deployment_todo.md` / R-13 へ反映 | Codex |
+| 2026-04-29 | deployment TODO の完了に合わせて R-09 を Closed へ更新し、`log_design_todo.md` の完了後整理を実施 | Codex |

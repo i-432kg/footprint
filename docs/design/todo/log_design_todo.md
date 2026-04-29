@@ -9,7 +9,7 @@
 
 ## 目的
 
-`06_log_design.md` を正とし、現状実装で不足しているログ設計項目を実装タスクとして整理する。
+`06_log_design.md` を正とし、現状実装で不足していたログ設計項目を実装タスクとして整理し、完了状況を記録する。
 
 ## 対応状況
 
@@ -54,17 +54,17 @@
 
 ### 4. JSON 構造化ログの導入
 
-状況:
+対応済み:
 
-- 設計では JSON 構造化ログを前提
-- Spring Boot 標準の structured logging を導入し、`local` / `stg` / `prod` の console は `logstash` JSON で出力するようにした
+- 設計では JSON 構造化ログを前提としている
+- Spring Boot 標準の structured logging を導入し、`stg` / `prod` の console は `logstash` JSON で出力するようにした
 - `application.yml` に共通設定を寄せ、`environment` だけを各 profile の `app.logging.environment` で差し替える形に整理した
 - `local-logfile` 補助 profile では `logs/footprint-local-${PID}.json` への file 出力も行えるようにした
-
-TODO:
-
 - `access` / `auth` / `app` / `audit` の主要ログを key-value 形式へ統一し、`event`, `status`, `durationMs`, `errorCode` などを独立 JSON field として出せるようにした
 - repository / storage / seed 系の周辺技術ログも fluent logging に寄せ、`event` と主要識別子で検索しやすい形へそろえた
+
+本番後の運用改善メモ:
+
 - 運用基盤側で必要な rename / exclude / add 項目があれば最終調整する
 - 主要ログの JSON field を前提とした UT / UT 仕様書の追補を必要に応じて進める
 
@@ -95,7 +95,7 @@ TODO:
 
 ### 6. 業務イベントログの整備
 
-進捗:
+対応済み:
 
 - `POST_CREATE_SUCCESS`, `REPLY_CREATE_SUCCESS`, `USER_CREATE_SUCCESS` を command service で出すようにした
 - `POST_TIMELINE_FETCH`, `POST_SEARCH_FETCH`, `POST_MAP_BBOX_FETCH`, `POST_DETAIL_FETCH`, `REPLY_LIST_FETCH`, `ME_FETCH`, `ME_POSTS_FETCH`, `ME_REPLIES_FETCH` を実装した
@@ -104,7 +104,7 @@ TODO:
 - request 内の read 系 access ログ文脈は `AccessLogContext` に集約した
 - `@LogOperation` と `LoggingOperationInterceptor` で request 文脈へ `operation` を設定し、`FailureEventResolver` が `POST_CREATE_VALIDATION_FAIL`, `POST_CREATE_UPLOAD_REJECTED`, `REPLY_CREATE_VALIDATION_FAIL`, `POST_LAST_ID_INVALID`, `REPLY_LAST_ID_INVALID` を解決する形にした
 
-運用改善として後続対応する項目:
+本番後の運用改善メモ:
 
 - bbox 業務制約違反や semantic cursor invalid など、read 中の `app` 警告イベント
 - seek ページング異常兆候の観測強化
@@ -112,18 +112,7 @@ TODO:
 
 ### 7. 例外ログとバリデーションログの粒度見直し
 
-状況:
-
-- `GlobalExceptionHandler` によるログ出力はある
-- ただしカテゴリ、出力項目、構造化キーの標準化は未完了
-
-TODO:
-
-- バリデーションエラーのログレベルと出力項目を統一する
-- 想定内例外と想定外例外の扱いを明確にする
-- `traceId` と `errorCode` を確実にひもづける
-
-進捗:
+対応済み:
 
 - `GlobalExceptionHandler` は resource / domain / application / use case 例外で `errorCode` とマスク済み `details` を出す形へ整理した
 - `MethodArgumentNotValidException`, `BindException`, `ConstraintViolationException`, `MethodArgumentTypeMismatchException` はサニタイズ済み `errors` をログ出力する形へ整理した
@@ -152,5 +141,5 @@ TODO:
 
 ## 運用メモ
 
-- `06_log_design.md` は将来設計ではなく、実装目標として扱う
-- TODO は「設計差分の吸収」ではなく「実装不足の解消」として管理する
+- `06_log_design.md` は将来設計ではなく、実装目標として扱った
+- 本ファイルは、設計差分ではなく実装不足の解消履歴として維持する
