@@ -35,10 +35,17 @@ public class StgSeedCleaner {
         final List<String> objectKeys = seedAdminMapper.findSeedImageObjectKeys();
         objectKeys.forEach(this::deletePhysicalObjectQuietly);
 
-        seedAdminMapper.deleteSeedReplies();
+        deleteSeedRepliesFromLeaves();
         seedAdminMapper.deleteSeedPostImages();
         seedAdminMapper.deleteSeedPosts();
         seedAdminMapper.deleteSeedUsers();
+    }
+
+    private void deleteSeedRepliesFromLeaves() {
+        final int deletedReplies = seedAdminMapper.deleteSeedLeafReplies();
+        if (deletedReplies > 0) {
+            deleteSeedRepliesFromLeaves();
+        }
     }
 
     private void deletePhysicalObjectQuietly(final String objectKeyValue) {

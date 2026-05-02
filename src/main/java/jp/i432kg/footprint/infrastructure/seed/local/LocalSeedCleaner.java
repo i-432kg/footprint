@@ -35,10 +35,17 @@ public class LocalSeedCleaner {
         final List<String> objectKeys = localSeedAdminMapper.findSeedImageObjectKeys();
         objectKeys.forEach(this::deletePhysicalObjectQuietly);
 
-        localSeedAdminMapper.deleteSeedReplies();
+        deleteSeedRepliesFromLeaves();
         localSeedAdminMapper.deleteSeedPostImages();
         localSeedAdminMapper.deleteSeedPosts();
         localSeedAdminMapper.deleteSeedUsers();
+    }
+
+    private void deleteSeedRepliesFromLeaves() {
+        final int deletedReplies = localSeedAdminMapper.deleteSeedLeafReplies();
+        if (deletedReplies > 0) {
+            deleteSeedRepliesFromLeaves();
+        }
     }
 
     private void deletePhysicalObjectQuietly(final String objectKeyValue) {

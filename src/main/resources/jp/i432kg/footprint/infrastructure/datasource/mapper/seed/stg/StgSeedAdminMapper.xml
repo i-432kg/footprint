@@ -42,16 +42,20 @@
            OR p.caption LIKE '[STG] %'
     </select>
 
-    <delete id="deleteSeedReplies">
+    <delete id="deleteSeedLeafReplies">
         DELETE r
         FROM replies r
+        LEFT JOIN replies child ON child.parent_id = r.public_id
         LEFT JOIN posts p ON p.public_id = r.post_id
         LEFT JOIN users post_user ON post_user.public_id = p.user_id
         LEFT JOIN users reply_user ON reply_user.public_id = r.user_id
-        WHERE post_user.email LIKE 'stg\\_seed\\_user\\_%@example.com'
-           OR reply_user.email LIKE 'stg\\_seed\\_user\\_%@example.com'
-           OR p.caption LIKE '[STG] %'
-           OR r.message LIKE '[STG] %'
+        WHERE child.public_id IS NULL
+          AND (
+              post_user.email LIKE 'stg\\_seed\\_user\\_%@example.com'
+              OR reply_user.email LIKE 'stg\\_seed\\_user\\_%@example.com'
+              OR p.caption LIKE '[STG] %'
+              OR r.message LIKE '[STG] %'
+          )
     </delete>
 
     <delete id="deleteSeedPostImages">

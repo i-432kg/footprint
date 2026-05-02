@@ -57,7 +57,7 @@ public interface LocalSeedAdminMapper extends SeedAdminOperations {
     /**
      * local seed が作成した返信を削除します。
      */
-    void deleteSeedReplies();
+    int deleteSeedLeafReplies();
 
     /**
      * local seed が作成した投稿画像レコードを削除します。

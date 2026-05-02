@@ -57,7 +57,7 @@ public interface StgSeedAdminMapper extends SeedAdminOperations {
     /**
      * STG seed が作成した返信を削除します。
      */
-    void deleteSeedReplies();
+    int deleteSeedLeafReplies();
 
     /**
      * STG seed が作成した投稿画像レコードを削除します。
