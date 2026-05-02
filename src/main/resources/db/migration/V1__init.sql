@@ -105,3 +105,5 @@ CREATE INDEX idx_replies_public_id ON replies (public_id);
 CREATE INDEX idx_replies_post_id_created ON replies (post_id, created_at);
 -- 特定の返信に対するツリー取得用
 CREATE INDEX idx_replies_parent_id_created ON replies (parent_id, created_at);
+-- マイページ返信一覧用
+CREATE INDEX idx_replies_user_timeline ON replies (user_id, created_at DESC);
