@@ -25,6 +25,7 @@
         FROM replies
         WHERE post_id = #{postId}
           AND parent_id IS NULL
+        ORDER BY created_at DESC, id DESC
     </select>
 
     <select id="findNestedRepliesByParentId" resultMap="ReplySummaryResultMap">
@@ -37,6 +38,7 @@
                created_at
         FROM replies
         WHERE parent_id = #{parentReplyId}
+        ORDER BY created_at DESC, id DESC
     </select>
 
     <select id="findMyRepliesFirstPage" resultMap="ReplySummaryResultMap">

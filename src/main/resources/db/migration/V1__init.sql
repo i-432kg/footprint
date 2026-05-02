@@ -102,8 +102,8 @@ CREATE TABLE replies
 -- 外部公開用IDでの検索用
 CREATE INDEX idx_replies_public_id ON replies (public_id);
 -- 投稿詳細での返信一覧取得用
-CREATE INDEX idx_replies_post_id_created ON replies (post_id, created_at);
+CREATE INDEX idx_replies_post_id_created ON replies (post_id, created_at DESC, id DESC);
 -- 特定の返信に対するツリー取得用
-CREATE INDEX idx_replies_parent_id_created ON replies (parent_id, created_at);
+CREATE INDEX idx_replies_parent_id_created ON replies (parent_id, created_at DESC, id DESC);
 -- マイページ返信一覧用
 CREATE INDEX idx_replies_user_timeline ON replies (user_id, created_at DESC);
