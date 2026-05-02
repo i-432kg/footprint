@@ -125,3 +125,4 @@ Accepted
 | 029 | `adr_029_api_security_handler_naming.md` | API 向け Security Handler は入口の役割で命名し、具体的な副作用は委譲先へ分離する方針 |
 | 030 | `adr_030_access_log_context.md` | access ログの request 受け渡しを `AccessLogContext` へ集約する方針 |
 | 031 | `adr_031_log_operation_based_event_resolution.md` | failure / warning 系ログの event を path ではなく operation から解決する方針 |
+| 032 | `adr_032_api_security_problem_detail_response.md` | `/api` の認証系エラーは Security Handler で `ProblemDetail` を返し、共通 writer へ委譲する方針 |

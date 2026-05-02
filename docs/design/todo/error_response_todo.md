@@ -5,10 +5,14 @@
 対象:
 
 - `src/main/java/jp/i432kg/footprint/presentation/api/GlobalExceptionHandler.java`
+- `src/main/java/jp/i432kg/footprint/infrastructure/security/ApiAuthenticationFailureHandler.java`
+- `src/main/java/jp/i432kg/footprint/infrastructure/security/ApiAuthenticationEntryPoint.java`
+- `src/main/java/jp/i432kg/footprint/infrastructure/security/ApiAccessDeniedHandler.java`
 - `docs/design/04_api_spec.yaml`
 - `docs/design/07_authz_authn.md`
 - `docs/adr/adr_024_problem_detail_error_response_policy.md`
 - `docs/adr/adr_027_problem_detail_details_structure.md`
+- `docs/adr/adr_032_api_security_problem_detail_response.md`
 
 ## 目的
 
@@ -23,6 +27,7 @@
 | ERR-03 | `application/problem+json` の扱いを明確化する | Closed | `GlobalExceptionHandler` を `application/problem+json` 明示運用にし、OpenAPI のエラーレスポンス content も統一した | フロントは `Content-Type` 固定前提ではないことを確認済み |
 | ERR-04 | `07_authz_authn.md` を `ProblemDetail` 方針へ追随させる | Closed | `07_authz_authn.md` のエラー応答説明を `ProblemDetail` / `errorCode` / `details` 前提へ更新済み | ADR-024 準拠 |
 | ERR-05 | 機微情報の露出を継続的に抑制する | Closed | `errorCode` / `details` / `detail` の出力内容を見直し、`SensitiveDataMasker` と 500 系 `UseCaseExecutionException` の運用を反映した | seed 専用ログは固定ダミーデータに限って別ルールで許容 |
+| ERR-06 | `/api` の認証系エラーを `ProblemDetail` へ統一する | On Hold | ADR-032 で、Spring Security の認証失敗 / 未認証 / 認可失敗 / CSRF 拒否を共通 writer で `ProblemDetail` 化する方針を決定した。影響範囲が広いため、現リリースには含めずリリース後タスクとする | infrastructure review No.3 |
 
 ## TODO 詳細
 
@@ -88,6 +93,22 @@
 
 - seed 専用ログは local / stg の fixed seed scenario に限り、固定ダミーデータの詳細出力を許容する
 - 本体の API エラーレスポンスと通常ログでは、引き続き `SensitiveDataMasker` と ADR-008 の方針に従う
+
+### 6. `/api` の認証系エラーを `ProblemDetail` へ統一する
+
+保留方針:
+
+- `GlobalExceptionHandler` 配下の例外応答は `ProblemDetail` 化済みだが、Spring Security filter chain 内で完結する 401 / 403 は未対応のため、別タスクとして扱う
+- `ApiAuthenticationFailureHandler`、`ApiAuthenticationEntryPoint`、`ApiAccessDeniedHandler` の 3 経路を同時に置き換える必要があり、現リリースでは影響範囲が大きい
+- 実装方針は ADR-032 に固定し、リリース後にまとめて着手する
+
+再開時 TODO:
+
+- auth 系 `ProblemDetail` を書き込む共通 writer を `infrastructure.security` 配下へ追加する
+- auth 系 `errorCode` 定数と `details.reason` の外部契約を定義する
+- `/api/login` 認証失敗、未認証アクセス、403 / CSRF 拒否の応答を `application/problem+json` へ統一する
+- OpenAPI と認証設計書の 401 / 403 記述を実装に合わせて補強する
+- 既存の security handler テストを status-only から本文検証付きへ拡張する
 
 ## 運用メモ
 
