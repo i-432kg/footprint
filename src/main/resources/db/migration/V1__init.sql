@@ -92,11 +92,11 @@ CREATE TABLE replies
 
     CONSTRAINT uq_replies_public_id UNIQUE (public_id),
     CONSTRAINT fk_replies_post_id
-        FOREIGN KEY (post_id) REFERENCES posts (public_id) ON DELETE CASCADE,
+        FOREIGN KEY (post_id) REFERENCES posts (public_id),
     CONSTRAINT fk_replies_user_id
         FOREIGN KEY (user_id) REFERENCES users (public_id),
     CONSTRAINT fk_replies_parent_id
-        FOREIGN KEY (parent_id) REFERENCES replies (public_id) ON DELETE CASCADE
+        FOREIGN KEY (parent_id) REFERENCES replies (public_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 外部公開用IDでの検索用
