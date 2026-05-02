@@ -53,7 +53,7 @@ CREATE INDEX idx_posts_public_id ON posts (public_id);
 -- タイムライン用（シーク法）
 CREATE INDEX idx_posts_timeline ON posts (created_at DESC, id DESC);
 -- マイページ用
-CREATE INDEX idx_posts_user_timeline ON posts (user_id, created_at DESC);
+CREATE INDEX idx_posts_user_timeline ON posts (user_id, created_at DESC, id DESC);
 -- 地図表示用（bbox）
 CREATE INDEX idx_posts_location ON posts (has_location, latitude, longitude);
 
@@ -106,4 +106,4 @@ CREATE INDEX idx_replies_post_id_created ON replies (post_id, created_at DESC, i
 -- 特定の返信に対するツリー取得用
 CREATE INDEX idx_replies_parent_id_created ON replies (parent_id, created_at DESC, id DESC);
 -- マイページ返信一覧用
-CREATE INDEX idx_replies_user_timeline ON replies (user_id, created_at DESC);
+CREATE INDEX idx_replies_user_timeline ON replies (user_id, created_at DESC, id DESC);
