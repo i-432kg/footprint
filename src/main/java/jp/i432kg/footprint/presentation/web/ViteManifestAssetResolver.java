@@ -53,10 +53,13 @@ public class ViteManifestAssetResolver {
         final Map<String, ManifestChunk> manifest = loadManifest();
 
         final FrontendAssetProperties properties = new FrontendAssetProperties();
+        properties.getEntries().setAbout(toAsset(manifest, "src/entries/about/main.js"));
         properties.getEntries().setLogin(toAsset(manifest, "src/entries/login/main.js"));
         properties.getEntries().setMap(toAsset(manifest, "src/entries/map/main.js"));
         properties.getEntries().setMypage(toAsset(manifest, "src/entries/mypage/main.js"));
+        properties.getEntries().setPrivacy(toAsset(manifest, "src/entries/privacy/main.js"));
         properties.getEntries().setSearch(toAsset(manifest, "src/entries/search/main.js"));
+        properties.getEntries().setTerms(toAsset(manifest, "src/entries/terms/main.js"));
         properties.getEntries().setTimeline(toAsset(manifest, "src/entries/timeline/main.js"));
         return properties;
     }

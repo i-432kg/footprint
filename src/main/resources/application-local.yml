@@ -42,6 +42,9 @@ app:
   frontend:
     public-base-url: "http://localhost:5173"
     entries:
+      about:
+        js: "http://localhost:5173/src/entries/about/main.js"
+        css: [ ]
       login:
         js: "http://localhost:5173/src/entries/login/main.js"
         css: [ ]
@@ -51,8 +54,14 @@ app:
       mypage:
         js: "http://localhost:5173/src/entries/mypage/main.js"
         css: [ ]
+      privacy:
+        js: "http://localhost:5173/src/entries/privacy/main.js"
+        css: [ ]
       search:
         js: "http://localhost:5173/src/entries/search/main.js"
+        css: [ ]
+      terms:
+        js: "http://localhost:5173/src/entries/terms/main.js"
         css: [ ]
       timeline:
         js: "http://localhost:5173/src/entries/timeline/main.js"

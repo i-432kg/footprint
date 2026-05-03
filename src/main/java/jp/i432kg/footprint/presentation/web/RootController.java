@@ -41,6 +41,16 @@ public class RootController {
     }
 
     /**
+     * About 画面を返します。
+     *
+     * @return About 画面のテンプレート名
+     */
+    @GetMapping("/about")
+    public String about() {
+        return "about";
+    }
+
+    /**
      * ログイン画面を返します。
      *
      * @return ログイン画面のテンプレート名
@@ -71,6 +81,16 @@ public class RootController {
     }
 
     /**
+     * Privacy 画面を返します。
+     *
+     * @return Privacy 画面のテンプレート名
+     */
+    @GetMapping("/privacy")
+    public String privacy() {
+        return "privacy";
+    }
+
+    /**
      * 検索画面を返します。
      *
      * @return 検索画面のテンプレート名
@@ -78,6 +98,16 @@ public class RootController {
     @GetMapping("/search")
     public String search() {
         return "search";
+    }
+
+    /**
+     * Terms 画面を返します。
+     *
+     * @return Terms 画面のテンプレート名
+     */
+    @GetMapping("/terms")
+    public String terms() {
+        return "terms";
     }
 
     /**

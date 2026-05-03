@@ -21,13 +21,19 @@ app:
   frontend:
     public-base-url: ""
     entries:
+      about:
+        js: ""
       login:
         js: ""
       map:
         js: ""
       mypage:
         js: ""
+      privacy:
+        js: ""
       search:
+        js: ""
+      terms:
         js: ""
       timeline:
         js: ""

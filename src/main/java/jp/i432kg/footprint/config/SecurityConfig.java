@@ -99,6 +99,9 @@ public class SecurityConfig {
                     // 画面・静的リソース
                     auth.requestMatchers(
                             "/login",
+                            "/about",
+                            "/terms",
+                            "/privacy",
                             "/favicon.ico",
                             "/favicon.svg",
                             "/footprint-title-logo.svg",

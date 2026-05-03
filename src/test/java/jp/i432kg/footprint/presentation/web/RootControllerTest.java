@@ -37,10 +37,13 @@ class RootControllerTest {
     @DisplayName("RootController は各画面の期待テンプレート名を返す")
     void should_returnExpectedTemplateNames_when_pageEndpointsAreCalled() {
         assertThat(controller.index()).isEqualTo("timeline");
+        assertThat(controller.about()).isEqualTo("about");
         assertThat(controller.login()).isEqualTo("login");
         assertThat(controller.map()).isEqualTo("map");
         assertThat(controller.mypage()).isEqualTo("mypage");
+        assertThat(controller.privacy()).isEqualTo("privacy");
         assertThat(controller.search()).isEqualTo("search");
+        assertThat(controller.terms()).isEqualTo("terms");
         assertThat(controller.timeline()).isEqualTo("timeline");
     }
 

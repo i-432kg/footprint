@@ -36,10 +36,13 @@ class ViteManifestAssetResolverTest {
 
         final FrontendAssetProperties actual = newResolver().resolve();
 
+        assertThat(actual.getEntries().getAbout().getJs()).isEqualTo("/assets/about.js");
         assertThat(actual.getEntries().getLogin().getJs()).isEqualTo("/assets/login.js");
         assertThat(actual.getEntries().getMap().getJs()).isEqualTo("/assets/map.js");
         assertThat(actual.getEntries().getMypage().getJs()).isEqualTo("/assets/mypage.js");
+        assertThat(actual.getEntries().getPrivacy().getJs()).isEqualTo("/assets/privacy.js");
         assertThat(actual.getEntries().getSearch().getJs()).isEqualTo("/assets/search.js");
+        assertThat(actual.getEntries().getTerms().getJs()).isEqualTo("/assets/terms.js");
         assertThat(actual.getEntries().getTimeline().getJs()).isEqualTo("/assets/timeline.js");
         assertThat(actual.getEntries().getTimeline().getCss())
                 .containsExactly("/assets/timeline.css", "/assets/shared.css");
@@ -110,6 +113,10 @@ class ViteManifestAssetResolverTest {
     private static String validManifestJson() {
         return """
                 {
+                  "src/entries/about/main.js": {
+                    "file": "assets/about.js",
+                    "css": ["assets/about.css"]
+                  },
                   "src/entries/login/main.js": {
                     "file": "assets/login.js",
                     "css": ["assets/login.css"]
@@ -122,9 +129,17 @@ class ViteManifestAssetResolverTest {
                     "file": "assets/mypage.js",
                     "css": ["assets/mypage.css"]
                   },
+                  "src/entries/privacy/main.js": {
+                    "file": "assets/privacy.js",
+                    "css": ["assets/privacy.css"]
+                  },
                   "src/entries/search/main.js": {
                     "file": "assets/search.js",
                     "css": ["assets/search.css"]
+                  },
+                  "src/entries/terms/main.js": {
+                    "file": "assets/terms.js",
+                    "css": ["assets/terms.css"]
                   },
                   "src/entries/timeline/main.js": {
                     "file": "assets/timeline.js",
@@ -142,9 +157,12 @@ class ViteManifestAssetResolverTest {
     private static String missingSearchEntryManifestJson() {
         return """
                 {
+                  "src/entries/about/main.js": {"file": "assets/about.js"},
                   "src/entries/login/main.js": {"file": "assets/login.js"},
                   "src/entries/map/main.js": {"file": "assets/map.js"},
                   "src/entries/mypage/main.js": {"file": "assets/mypage.js"},
+                  "src/entries/privacy/main.js": {"file": "assets/privacy.js"},
+                  "src/entries/terms/main.js": {"file": "assets/terms.js"},
                   "src/entries/timeline/main.js": {"file": "assets/timeline.js"}
                 }
                 """;

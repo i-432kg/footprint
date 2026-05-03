@@ -58,6 +58,11 @@ public class FrontendAssetProperties {
     @Setter
     public static class Entries {
         /**
+         * about 画面の asset 設定です。
+         */
+        private Asset about = new Asset();
+
+        /**
          * login 画面の asset 設定です。
          */
         private Asset login = new Asset();
@@ -73,9 +78,19 @@ public class FrontendAssetProperties {
         private Asset mypage = new Asset();
 
         /**
+         * privacy 画面の asset 設定です。
+         */
+        private Asset privacy = new Asset();
+
+        /**
          * search 画面の asset 設定です。
          */
         private Asset search = new Asset();
+
+        /**
+         * terms 画面の asset 設定です。
+         */
+        private Asset terms = new Asset();
 
         /**
          * timeline 画面の asset 設定です。
