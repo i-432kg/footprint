@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -275,6 +276,24 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleApplicationException(final ApplicationException ex) {
         logHandledException("Application error occurred", ex);
         return createApplicationProblemDetail(resolveStatus(ex), "Application Error", ex);
+    }
+
+    /**
+     * 静的リソース未検出を 404 の {@link ProblemDetail} へ変換します。
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ProblemDetail handleNoResourceFound(final NoResourceFoundException ex) {
+        APP_LOGGER.atWarn()
+                .addKeyValue("path", ex.getResourcePath())
+                .log("Static resource not found");
+
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND,
+                "リソースが見つかりません。"
+        );
+        problemDetail.setTitle("Not Found");
+        problemDetail.setProperty("errorCode", "RESOURCE_NOT_FOUND");
+        return problemDetail;
     }
 
     /**

@@ -30,6 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -41,6 +42,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -356,6 +358,18 @@ class GlobalExceptionHandlerTest {
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         assertThat(actual.getTitle()).isEqualTo("Application Error");
         assertThat(actual.getProperties()).containsEntry("errorCode", ErrorCode.USER_COMMAND_FAILED);
+    }
+
+    @Test
+    @DisplayName("GlobalExceptionHandler は NoResourceFoundException を 404 の ProblemDetail へ変換する")
+    void should_createNotFoundProblemDetail_when_noResourceFoundExceptionIsHandled() {
+        final ProblemDetail actual = newHandler()
+                .handleNoResourceFound(new NoResourceFoundException(HttpMethod.GET, "/assets/logo.svg", null));
+
+        assertThat(actual.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(actual.getTitle()).isEqualTo("Not Found");
+        assertThat(actual.getDetail()).isEqualTo("リソースが見つかりません。");
+        assertThat(actual.getProperties()).containsEntry("errorCode", "RESOURCE_NOT_FOUND");
     }
 
     @Test
