@@ -101,6 +101,7 @@ public class SecurityConfig {
                             "/login",
                             "/favicon.ico",
                             "/favicon.svg",
+                            "/footprint-title-logo.svg",
                             "/css/**",
                             "/assets/**",
                             "/actuator/health"
