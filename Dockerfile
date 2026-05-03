@@ -1,5 +1,5 @@
 # ---------- frontend build ----------
-FROM node:20-alpine AS frontend-build
+FROM node:24.14.1-alpine3.23 AS frontend-build
 WORKDIR /frontend
 
 COPY frontend/package*.json ./
