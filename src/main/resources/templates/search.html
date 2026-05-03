@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Footprint - search</title>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" th:href="${frontendAssets.publicAssetUrl('/favicon.ico')}" sizes="any">
+    <link rel="icon" th:href="${frontendAssets.publicAssetUrl('/favicon.svg')}" type="image/svg+xml">
 
     <th:block th:each="cssFile : ${frontendAssets.entries.search.css}">
         <link rel="stylesheet" th:href="${cssFile}">

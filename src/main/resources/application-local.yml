@@ -40,6 +40,7 @@ app:
     manifest-path: seed-source/manifest/seed-images.json
 
   frontend:
+    public-base-url: "http://localhost:5173"
     entries:
       login:
         js: "http://localhost:5173/src/entries/login/main.js"

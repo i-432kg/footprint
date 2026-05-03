@@ -19,6 +19,7 @@ spring:
 # 共通のアプリ設定
 app:
   frontend:
+    public-base-url: ""
     entries:
       login:
         js: ""
