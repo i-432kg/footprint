@@ -14,14 +14,14 @@ permissions:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: stg
     env:
       FRONTEND_REF_FOR_DEPLOY: ${{ github.event.client_payload.frontend_ref || vars.FRONTEND_REF }}
 
     steps:
       - name: Checkout backend repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Validate repository variables
         run: |
