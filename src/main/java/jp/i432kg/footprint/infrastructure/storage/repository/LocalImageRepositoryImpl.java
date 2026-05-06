@@ -204,7 +204,6 @@ public class LocalImageRepositoryImpl implements ImageStorage, ImageMetadataExtr
             case Jpeg -> Optional.of(FileExtension.Allowed.JPG);
             case Png -> Optional.of(FileExtension.Allowed.PNG);
             case Gif -> Optional.of(FileExtension.Allowed.GIF);
-            case WebP -> Optional.of(FileExtension.Allowed.WEBP);
             default -> Optional.empty();
         };
 

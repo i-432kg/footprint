@@ -34,7 +34,7 @@
 | No. | 区分 | テストケース | 入力値 / 事前条件 | 期待結果 | 備考 |
 |---|---|---|---|---|---|
 | 1 | 正常系 | JPEG 画像をローカル保存する | JPEG バイト列, `originalFilename=sample.png`, 固定 `ImageId` | `StorageObject.local(objectKey)` を返し、最終保存先にファイルが存在する | 判定拡張子は `jpg` を優先 |
-| 2 | 正常系 | 判定不能でも元ファイル名拡張子で保存する | 判定不能バイト列, `originalFilename=sample.webp` | `webp` 拡張子の object key で保存する | フォールバック確認 |
+| 2 | 正常系 | 判定不能でも元ファイル名拡張子で保存する | 判定不能バイト列, `originalFilename=sample.png` | `png` 拡張子の object key で保存する | フォールバック確認 |
 | 3 | 正常系 | EXIF 付き画像からメタデータを抽出する | GPS / 撮影日時を持つ画像, resolver が実ファイル `Path` を返す | `ImageMetadata` に幅・高さ・位置情報・撮影日時・拡張子・EXIF 有無・ファイルサイズが設定される | 実画像 fixture 推奨 |
 | 4 | 正常系 | GPS と撮影日時が無い画像で既定値を使う | EXIF なし画像, 固定 `Clock` | `location=Location.unknown()`, `takenAt=LocalDateTime.now(clock)`, `hasEXIF=false` |  |
 | 5 | 正常系 | 保存済み画像を削除する | resolver が既存ファイル `Path` を返す | 対象ファイルが削除される | `deleteIfExists` のため未存在でも例外なし |

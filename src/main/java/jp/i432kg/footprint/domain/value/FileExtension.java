@@ -39,8 +39,7 @@ public class FileExtension {
         JPG("jpg"),
         JPEG("jpeg"),
         PNG("png"),
-        GIF("gif"),
-        WEBP("webp");
+        GIF("gif");
 
         private final String value;
 

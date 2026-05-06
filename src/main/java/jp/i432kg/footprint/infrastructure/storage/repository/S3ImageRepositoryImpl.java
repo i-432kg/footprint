@@ -248,7 +248,6 @@ public class S3ImageRepositoryImpl implements ImageStorage, ImageMetadataExtract
             case Jpeg -> Optional.of(FileExtension.Allowed.JPG);
             case Png -> Optional.of(FileExtension.Allowed.PNG);
             case Gif -> Optional.of(FileExtension.Allowed.GIF);
-            case WebP -> Optional.of(FileExtension.Allowed.WEBP);
             default -> Optional.empty();
         };
 
@@ -269,7 +268,6 @@ public class S3ImageRepositoryImpl implements ImageStorage, ImageMetadataExtract
             case "jpg", "jpeg" -> "image/jpeg";
             case "png" -> "image/png";
             case "gif" -> "image/gif";
-            case "webp" -> "image/webp";
             default -> "application/octet-stream";
         };
     }

@@ -116,7 +116,7 @@ class S3ImageRepositoryImplTest {
         final PostId postId = DomainTestFixtures.postId();
         final ImageId imageId = DomainTestFixtures.imageId();
         final ObjectKey expectedObjectKey =
-                ObjectKey.createPostImageKey(userId, postId, imageId, FileExtension.of("webp"));
+                ObjectKey.createPostImageKey(userId, postId, imageId, FileExtension.of("png"));
         final StorageObject expectedStorageObject = StorageObject.s3(expectedObjectKey);
 
         when(imageIdGenerator.generate()).thenReturn(imageId);
@@ -129,7 +129,7 @@ class S3ImageRepositoryImplTest {
 
             final StorageObject actual = newRepository().store(
                     new ByteArrayInputStream(imageBytes),
-                    FileName.of("sample.webp"),
+                    FileName.of("sample.png"),
                     userId,
                     postId
             );
@@ -139,7 +139,7 @@ class S3ImageRepositoryImplTest {
 
         final ArgumentCaptor<PutObjectRequest> requestCaptor = ArgumentCaptor.forClass(PutObjectRequest.class);
         verify(s3Client).putObject(requestCaptor.capture(), any(RequestBody.class));
-        assertThat(requestCaptor.getValue().contentType()).isEqualTo("image/webp");
+        assertThat(requestCaptor.getValue().contentType()).isEqualTo("image/png");
         verify(imageIdGenerator).generate();
         verify(s3ObjectResolver).resolveBucket(expectedStorageObject);
         verify(s3ObjectResolver).resolveKey(expectedStorageObject);
@@ -276,7 +276,7 @@ class S3ImageRepositoryImplTest {
         final PostId postId = DomainTestFixtures.postId();
         final ImageId imageId = DomainTestFixtures.imageId();
         final ObjectKey expectedObjectKey =
-                ObjectKey.createPostImageKey(userId, postId, imageId, FileExtension.of("webp"));
+                ObjectKey.createPostImageKey(userId, postId, imageId, FileExtension.of("png"));
         final StorageObject expectedStorageObject = StorageObject.s3(expectedObjectKey);
 
         when(imageIdGenerator.generate()).thenReturn(imageId);
@@ -291,7 +291,7 @@ class S3ImageRepositoryImplTest {
 
             assertThatThrownBy(() -> newRepository().store(
                     new ByteArrayInputStream(imageBytes),
-                    FileName.of("sample.webp"),
+                    FileName.of("sample.png"),
                     userId,
                     postId
             ))

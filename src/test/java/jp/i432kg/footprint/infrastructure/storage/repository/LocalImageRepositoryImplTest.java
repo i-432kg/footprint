@@ -95,12 +95,12 @@ class LocalImageRepositoryImplTest {
     @DisplayName("LocalImageRepositoryImpl.store は画像形式判定不能時に元ファイル名の拡張子へフォールバックする")
     void should_fallbackToOriginalExtension_when_fileTypeCannotBeDetected() throws IOException {
         final byte[] imageBytes = "not-an-image".getBytes();
-        final FileName originalFilename = FileName.of("sample.webp");
+        final FileName originalFilename = FileName.of("sample.png");
         final UserId userId = DomainTestFixtures.userId();
         final PostId postId = DomainTestFixtures.postId();
         final ImageId imageId = DomainTestFixtures.imageId();
         final ObjectKey expectedObjectKey =
-                ObjectKey.createPostImageKey(userId, postId, imageId, FileExtension.of("webp"));
+                ObjectKey.createPostImageKey(userId, postId, imageId, FileExtension.of("png"));
         final StorageObject expectedStorageObject = StorageObject.local(expectedObjectKey);
         final Path finalPath = tempDir.resolve(expectedObjectKey.getValue());
 

@@ -22,7 +22,6 @@ class FileExtensionTest {
         assertThat(FileExtension.of("jpeg").getValue()).isEqualTo("jpeg");
         assertThat(FileExtension.of("png").getValue()).isEqualTo("png");
         assertThat(FileExtension.of("gif").getValue()).isEqualTo("gif");
-        assertThat(FileExtension.of("webp").getValue()).isEqualTo("webp");
     }
 
     @Test
@@ -56,5 +55,6 @@ class FileExtensionTest {
     @DisplayName("FileExtension.of は未対応の拡張子を拒否する")
     void should_throwException_when_fileExtensionIsUnsupported() {
         assertInvalidValue(() -> FileExtension.of("bmp"), "extension", "unsupported extension");
+        assertInvalidValue(() -> FileExtension.of("webp"), "extension", "unsupported extension");
     }
 }

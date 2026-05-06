@@ -36,7 +36,7 @@
 | No. | 区分 | テストケース | 入力値 / 事前条件 | 期待結果 | 備考 |
 |---|---|---|---|---|---|
 | 1 | 正常系 | JPEG 画像を S3 へアップロードする | JPEG バイト列, 固定 `ImageId`, resolver が bucket / key を返す | `StorageObject.s3(objectKey)` を返し、`putObject` に正しい bucket / key / `image/jpeg` / byte 長を渡す | `ArgumentCaptor` 使用 |
-| 2 | 正常系 | 判定不能でも元ファイル名拡張子でアップロードする | 判定不能バイト列, `originalFilename=sample.webp` | `webp` 拡張子の object key と `image/webp` で `putObject` を呼ぶ | フォールバック確認 |
+| 2 | 正常系 | 判定不能でも元ファイル名拡張子でアップロードする | 判定不能バイト列, `originalFilename=sample.png` | `png` 拡張子の object key と `image/png` で `putObject` を呼ぶ | フォールバック確認 |
 | 3 | 正常系 | EXIF 付き S3 画像からメタデータを抽出する | `headObject.contentLength=123L`, `getObject` が GPS / 撮影日時付き画像を返す | `ImageMetadata` に幅・高さ・位置情報・撮影日時・拡張子・EXIF 有無・ファイルサイズが設定される | 実画像 fixture 推奨 |
 | 4 | 正常系 | GPS と撮影日時が無い画像で既定値を使う | EXIF なし画像, 固定 `Clock`, `contentLength=null` | `location=Location.unknown()`, `takenAt=LocalDateTime.now(clock)`, `fileSize=imageBytes.length` |  |
 | 5 | 正常系 | S3 画像を削除する | resolver が bucket / key を返す | `deleteObject` が 1 回呼ばれる |  |
