@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footprint - terms</title>
+    <link rel="icon" th:href="${frontendAssets.publicAssetUrl('/favicon.ico')}" sizes="any">
+    <link rel="icon" th:href="${frontendAssets.publicAssetUrl('/favicon.svg')}" type="image/svg+xml">
+
+    <th:block th:each="cssFile : ${frontendAssets.entries.terms.css}">
+        <link rel="stylesheet" th:href="${cssFile}">
+    </th:block>
+
+</head>
+<body>
+
+<div id="app-terms"></div>
+
+<script type="module" th:src="${frontendAssets.entries.terms.js}"></script>
+</body>
+</html>

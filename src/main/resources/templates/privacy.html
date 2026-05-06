@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footprint - privacy</title>
+    <link rel="icon" th:href="${frontendAssets.publicAssetUrl('/favicon.ico')}" sizes="any">
+    <link rel="icon" th:href="${frontendAssets.publicAssetUrl('/favicon.svg')}" type="image/svg+xml">
+
+    <th:block th:each="cssFile : ${frontendAssets.entries.privacy.css}">
+        <link rel="stylesheet" th:href="${cssFile}">
+    </th:block>
+
+</head>
+<body>
+
+<div id="app-privacy"></div>
+
+<script type="module" th:src="${frontendAssets.entries.privacy.js}"></script>
+</body>
+</html>

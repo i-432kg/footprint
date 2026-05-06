@@ -1,0 +1,73 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: false
+        same-site: lax
+
+app:
+  logging:
+    environment: local
+
+  storage:
+    type: LOCAL
+    image-csp-allow-origins: ""
+
+    local:
+      root-dir: storage/local
+
+    image-base-url: /images/
+
+  local-seed:
+    enabled: false
+    cleanup-only: false
+    cleanup-before-seed: false
+    test-password: ${APP_LOCAL_SEED_TEST_PASSWORD}
+    email-prefix: local_seed_user_
+    source-root-dir: seed-source
+    manifest-path: seed-source/manifest/seed-images.json
+
+  frontend:
+    public-base-url: "http://localhost:5173"
+
+    entries:
+      about:
+        js: "http://localhost:5173/src/entries/about/main.js"
+        css: [ ]
+      login:
+        js: "http://localhost:5173/src/entries/login/main.js"
+        css: [ ]
+      map:
+        js: "http://localhost:5173/src/entries/map/main.js"
+        css: [ ]
+      mypage:
+        js: "http://localhost:5173/src/entries/mypage/main.js"
+        css: [ ]
+      privacy:
+        js: "http://localhost:5173/src/entries/privacy/main.js"
+        css: [ ]
+      search:
+        js: "http://localhost:5173/src/entries/search/main.js"
+        css: [ ]
+      terms:
+        js: "http://localhost:5173/src/entries/terms/main.js"
+        css: [ ]
+      timeline:
+        js: "http://localhost:5173/src/entries/timeline/main.js"
+        css: [ ]

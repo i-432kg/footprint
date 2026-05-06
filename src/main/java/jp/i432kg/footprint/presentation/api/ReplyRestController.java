@@ -1,0 +1,108 @@
+package jp.i432kg.footprint.presentation.api;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
+import jp.i432kg.footprint.application.command.service.ReplyCommandService;
+import jp.i432kg.footprint.application.command.model.CreateReplyCommand;
+import jp.i432kg.footprint.application.query.service.ReplyQueryService;
+import jp.i432kg.footprint.application.query.model.ReplySummary;
+import jp.i432kg.footprint.domain.model.ParentReply;
+import jp.i432kg.footprint.domain.value.PostId;
+import jp.i432kg.footprint.domain.value.ReplyId;
+import jp.i432kg.footprint.domain.value.ReplyComment;
+import jp.i432kg.footprint.infrastructure.security.UserDetailsImpl;
+import jp.i432kg.footprint.logging.LoggingEvents;
+import jp.i432kg.footprint.logging.LoggingOperations;
+import jp.i432kg.footprint.logging.access.AccessLogFilter;
+import jp.i432kg.footprint.logging.operation.LogOperation;
+import jp.i432kg.footprint.presentation.api.request.ReplyRequest;
+import jp.i432kg.footprint.presentation.api.response.ReplyItemResponse;
+import jp.i432kg.footprint.presentation.api.response.mapper.ReplyResponseMapper;
+import jp.i432kg.footprint.presentation.validation.PresentationValidationPatterns;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * 返信に関する REST API を提供する controller です。
+ * <p>
+ * ネスト返信の取得と返信作成を扱います。
+ */
+@RestController
+@RequestMapping("/api/replies")
+@Validated
+@RequiredArgsConstructor
+public class ReplyRestController {
+
+    private final ReplyCommandService replyCommandService;
+
+    private final ReplyQueryService replyQueryService;
+
+    private final ReplyResponseMapper replyResponseMapper;
+
+    /**
+     * 指定した親返信に紐づくネスト返信一覧を取得します。
+     *
+     * @param parentReplyId 親返信 ID
+     * @param request HTTP リクエスト
+     * @return 返信一覧レスポンス
+     */
+    @GetMapping("/{parentReplyId}")
+    @LogOperation(LoggingOperations.REPLY_LIST_FETCH)
+    public ResponseEntity<List<ReplyItemResponse>> getNextReplies(
+            @PathVariable @Pattern(regexp = PresentationValidationPatterns.ULID) final String parentReplyId,
+            final HttpServletRequest request
+    ) {
+
+        // 返信一覧を取得する
+        final List<ReplySummary> replySummaries = replyQueryService.listNestedReplies(ReplyId.of(parentReplyId));
+
+        // レスポンス形式に変換する
+        final List<ReplyItemResponse> responses = replyResponseMapper.fromList(replySummaries);
+
+        // access ログ出力用のイベント名と補助項目を設定する
+        AccessLogFilter.setEvent(request, LoggingEvents.REPLY_LIST_FETCH);
+        AccessLogFilter.addField(request, "parentReplyId", parentReplyId);
+        AccessLogFilter.addField(request, "items", responses.size());
+
+        return ResponseEntity.ok(responses);
+    }
+
+    /**
+     * 指定した投稿に対する返信を作成します。
+     *
+     * @param postId 投稿 ID
+     * @param request 返信作成リクエスト
+     * @param userDetails 認証済みユーザー
+     * @return 201 Created
+     */
+    @PostMapping("/{postId}/reply")
+    @LogOperation(LoggingOperations.REPLY_CREATE)
+    public ResponseEntity<Void> reply(
+            @PathVariable @Pattern(regexp = PresentationValidationPatterns.ULID) final String postId,
+            @Valid @RequestBody final ReplyRequest request,
+            @AuthenticationPrincipal final UserDetailsImpl userDetails) {
+
+        final CreateReplyCommand command = CreateReplyCommand.of(
+                PostId.of(postId),
+                userDetails.getUserId(),
+                Optional.ofNullable(request.getParentReplyId())
+                        .map(ReplyId::of)
+                        .map(ParentReply::of)
+                        .orElseGet(ParentReply::root),
+                ReplyComment.of(request.getMessage())
+        );
+
+        replyCommandService.createReply(command);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+}

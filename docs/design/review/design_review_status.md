@@ -1,0 +1,68 @@
+# Footprint 設計資料レビュー 対応状況
+
+作成日: 2026-04-23
+
+関連資料:
+
+- `docs/design/review/implementation_gap_review.md`
+- `docs/design/todo/api_spec_todo.md`
+- `docs/design/todo/db_design_todo.md`
+- `docs/design/todo/log_design_todo.md`
+- `docs/design/todo/deployment_todo.md`
+
+## ステータス定義
+
+| ステータス | 意味 |
+|---|---|
+| Open | 未対応。設計資料の更新要否をこれから判断または反映する |
+| In Progress | 対応中。設計資料更新またはレビュー確認を進めている |
+| Closed | クローズ済み。実装を正として問題ないと判断し、必要な整理が完了した |
+| On Hold | いったん保留。フロントエンドリポジトリ確認など追加前提が必要 |
+
+## 一覧
+
+| ID | 対象資料 | レビュー項目 | 実装を正とする方針 | 対応内容 | ステータス | 備考 |
+|---|---|---|---|---|---|---|
+| R-01 | `05_screen_spec.md`, `07_authz_authn.md` | 画面公開範囲と認可仕様が初期設計・現状 `SecurityConfig`・新方針で不一致 | Yes | ADR-021 に基づき、画面・API・画像配信を原則認証必須として整理し、`SecurityConfig` を実装方針へ追随させた | Closed | 未認証公開は `POST /api/login`, `POST /api/users`, 静的資産, ヘルスチェック, local OpenAPI に限定 |
+| R-02 | `04_api_spec.yaml`, `05_screen_spec.md`, `07_authz_authn.md` | API エンドポイント一覧が現実装と不一致 | Yes | `04_api_spec.yaml`, `05_screen_spec.md`, `07_authz_authn.md` を実装準拠へ更新し、自動生成との差分運用は `api_spec_todo.md` で整理した | Closed | API-05 は annotation 品質改善の保留であり、エンドポイント不一致自体は解消済み |
+| R-03 | `03_database.md`, `05_screen_spec.md`, `06_log_design.md` | ページング仕様は `lastId` / `size` へ整理できるが、SQL の seek 条件が厳密でない | Yes | ADR-023 / ADR-025 に基づき、複合 seek 条件へ修正し、初回表示用 / 継続取得用 SQL 分割方針を設計・実装へ反映した | Closed | `page.nextCursor` は不要。`ORDER BY created_at DESC, id DESC` と整合する境界条件へ修正済み |
+| R-04 | `03_database.md` | DB 設計が `id` 中心で、実装の `public_id` 中心設計に追随していない | Yes | テーブル定義、キー設計、カラム定義を実装準拠に更新した | Closed | `public_id`, `birthdate`, `child_count`, `object_key`, `file_extension` などを反映済み |
+| R-05 | `05_screen_spec.md`, `01_overview.md`, `02_architecture.md` | 初期設計にない検索画面 `/search` が存在する | Yes | 検索画面と検索導線を資料へ追加した | Closed | `/search`, `/api/posts/search`, `/api/posts/search/map` を反映済み |
+| R-06 | `05_screen_spec.md`, `04_api_spec.yaml` | サインアップ仕様に `birthDate` 必須、自動ログインが反映されていない | Yes | 登録項目と登録後挙動を実装準拠で更新した | Closed | `userName`, `email`, `password`, `birthDate` を反映済み |
+| R-07 | `04_api_spec.yaml`, `07_authz_authn.md` | エラーレスポンスが独自 `ErrorResponse` 前提のまま | Yes | `04_api_spec.yaml` と `07_authz_authn.md` を `ProblemDetail` ベースへ更新した | Closed | ADR-024, `GlobalExceptionHandler` 準拠 |
+| R-08 | `06_log_design.md` | ログ設計が現状実装より先行している | No | `06_log_design.md` を正とし、実装不足を TODO 化して追い、`traceId` / `X-Trace-Id` / カテゴリ分割 / 認証・業務イベント / 例外ログ / JSON 構造化ログ / マスキング方針まで反映した | Closed | `log_design_todo.md` の `LOG-01` 〜 `LOG-08` はすべて Closed |
+| R-09 | `08_deployment.md`, `02_architecture.md`, `01_overview.md` | フロントエンド別リポジトリ取り込み構成が反映されていない | Yes | `08_deployment.md` を現実装ベースへ更新し、frontend checkout 失敗時運用、ロールバック単位、frontend ref 追跡まで `deployment_todo.md` で整理して完了した | Closed | `deployment_todo.md` の `DEP-01` 〜 `DEP-08` はすべて Closed |
+| R-10 | `07_authz_authn.md` | ログイン/ログアウト経路が旧前提のまま | Yes | `POST /api/login`, `POST /api/logout`, `loginId` を明記した | Closed | Spring Security 実装準拠 |
+| R-11 | `08_deployment.md` | Railway + S3 方針は大筋維持されている | Yes | 現実装ベースの補足を反映した | Closed | frontend 別リポジトリ連携や presigned URL 暫定運用も追記済み |
+| R-12 | `01_overview.md` | アプリの目的・コア機能は概ね現状実装と整合している | Yes | 検索機能、認証必須方針、`public_id`、画像配信方針などの補足を反映した | Closed | 概要レベルの主要差分は解消済み |
+| R-13 | `07_authz_authn.md`, `08_deployment.md`, `SecurityConfig` | stg/prod の画像配信が S3 presigned URL 前提で、URL 保有者は期限内に未認証取得できる | Partial | CloudFront 導入までは presigned URL を短命化し、現行採用値として `APP_STORAGE_S3_PRESIGNED_GET_EXPIRE_MINUTES=1` を運用する。期限切れは URL 再取得で吸収し、将来は CloudFront private content へ移行する | In Progress | ADR-021 は短命化方針の判断履歴として維持し、現行運用値は設計資料と設定値で管理する |
+| R-14 | `01_overview.md`, `05_screen_spec.md`, `04_api_spec.yaml` | 位置情報入力元の設計が「EXIF or ユーザー入力」のままだが、現実装は画像 EXIF 抽出のみ | Yes | 投稿作成仕様を実装準拠へ更新し、ユーザー手入力の位置情報は現状スコープ外と明記した | Closed | `PostRequest` は `imageFile` と `comment` のみ。位置情報は保存後メタデータ抽出で決定 |
+| R-15 | `01_overview.md`, `04_api_spec.yaml` | 画像アップロード制約が設計と実装で不一致（サイズ上限、許可形式、レート制限/タイムアウト） | Partial | サイズ上限を 10MB、許可形式を JPEG / PNG / GIF へ更新した。レート制限 / タイムアウトは TODO へ切り出して将来対応とする | In Progress | 5MB ではスマホ撮影画像を受けきれないため 10MB へ拡張。未実装分は `API-06` で管理 |
+| R-16 | `05_screen_spec.md`, `07_authz_authn.md` | ログイン成功後の挙動について、`/api/login` の利用形態が資料上あいまい | Yes | `/api/login` はフロントエンドから `application/x-www-form-urlencoded` で呼び出し、成功時は `200 OK` を返して画面遷移はフロントエンドが制御する前提へ資料を更新した | Closed | `ApiAuthenticationSuccessHandler` の `200 OK` 応答と整合 |
+| R-17 | `03_database.md`, `05_screen_spec.md`, `04_api_spec.yaml` | 返信取得の責務が「post_id で取得してアプリ側でツリー構築」前提のままだが、実装は 1 階層ずつ別 API 取得 | Yes | 投稿直下の返信は全件取得し、子返信は展開時に 1 階層ずつ取得する方針として `05_screen_spec.md` / `04_api_spec.yaml` を実装準拠へ更新した | Closed | `GET /api/posts/{postId}/replies` と `GET /api/replies/{parentReplyId}` はどちらも 1 階層取得 |
+| R-18 | `08_deployment.md`, `01_overview.md` | local/stg の seed 実行・cleanup 運用が設計資料に反映されていない | Yes | 起動時 seed runner、cleanup 運用、関連設定値を運用設計へ追記した | Closed | `app.local-seed.*`, `app.stg-seed.*` と `ApplicationRunner` 実装あり |
+
+## 更新ログ
+
+| 日付 | 更新内容 | 更新者 |
+|---|---|---|
+| 2026-04-23 | 初版作成 | Codex |
+| 2026-04-23 | ADR-021 に基づく認証必須方針と画像配信暫定方針を反映 | Codex |
+| 2026-04-24 | ADR-023 に基づくページング方針と seek 条件の改善方針を反映 | Codex |
+| 2026-04-24 | API仕様書の残課題 TODO を追加し、R-02 / R-07 の進捗を更新 | Codex |
+| 2026-04-24 | サインアップ仕様反映済みとして R-06 を Closed へ更新 | Codex |
+| 2026-04-24 | `07_authz_authn.md` を ADR-024 に追随させ、R-07 を Closed へ更新 | Codex |
+| 2026-04-24 | ログ設計を実装目標として扱う TODO を追加し、R-08 の方針を更新 | Codex |
+| 2026-04-24 | デプロイ設計を現実装ベースへ更新し、残論点 TODO を追加 | Codex |
+| 2026-04-24 | 検索画面、ログイン/ログアウト経路、概要補足の反映に合わせて R-05 / R-10 / R-12 を Closed へ更新 | Codex |
+| 2026-04-25 | 位置情報入力元、画像アップロード制約、ログイン成功後挙動、返信取得責務、seed 運用のレビュー漏れを R-14 〜 R-18 として追加 | Codex |
+| 2026-04-25 | API / DB TODO と実装修正の反映に合わせて R-01 / R-02 / R-03 / R-04 を Closed へ更新し、R-17 の進捗を更新 | Codex |
+| 2026-04-26 | 位置情報のユーザー手入力を現行スコープ外として `01_overview.md` に反映し、R-14 を Closed へ更新 | Codex |
+| 2026-04-26 | MPA 前提のログイン遷移方針を `05_screen_spec.md` / `07_authz_authn.md` に反映し、R-16 を Closed へ更新 | Codex |
+| 2026-04-26 | `/api/login` の実利用形態に合わせて R-16 の説明を更新し、seed 運用を `01_overview.md` / `08_deployment.md` に反映して R-18 を Closed へ更新 | Codex |
+| 2026-04-26 | 画像アップロード制約を実装準拠へ更新し、R-15 を Closed へ更新 | Codex |
+| 2026-04-26 | 画像アップロード API のレート制限 / タイムアウトを `API-06` へ切り出し、R-15 を In Progress へ戻した | Codex |
+| 2026-04-26 | 返信ツリー取得方針を `05_screen_spec.md` / `04_api_spec.yaml` に反映し、R-17 を Closed へ更新 | Codex |
+| 2026-04-29 | ログ設計 TODO の完了に合わせて R-08 を Closed へ更新し、関連資料のパス表記を実在パスへ整理 | Codex |
+| 2026-04-29 | presigned URL 暫定運用の方針を 1 分へ固定し、`07_authz_authn.md` / `08_deployment.md` / `deployment_todo.md` / R-13 へ反映 | Codex |
+| 2026-04-29 | deployment TODO の完了に合わせて R-09 を Closed へ更新し、`log_design_todo.md` の完了後整理を実施 | Codex |

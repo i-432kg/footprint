@@ -5,6 +5,18 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+# local env files
+.env
+.env.*
+!.env.example
+
+# local seed images
+seed-source/posts/**
+storage/**
+
+# local log files
+logs/
+
 ### STS ###
 .apt_generated
 .classpath

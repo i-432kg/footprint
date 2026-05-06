@@ -1,0 +1,59 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: true
+        same-site: lax
+
+app:
+  logging:
+    environment: stg
+
+  # STG環境はS3を使用（バケット名などは環境変数で注入）
+  storage:
+    type: ${APP_STORAGE_TYPE:S3}
+    image-csp-allow-origins: ${APP_STORAGE_IMAGE_CSP_ALLOW_ORIGINS:}
+
+    s3:
+      endpoint: ${APP_STORAGE_S3_ENDPOINT}
+      bucket-name: ${APP_STORAGE_S3_BUCKET_NAME}
+      region: ${APP_STORAGE_S3_REGION}
+      access-key: ${APP_STORAGE_S3_ACCESS_KEY}
+      secret-key: ${APP_STORAGE_S3_SECRET_KEY}
+
+      # Railway Bucketの標準はvirtual-hosted-styleのためfalse。古いBucketでpath-style指定が必要な場合のみtrueにする。
+      path-style: ${APP_STORAGE_S3_PATH_STYLE:false}
+
+      # CDN導入までの次善策として、署名付きURLのアクセス可能時間を短くする。
+      presigned-get-expire-minutes: ${APP_STORAGE_S3_PRESIGNED_GET_EXPIRE_MINUTES:1}
+
+  stg-seed:
+    enabled: ${APP_STG_SEED_ENABLED:false}
+    cleanup-only: ${APP_STG_SEED_CLEANUP_ONLY:false}
+    cleanup-before-seed: ${APP_STG_SEED_CLEANUP_BEFORE_SEED:false}
+    test-password: ${APP_STG_SEED_TEST_PASSWORD:}
+    email-prefix: ${APP_STG_SEED_EMAIL_PREFIX:stg_seed_user_}
+    source-bucket-name: ${APP_STG_SEED_SOURCE_BUCKET_NAME:}
+    manifest-object-key: ${APP_STG_SEED_MANIFEST_OBJECT_KEY:seed-source/manifest/seed-images.json}
+
+  frontend:
+    vite:
+      manifest-location: classpath:/static/manifest.json
+
+logging:
+  structured:
+    format:
+      console: logstash

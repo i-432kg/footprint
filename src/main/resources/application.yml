@@ -1,0 +1,66 @@
+spring:
+  profiles:
+    active: local # デフォルトはローカル起動用
+
+  application:
+    name: footprint
+
+  jackson:
+    property-naming-strategy: LOWER_CAMEL_CASE
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  sql:
+    init:
+      # DBスキーマはFlywayで管理するため、schema.sql/data.sqlは実行しない。
+      mode: never
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+
+app:
+  frontend:
+    public-base-url: ""
+
+    entries:
+      about:
+        js: ""
+      login:
+        js: ""
+      map:
+        js: ""
+      mypage:
+        js: ""
+      privacy:
+        js: ""
+      search:
+        js: ""
+      terms:
+        js: ""
+      timeline:
+        js: ""
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+  type-handlers-package: jp.i432kg.footprint.infrastructure.datasource.typehandler
+  mapper-locations: classpath*:jp/i432kg/footprint/infrastructure/datasource/mapper/**/*.xml
+
+logging:
+  pattern:
+    # text ログ出力時のレベル表示へ traceId を載せる設定。structured logging(JSON) では直接使われない。
+    level: "%5p [traceId:%X{traceId}]"
+  structured:
+    json:
+      add:
+        environment: ${app.logging.environment}
+      stacktrace:
+        root: first
+        max-length: 8192
+        include-common-frames: true
+        include-hashes: true

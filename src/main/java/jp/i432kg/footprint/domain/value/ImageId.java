@@ -1,0 +1,26 @@
+package jp.i432kg.footprint.domain.value;
+
+import jp.i432kg.footprint.domain.helper.UlidValidation;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Value;
+import org.jspecify.annotations.Nullable;
+
+/**
+ * 画像を一意に識別するための ID を表す値オブジェクト
+ * <p>
+ * フロント側に公開する ID として扱う
+ */
+@Value
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class ImageId {
+
+    static String FIELD_NAME = "image_id";
+
+    String value;
+
+    public static ImageId of(final @Nullable String value) {
+        final String validated = UlidValidation.requireValidUlid(FIELD_NAME, value);
+        return new ImageId(validated);
+    }
+}

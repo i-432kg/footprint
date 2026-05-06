@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.i432kg.footprint.infrastructure.security.mapper.AuthMapper">
+
+    <select id="findAuthUserByLoginId" resultType="jp.i432kg.footprint.infrastructure.security.mapper.AuthMapper$AuthUserEntity">
+        SELECT
+            public_id AS userId,
+            email AS email,
+            username AS displayUsername,
+            password_hash AS password
+        FROM users
+        WHERE email = #{email}
+          AND disabled = false
+    </select>
+
+    <update id="updateLastLoginAt">
+        UPDATE users
+        SET last_login_at = #{lastLoginAt}
+        WHERE public_id = #{userId}
+    </update>
+
+</mapper>

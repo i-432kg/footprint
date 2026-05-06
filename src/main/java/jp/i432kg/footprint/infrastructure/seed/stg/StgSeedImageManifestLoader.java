@@ -1,0 +1,48 @@
+package jp.i432kg.footprint.infrastructure.seed.stg;
+
+import jp.i432kg.footprint.infrastructure.seed.shared.SeedImageEntryLoader;
+import jp.i432kg.footprint.infrastructure.seed.shared.SeedImageManifestParser;
+import jp.i432kg.footprint.infrastructure.seed.shared.SeedSourceImage;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+/**
+ * STG 環境の seed image manifest を S3 から読み込み、投稿元画像の object key 一覧へ解決するローダです。
+ */
+@Component
+@Profile("stg")
+@RequiredArgsConstructor
+public class StgSeedImageManifestLoader implements SeedImageEntryLoader {
+
+    private final S3SeedSourceImageProvider seedSourceImageProvider;
+    private final StgSeedProperties properties;
+    private final SeedImageManifestParser manifestParser;
+
+    /**
+     * STG seed 用 manifest を読み込み、投稿元画像の object key 一覧を返します。
+     *
+     * @return 重複を除去したオブジェクトキー一覧
+     */
+    public List<String> loadObjectKeys() {
+        final String manifestObjectKey = properties.getManifestObjectKey();
+
+        try (SeedSourceImage manifest = seedSourceImageProvider.load(manifestObjectKey);
+             InputStream inputStream = manifest.inputStream()) {
+            return manifestParser.parseEntries(inputStream, manifestObjectKey);
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to read seed image manifest. objectKey=" + manifestObjectKey, e);
+        } catch (RuntimeException e) {
+            throw new IllegalStateException("Failed to load seed image manifest. objectKey=" + manifestObjectKey, e);
+        }
+    }
+
+    @Override
+    public List<String> loadEntries() {
+        return loadObjectKeys();
+    }
+}

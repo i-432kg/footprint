@@ -1,0 +1,67 @@
+name: Deploy PROD to Railway
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment: prod
+    env:
+      FRONTEND_REF_FOR_DEPLOY: ${{ vars.FRONTEND_REF }}
+
+    steps:
+      - name: Checkout backend repository
+        uses: actions/checkout@v5
+
+      - name: Validate repository variables
+        run: |
+          test -n "${{ vars.FRONTEND_REPO }}" || (echo "FRONTEND_REPO is not set" && exit 1)
+          test -n "$FRONTEND_REF_FOR_DEPLOY" || (echo "FRONTEND_REF is not set" && exit 1)
+          test -n "${{ vars.RAILWAY_SERVICE }}" || (echo "RAILWAY_SERVICE is not set" && exit 1)
+          echo "Required repository variables are set"
+
+      - name: Validate required secrets
+        env:
+          FRONTEND_REPO_PAT: ${{ secrets.FRONTEND_REPO_PAT }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          test -n "$FRONTEND_REPO_PAT" || (echo "FRONTEND_REPO_PAT is not set" && exit 1)
+          test -n "$RAILWAY_TOKEN" || (echo "RAILWAY_TOKEN is not set" && exit 1)
+          echo "Required secrets are set"
+
+      - name: Checkout frontend repository
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ vars.FRONTEND_REPO }}
+          ref: ${{ env.FRONTEND_REF_FOR_DEPLOY }}
+          token: ${{ secrets.FRONTEND_REPO_PAT }}
+          path: frontend
+
+      - name: Write deploy summary
+        run: |
+          FRONTEND_COMMIT="$(git -C frontend rev-parse HEAD)"
+          {
+            echo "## Deploy Summary"
+            echo ""
+            echo "| Key | Value |"
+            echo "|---|---|"
+            echo "| Backend commit | \`${GITHUB_SHA}\` |"
+            echo "| Frontend ref | \`${FRONTEND_REF_FOR_DEPLOY}\` |"
+            echo "| Frontend commit | \`${FRONTEND_COMMIT}\` |"
+            echo "| Environment | \`prod\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --service "${{ vars.RAILWAY_SERVICE }}"

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.i432kg.footprint.infrastructure.datasource.mapper.query.UserQueryMapper">
+
+    <select id="findProfileByUserId" resultType="jp.i432kg.footprint.application.query.model.UserProfileSummary">
+        SELECT u.public_id as id,
+               u.username,
+               u.email,
+               u.birthdate,
+               (SELECT COUNT(*) FROM posts WHERE user_id = u.public_id)   AS postCount,
+               (SELECT COUNT(*) FROM replies WHERE user_id = u.public_id) AS replyCount
+        FROM users u
+        WHERE u.public_id = #{userId}
+    </select>
+
+</mapper>
