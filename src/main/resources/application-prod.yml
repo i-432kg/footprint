@@ -25,12 +25,14 @@ app:
     type: ${APP_STORAGE_TYPE:S3}
     image-csp-allow-origins: ${APP_STORAGE_IMAGE_CSP_ALLOW_ORIGINS:}
     s3:
-      endpoint: ${APP_STORAGE_S3_ENDPOINT:}
-      bucket-name: ${APP_STORAGE_S3_BUCKET_NAME:}
-      region: ${APP_STORAGE_S3_REGION:ap-northeast-1}
-      access-key: ${APP_STORAGE_S3_ACCESS_KEY:}
-      secret-key: ${APP_STORAGE_S3_SECRET_KEY:}
+      endpoint: ${APP_STORAGE_S3_ENDPOINT}
+      bucket-name: ${APP_STORAGE_S3_BUCKET_NAME}
+      region: ${APP_STORAGE_S3_REGION}
+      access-key: ${APP_STORAGE_S3_ACCESS_KEY}
+      secret-key: ${APP_STORAGE_S3_SECRET_KEY}
+      # Railway Bucketの標準はvirtual-hosted-styleのためfalse。古いBucketでpath-style指定が必要な場合のみtrueにする。
       path-style: ${APP_STORAGE_S3_PATH_STYLE:false}
+      # CDN導入までの次善策として、署名付きURLのアクセス可能時間を短くする。
       presigned-get-expire-minutes: ${APP_STORAGE_S3_PRESIGNED_GET_EXPIRE_MINUTES:1}
 
   frontend:
