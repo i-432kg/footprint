@@ -1,27 +1,32 @@
 spring:
   profiles:
     active: local # デフォルトはローカル起動用
+
   application:
     name: footprint
+
   jackson:
     property-naming-strategy: LOWER_CAMEL_CASE
+
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+
   sql:
     init:
       # DBスキーマはFlywayで管理するため、schema.sql/data.sqlは実行しない。
       mode: never
+
   flyway:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: false
 
-# 共通のアプリ設定
 app:
   frontend:
     public-base-url: ""
+
     entries:
       about:
         js: ""

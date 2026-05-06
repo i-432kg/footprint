@@ -1,6 +1,7 @@
 spring:
   config:
     import: optional:file:.env[.properties]
+
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
@@ -23,11 +24,14 @@ server:
 app:
   logging:
     environment: local
+
   storage:
     type: LOCAL
     image-csp-allow-origins: ""
+
     local:
       root-dir: storage/local
+
     image-base-url: /images/
 
   local-seed:
@@ -41,6 +45,7 @@ app:
 
   frontend:
     public-base-url: "http://localhost:5173"
+
     entries:
       about:
         js: "http://localhost:5173/src/entries/about/main.js"

@@ -3,6 +3,7 @@ spring:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
+
 springdoc:
   api-docs:
     enabled: true
@@ -17,10 +18,11 @@ server:
         secure: true
         same-site: lax
 
-# STG環境はS3を使用（バケット名などは環境変数で注入）
 app:
   logging:
     environment: stg
+
+  # STG環境はS3を使用（バケット名などは環境変数で注入）
   storage:
     type: ${APP_STORAGE_TYPE:S3}
     image-csp-allow-origins: ${APP_STORAGE_IMAGE_CSP_ALLOW_ORIGINS:}
@@ -31,8 +33,10 @@ app:
       region: ${APP_STORAGE_S3_REGION}
       access-key: ${APP_STORAGE_S3_ACCESS_KEY}
       secret-key: ${APP_STORAGE_S3_SECRET_KEY}
+
       # Railway Bucketの標準はvirtual-hosted-styleのためfalse。古いBucketでpath-style指定が必要な場合のみtrueにする。
       path-style: ${APP_STORAGE_S3_PATH_STYLE:false}
+
       # CDN導入までの次善策として、署名付きURLのアクセス可能時間を短くする。
       presigned-get-expire-minutes: ${APP_STORAGE_S3_PRESIGNED_GET_EXPIRE_MINUTES:1}
 
