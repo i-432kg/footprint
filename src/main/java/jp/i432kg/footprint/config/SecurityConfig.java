@@ -104,6 +104,8 @@ public class SecurityConfig {
                             "/privacy",
                             "/favicon.ico",
                             "/favicon.svg",
+                            "/ogp.png",
+                            "/ogp.svg",
                             "/footprint-title-logo.svg",
                             "/css/**",
                             "/assets/**",

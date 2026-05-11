@@ -24,6 +24,15 @@ spring:
     baseline-on-migrate: false
 
 app:
+  ogp:
+    site-base-url: ${APP_OGP_SITE_BASE_URL:}
+    site-name: Footprint
+    title: "Footprint - 写真と場所で日常を残す投稿アプリ"
+    description: "Footprint は、写真付きの投稿をタイムラインと地図の両方から振り返れる Web アプリケーションです。"
+    type: website
+    image-path: /ogp.png
+    twitter-card: summary_large_image
+
   frontend:
     public-base-url: ""
 
